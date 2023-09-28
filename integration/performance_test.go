@@ -12,9 +12,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dedis/d-voting/contracts/evoting"
-	"github.com/dedis/d-voting/contracts/evoting/types"
-	"github.com/dedis/d-voting/services/dkg"
+	"github.com/c4dt/d-voting/contracts/evoting"
+	"github.com/c4dt/d-voting/contracts/evoting/types"
+	"github.com/c4dt/d-voting/services/dkg"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	delaPkg "go.dedis.ch/dela"

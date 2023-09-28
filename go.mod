@@ -1,4 +1,4 @@
-module github.com/dedis/d-voting
+module github.com/c4dt/d-voting
 
 go 1.19
 
@@ -9,8 +9,8 @@ require (
 	github.com/rs/zerolog v1.19.0
 	github.com/stretchr/testify v1.7.0
 	github.com/uber/jaeger-client-go v2.25.0+incompatible
-	go.dedis.ch/dela v0.0.0-20230907131212-0d61b081b4af
-	go.dedis.ch/dela-apps v0.0.0-20211019120455-a0db752a0ba0
+	github.com/c4dt v0.0.0-20230907131212-0d61b081b4af
+	github.com/c4dt-apps v0.0.0-20211019120455-a0db752a0ba0
 	go.dedis.ch/kyber/v3 v3.1.0
 	golang.org/x/net v0.3.0
 	golang.org/x/tools v0.4.1-0.20221208213631-3f74d914ae6d

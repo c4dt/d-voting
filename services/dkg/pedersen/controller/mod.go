@@ -11,8 +11,8 @@ import (
 	"go.dedis.ch/dela/crypto/bls"
 	"go.dedis.ch/dela/crypto/loader"
 
-	"github.com/dedis/d-voting/contracts/evoting"
-	"github.com/dedis/d-voting/services/dkg/pedersen"
+	"github.com/c4dt/d-voting/contracts/evoting"
+	"github.com/c4dt/d-voting/services/dkg/pedersen"
 	"go.dedis.ch/dela/cli"
 	"go.dedis.ch/dela/cli/node"
 	"go.dedis.ch/dela/core/access/darc"
@@ -24,7 +24,7 @@ import (
 	"go.dedis.ch/dela/mino"
 	"golang.org/x/xerrors"
 
-	etypes "github.com/dedis/d-voting/contracts/evoting/types"
+	etypes "github.com/c4dt/d-voting/contracts/evoting/types"
 )
 
 // BucketName is the name of the bucket in the database.

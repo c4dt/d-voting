@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dedis/d-voting/proxy/txnmanager"
+	"github.com/c4dt/d-voting/proxy/txnmanager"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/dela/core/execution/native"
 	"go.dedis.ch/dela/core/ordering"

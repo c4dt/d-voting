@@ -27,7 +27,7 @@ mkdir -p nodes
 function build_dela() {
   echo "Building dela-node"
   if ! [[ -d dela/ ]]; then
-    git clone -b fix-bbolt https://github.com/dedis/dela.git
+    git clone -b fix-bbolt https://github.com/c4dt/dela.git
   fi
   export GOBIN=$(pwd)/bin
   PATH="$PATH":"$GOBIN"
