@@ -33,13 +33,13 @@ proxiesRouter.put('/:nodeAddr', (req, res) => {
   const proxy = proxiesDB.get(nodeAddr);
 
   if (proxy === undefined) {
-    res.status(404).send('not found');
+    res.status(404).send(`proxy ${nodeAddr} not found`);
     return;
   }
   try {
     const bodydata = req.body;
     if (bodydata.Proxy === undefined) {
-      res.status(400).send('bad request, proxy is undefined');
+      res.status(400).send(`bad request, proxy ${nodeAddr} is undefined`);
       return;
     }
 
@@ -70,7 +70,7 @@ proxiesRouter.delete('/:nodeAddr', (req, res) => {
   const proxy = proxiesDB.get(nodeAddr);
 
   if (proxy === undefined) {
-    res.status(404).send('not found');
+    res.status(404).send(`proxy ${nodeAddr} not found`);
     return;
   }
 
@@ -87,6 +87,7 @@ proxiesRouter.get('', (req, res) => {
   const output = new Map<string, string>();
   proxiesDB.getRange({}).forEach((entry) => {
     output.set(entry.key, entry.value);
+    console.log(`Outputting ${entry.key} / ${entry.value}`);
   });
 
   res.status(200).json({ Proxies: Object.fromEntries(output) });
@@ -98,10 +99,12 @@ proxiesRouter.get('/:nodeAddr', (req, res) => {
   const proxy = proxiesDB.get(decodeURIComponent(nodeAddr));
 
   if (proxy === undefined) {
-    res.status(404).send('not found');
+    console.log('undefined');
+    res.status(404).send(`proxy ${nodeAddr} not found`);
     return;
   }
 
+  console.log('Status 200');
   res.status(200).json({
     NodeAddr: nodeAddr,
     Proxy: proxy,

@@ -33,6 +33,7 @@ const ProxyInput: FC = () => {
   // update the proxy context and sessionStore each time the proxy changes
   useEffect(() => {
     sessionStorage.setItem(proxyKey, proxy);
+    console.error(`DEBUG: setting proxy ${proxy}`);
     pctx.setProxy(proxy);
     setInputVal(proxy);
   }, [pctx, proxy]);

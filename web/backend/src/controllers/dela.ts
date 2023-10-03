@@ -237,6 +237,8 @@ delaRouter.use('/*', (req, res) => {
     return;
   }
 
+  console.log(`Forwarding request to ${req.baseUrl}`);
+
   const bodyData = req.body;
 
   // special case for voting
