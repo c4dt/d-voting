@@ -54,7 +54,6 @@ export async function getUserPermissions(userID: number) {
   await authEnforcer.getFilteredPolicy(0, String(userID)).then((authRights) => {
     permissions = authRights;
   });
-  console.log(`[getUserPermissions] user has permissions: ${permissions}`);
   return permissions;
 }
 

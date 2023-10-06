@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { isAuthorized, PERMISSIONS, readSCIPER } from '../authManager';
+import { assignUserPermissionToOwnElection, isAuthorized, PERMISSIONS } from '../authManager';
 
 export const usersRouter = express.Router();
 
@@ -19,7 +19,7 @@ usersRouter.get('/user_rights', (req, res) => {
   res.json(users);
 });
 
-// This call (only for admins) allow an admin to add a role to a voter.
+// This call (only for admins) allows an admin to add a role to a voter.
 usersRouter.post('/add_role', (req, res, next) => {
   if (!isAuthorized(req.session.userId, PERMISSIONS.SUBJECTS.ROLES, PERMISSIONS.ACTIONS.ADD)) {
     res.status(400).send('Unauthorized - only admins allowed');
@@ -27,12 +27,13 @@ usersRouter.post('/add_role', (req, res, next) => {
   }
 
   try {
-    readSCIPER(req.body.sciper);
+    assignUserPermissionToOwnElection(req.body.sciper, req.body.formId);
   } catch (e) {
-    res.status(400).send('Sciper length is incorrect');
+    res.status(400).send(`Error while adding to roles: ${e}`);
     return;
   }
 
+  res.set(200).send();
   next();
   // Call https://search-api.epfl.ch/api/ldap?q=228271, if the answer is
   // empty then sciper unknown, otherwise add it in userDB
