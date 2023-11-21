@@ -4,7 +4,7 @@ import (
 	"io"
 	"testing"
 
-	"github.com/c4dt/dela/cli/node"
+	"go.dedis.ch/dela/cli/node"
 	"github.com/stretchr/testify/require"
 )
 

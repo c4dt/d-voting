@@ -12,7 +12,7 @@ import (
 	"github.com/c4dt/d-voting/contracts/evoting/types"
 	_ "github.com/c4dt/d-voting/services/dkg/pedersen/json"
 	_ "github.com/c4dt/d-voting/services/shuffle/neff/json"
-	delaPkg "github.com/c4dt/dela"
+	delaPkg "go.dedis.ch/dela"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 )

@@ -4,11 +4,11 @@ import (
 	"testing"
 
 	"github.com/c4dt/d-voting/internal/testing/fake"
-	"github.com/c4dt/dela/cli"
-	"github.com/c4dt/dela/cli/node"
-	"github.com/c4dt/dela/core/ordering"
-	"github.com/c4dt/dela/core/ordering/cosipbft/blockstore"
-	"github.com/c4dt/dela/core/txn/pool"
+	"go.dedis.ch/dela/cli"
+	"go.dedis.ch/dela/cli/node"
+	"go.dedis.ch/dela/core/ordering"
+	"go.dedis.ch/dela/core/ordering/cosipbft/blockstore"
+	"go.dedis.ch/dela/core/txn/pool"
 	"github.com/stretchr/testify/require"
 )
 

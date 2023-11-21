@@ -9,9 +9,9 @@ import (
 
 	"github.com/c4dt/d-voting/internal/testing/fake"
 	"github.com/c4dt/d-voting/services/dkg"
-	"github.com/c4dt/dela/cli"
-	"github.com/c4dt/dela/cli/node"
-	"github.com/c4dt/dela/core/store/kv"
+	"go.dedis.ch/dela/cli"
+	"go.dedis.ch/dela/cli/node"
+	"go.dedis.ch/dela/core/store/kv"
 	"github.com/stretchr/testify/require"
 )
 

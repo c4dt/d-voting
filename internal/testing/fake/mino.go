@@ -15,9 +15,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/c4dt/dela/crypto"
-	"github.com/c4dt/dela/mino"
-	"github.com/c4dt/dela/serde"
+	"go.dedis.ch/dela/crypto"
+	"go.dedis.ch/dela/mino"
+	"go.dedis.ch/dela/serde"
 	"github.com/stretchr/testify/require"
 )
 

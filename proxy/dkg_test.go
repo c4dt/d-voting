@@ -14,8 +14,8 @@ import (
 	"github.com/c4dt/d-voting/proxy/types"
 	dkgSrv "github.com/c4dt/d-voting/services/dkg"
 
-	"github.com/c4dt/dela/cli/node"
-	"github.com/c4dt/dela/core/txn"
+	"go.dedis.ch/dela/cli/node"
+	"go.dedis.ch/dela/core/txn"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
