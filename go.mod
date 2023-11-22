@@ -18,7 +18,8 @@ require (
 )
 
 replace (
-	go.dedis.ch/dela => github.com/c4dt/dela v0.0.0-20231121144634-18760d54394e
+	//go.dedis.ch/dela => github.com/c4dt/dela v0.0.0-20231121144634-18760d54394e
+	go.dedis.ch/dela => ../dela
 	go.dedis.ch/dela-apps => github.com/c4dt/dela-apps v0.0.0-20231121155105-f3a8a6f4b3b8
 )
 

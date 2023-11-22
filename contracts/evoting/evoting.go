@@ -233,10 +233,12 @@ func (e evotingCommand) castVote(snap store.Snapshot, step execution.Step) error
 
 	form.Suffragia.CastVote(tx.UserID, tx.Ballot)
 
+	//core.PrintTimer("Serializing")
 	formBuf, err := form.Serialize(e.context)
 	if err != nil {
 		return xerrors.Errorf("failed to marshal Form : %v", err)
 	}
+	//core.PrintTimer("Serializing done")
 
 	err = snap.Set(formID, formBuf)
 	if err != nil {
@@ -846,10 +848,12 @@ func (e evotingCommand) getForm(formIDHex string,
 		return form, nil, xerrors.Errorf("failed to get key %q: %v", formIDBuf, err)
 	}
 
+	//core.PrintTimer("Start Deserializing")
 	message, err := e.formFac.Deserialize(e.context, formBuff)
 	if err != nil {
 		return form, nil, xerrors.Errorf("failed to deserialize Form: %v", err)
 	}
+	//core.PrintTimer("End of Deserializing")
 
 	form, ok := message.(types.Form)
 	if !ok {

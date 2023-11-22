@@ -121,6 +121,7 @@ func (m txManager) addAndWait(args ...txn.Arg) ([]byte, error) {
 
 		accepted := isAccepted(events, sentTxnID)
 		if accepted {
+			//core.PrintTimer("Accepted")
 			return sentTxnID, nil
 		}
 

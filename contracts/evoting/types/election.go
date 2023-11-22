@@ -124,7 +124,7 @@ func NewFormFactory(cf serde.Factory, rf authority.Factory) FormFactory {
 // Deserialize implements serde.Factory
 func (e FormFactory) Deserialize(ctx serde.Context, data []byte) (serde.Message, error) {
 	format := formFormat.Get(ctx.GetFormat())
-
+	//fmt.Printf("Deserializing %T\n", format)
 	ctx = serde.WithFactory(ctx, CiphervoteKey{}, e.ciphervoteFac)
 	ctx = serde.WithFactory(ctx, ctypes.RosterKey{}, e.rosterFac)
 
