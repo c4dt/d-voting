@@ -12,6 +12,11 @@ i18n.init({
   debug: true,
 });
 
+async function login (page: any) {
+  const login = page.getByRole('button', { name: i18n.t('login') });
+  await login.click();
+}
+
 test('Assert homepage title', async({ page }) => {
   await page.goto(process.env.FRONT_END_URL);
   await expect(page).toHaveTitle(/D-Voting/);
@@ -19,9 +24,7 @@ test('Assert homepage title', async({ page }) => {
 
 test('Assert login button', async({ page }) => {
   await page.goto(process.env.FRONT_END_URL);
-  const login = page.getByRole('button', { name: i18n.t('login') });
-  await expect(login).toBeVisible();
-  await login.click();
+  await login(page);
   const cookies = await page.context().cookies();
   expect(cookies.find(cookie => cookie.name == 'connect.sid')).toBeTruthy();
 });
@@ -29,9 +32,8 @@ test('Assert login button', async({ page }) => {
 test('Assert create form button', async({ page }) => {
   i18n.init();
   await page.goto(process.env.FRONT_END_URL);
-  const login = page.getByRole('button', { name: i18n.t('login') });
   const createForm = page.getByRole('link', { name: i18n.t('navBarCreateForm') });
   await expect(createForm).toBeHidden();
-  await login.click();
+  await login(page);
   await expect(createForm).toBeVisible();
 });
