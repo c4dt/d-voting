@@ -25,3 +25,13 @@ test('Assert login button', async({ page }) => {
   const cookies = await page.context().cookies();
   expect(cookies.find(cookie => cookie.name == 'connect.sid')).toBeTruthy();
 });
+
+test('Assert create form button', async({ page }) => {
+  i18n.init();
+  await page.goto(process.env.FRONT_END_URL);
+  const login = page.getByRole('button', { name: i18n.t('login') });
+  const createForm = page.getByRole('link', { name: i18n.t('navBarCreateForm') });
+  await expect(createForm).toBeHidden();
+  await login.click();
+  await expect(createForm).toBeVisible();
+});
