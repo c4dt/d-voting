@@ -17,6 +17,13 @@ async function login (page: any) {
   await login.click();
 }
 
+async function assertOnlyVisibleToAdmin(page: any, key: string) {
+  const element = page.getByRole('link', { name: i18n.t(key) });
+  await expect(element).toBeHidden();
+  await login(page);
+  await expect(element).toBeVisible();
+}
+
 test('Assert homepage title', async({ page }) => {
   await page.goto(process.env.FRONT_END_URL);
   await expect(page).toHaveTitle(/D-Voting/);
@@ -31,8 +38,10 @@ test('Assert login button', async({ page }) => {
 
 test('Assert create form button', async({ page }) => {
   await page.goto(process.env.FRONT_END_URL);
-  const createForm = page.getByRole('link', { name: i18n.t('navBarCreateForm') });
-  await expect(createForm).toBeHidden();
-  await login(page);
-  await expect(createForm).toBeVisible();
+  await assertOnlyVisibleToAdmin(page, 'navBarCreateForm');
+});
+
+test('Assert admin button', async({ page }) => {
+  await page.goto(process.env.FRONT_END_URL);
+  await assertOnlyVisibleToAdmin(page, 'navBarAdmin');
 });
