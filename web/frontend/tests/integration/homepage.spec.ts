@@ -30,7 +30,6 @@ test('Assert login button', async({ page }) => {
 });
 
 test('Assert create form button', async({ page }) => {
-  i18n.init();
   await page.goto(process.env.FRONT_END_URL);
   const createForm = page.getByRole('link', { name: i18n.t('navBarCreateForm') });
   await expect(createForm).toBeHidden();
