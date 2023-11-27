@@ -12,17 +12,25 @@ i18n.init({
   debug: true,
 });
 
-async function login (page: any) {
-  const login = page.getByRole('button', { name: i18n.t('login') });
-  await login.click();
+async function logIn(page: any) {
+  await page.getByRole('button', { name: i18n.t('login') }).dispatchEvent('click');
 }
 
-async function assertOnlyVisibleToAdmin(page: any, key: string) {
-  const element = page.getByRole('link', { name: i18n.t(key) });
-  await expect(element).toBeHidden();
-  await login(page);
-  await expect(element).toBeVisible();
+async function logInNonAdmin (page: any) {
+  await logIn(page);
+  await page.getByRole('button', { name: i18n.t('Profile') }).dispatchEvent('click');
+  await page.getByRole('menuitem', { name: i18n.t('changeId') }).dispatchEvent('click');
+  await page.getByPlaceholder(i18n.t('changeIdPlaceholder')).fill('123456');
+  await logIn(page);
 }
+
+async function logOut (page: any) {
+  await page.getByRole('button', { name: i18n.t('Profile') }).dispatchEvent('click');
+  await page.getByRole('menuitem', { name: i18n.t('logout') }).dispatchEvent('click');
+  await page.getByRole('button', { name: i18n.t('continue') }).dispatchEvent('click');
+}
+
+// assert unauthenticated view
 
 test('Assert homepage title', async({ page }) => {
   await page.goto(process.env.FRONT_END_URL);
@@ -31,17 +39,46 @@ test('Assert homepage title', async({ page }) => {
 
 test('Assert login button', async({ page }) => {
   await page.goto(process.env.FRONT_END_URL);
-  await login(page);
+  const login = page.getByRole('button', { name: i18n.t('login') });
+  await login.click();
   const cookies = await page.context().cookies();
   expect(cookies.find(cookie => cookie.name == 'connect.sid')).toBeTruthy();
 });
 
+
+// assert authenticated non-admin view
+
+async function assertOnlyVisibleToAuthenticated(page: any, role: string, key: string) {
+  const element = page.getByRole(role, { name: i18n.t(key) });
+  await expect(element).toBeHidden();
+  await logInNonAdmin(page);
+  await expect(element).toBeVisible();
+}
+
+test('Assert profile button', async({ page }) => {
+  await page.goto(process.env.FRONT_END_URL);
+  await assertOnlyVisibleToAuthenticated(page, 'button', 'Profile');
+});
+
+
+// assert admin view
+
+async function assertOnlyVisibleToAdmin(page: any, role: string, key: string) {
+  const element = page.getByRole(role, { name: i18n.t(key) });
+  await expect(element).toBeHidden();
+  await logInNonAdmin(page);
+  await expect(element).toBeHidden();
+  await logOut(page);
+  await logIn(page);
+  await expect(element).toBeVisible();
+}
+
 test('Assert create form button', async({ page }) => {
   await page.goto(process.env.FRONT_END_URL);
-  await assertOnlyVisibleToAdmin(page, 'navBarCreateForm');
+  await assertOnlyVisibleToAdmin(page, 'link', 'navBarCreateForm');
 });
 
 test('Assert admin button', async({ page }) => {
   await page.goto(process.env.FRONT_END_URL);
-  await assertOnlyVisibleToAdmin(page, 'navBarAdmin');
+  await assertOnlyVisibleToAdmin(page, 'link', 'navBarAdmin');
 });
