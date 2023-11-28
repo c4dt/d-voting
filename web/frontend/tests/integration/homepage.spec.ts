@@ -11,6 +11,22 @@ test('Assert homepage has correct title', async({ page }) => {
   await expect(page).toHaveTitle(/D-Voting/);
 });
 
+test('Assert about button is present', async({ page }) => {
+  await page.goto(process.env.FRONT_END_URL);
+  await expect(page.getByRole('link', { name: i18n.t('navBarAbout') })).toBeVisible();
+});
+
+test('Assert link to form list is present', async({ page }) => {
+  await page.goto(process.env.FRONT_END_URL);
+  await expect(page.getByRole('link', { name: i18n.t('navBarStatus') })).toBeVisible();
+});
+
+test('Assert link to homepage is present', async({ page }) => {
+  await page.goto(process.env.FRONT_END_URL);
+  const img = await page.getByAltText(i18n.t('Workflow')).all();
+  expect(img.some((e) => e.isVisible())).toBeTruthy;
+});
+
 test('Assert login button sets cookie', async({ page }) => {
   await page.goto(process.env.FRONT_END_URL);
   const login = page.getByRole('button', { name: i18n.t('login') });
