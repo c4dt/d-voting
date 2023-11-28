@@ -1,34 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { default as i18n } from 'i18next';
-import en from './../../src/language/en.json';
-import de from './../../src/language/de.json';
-import fr from './../../src/language/fr.json';
+import { initI18n, logIn, logInNonAdmin, logOut } from './utils';
 
-const resources = { de, en, fr };
-
-i18n.init({
-  resources,
-  fallbackLng: ['en', 'fr', 'de'],
-  debug: true,
-});
-
-async function logIn(page: any) {
-  await page.getByRole('button', { name: i18n.t('login') }).dispatchEvent('click');
-}
-
-async function logInNonAdmin (page: any) {
-  await logIn(page);
-  await page.getByRole('button', { name: i18n.t('Profile') }).dispatchEvent('click');
-  await page.getByRole('menuitem', { name: i18n.t('changeId') }).dispatchEvent('click');
-  await page.getByPlaceholder(i18n.t('changeIdPlaceholder')).fill('123456');
-  await logIn(page);
-}
-
-async function logOut (page: any) {
-  await page.getByRole('button', { name: i18n.t('Profile') }).dispatchEvent('click');
-  await page.getByRole('menuitem', { name: i18n.t('logout') }).dispatchEvent('click');
-  await page.getByRole('button', { name: i18n.t('continue') }).dispatchEvent('click');
-}
+initI18n();
 
 // unauthenticated view
 
