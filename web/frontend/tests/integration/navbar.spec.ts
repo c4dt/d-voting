@@ -1,6 +1,13 @@
 import { test, expect } from '@playwright/test';
 import { default as i18n } from 'i18next';
-import { initI18n, logIn, logInNonAdmin, logOut } from './utils';
+import {
+  initI18n,
+  logIn,
+  logInNonAdmin,
+  logOut,
+  assertOnlyVisibleToAuthenticated,
+  assertOnlyVisibleToAdmin,
+} from './utils';
 
 initI18n();
 
@@ -33,13 +40,6 @@ test('Assert login button sets cookie', async({ page }) => {
 
 // authenticated non-admin view
 
-async function assertOnlyVisibleToAuthenticated(page: any, role: string, key: string) {
-  const element = page.getByRole(role, { name: i18n.t(key) });
-  await expect(element).toBeHidden();   // assert is hidden to unauthenticated user
-  await logInNonAdmin(page);
-  await expect(element).toBeVisible();  // assert is visible to authenticated non-admin user
-}
-
 test('Assert profile button is visible to any user', async({ page }) => {
   await page.goto(process.env.FRONT_END_URL);
   await assertOnlyVisibleToAuthenticated(page, 'button', 'Profile');
@@ -47,16 +47,6 @@ test('Assert profile button is visible to any user', async({ page }) => {
 
 
 // assert admin view
-
-async function assertOnlyVisibleToAdmin(page: any, role: string, key: string) {
-  const element = page.getByRole(role, { name: i18n.t(key) });
-  await expect(element).toBeHidden();   // assert is hidden to unauthenticated user
-  await logInNonAdmin(page);
-  await expect(element).toBeHidden();   // assert is hidden to non-admin user
-  await logOut(page);
-  await logIn(page);
-  await expect(element).toBeVisible();  // assert is visible to admin user
-}
 
 test('Assert form creation button is only visible to admin', async({ page }) => {
   await page.goto(process.env.FRONT_END_URL);
