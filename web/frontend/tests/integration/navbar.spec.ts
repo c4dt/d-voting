@@ -29,6 +29,20 @@ test('Assert link to homepage is present', async({ page }) => {
   expect(img.some((e) => e.isVisible())).toBeTruthy;
 });
 
+test('Assert language button sets language', async({ page }) => {
+  await page.goto(process.env.FRONT_END_URL);
+  await page.getByRole('button', { name: i18n.t('Language') }).click();
+  await ['en', 'fr', 'de'].forEach((lng) => {
+    expect(page.getByRole('menuitem', { name: i18n.t(lng) })).toBeVisible();
+  });
+  let currentLng: string = i18n.language;
+  for (let lng of ['en', 'fr', 'de']) {
+    await page.getByRole('menuitem', { name: i18n.t(lng, { lng: currentLng }) }).click();
+    currentLng = lng;
+    await page.getByRole('button', { name: i18n.t('Language', {lng: currentLng }) }).click();
+  }
+});
+
 test('Assert login button sets cookie', async({ page }) => {
   await page.goto(process.env.FRONT_END_URL);
   const login = page.getByRole('button', { name: i18n.t('login') });
