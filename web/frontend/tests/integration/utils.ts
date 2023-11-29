@@ -46,3 +46,17 @@ export async function assertOnlyVisibleToAdmin(page: any, role: string, key: str
   await logIn(page);
   await expect(element).toBeVisible();  // assert is visible to admin user
 }
+
+export async function assertNavigationPresent (page: any) {
+  await page.goto(process.env.FRONT_END_URL);
+  await expect(page.getByRole('navigation')).toBeVisible();
+}
+
+export async function getFooter(page) {
+  return await page.locator('//*[@id="root"]/div[1]/div[4]/div[1]/footer');
+}
+
+export async function assertFooterPresent (page: any) {
+  await page.goto(process.env.FRONT_END_URL);
+  await expect(await getFooter(page)).toBeVisible();
+}
