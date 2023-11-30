@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { default as i18n } from 'i18next';
-import en from './../../src/language/en.json';
-import de from './../../src/language/de.json';
-import fr from './../../src/language/fr.json';
+import en from './../src/language/en.json';
+import de from './../src/language/de.json';
+import fr from './../src/language/fr.json';
 
 export function initI18n() {
   i18n.init({
