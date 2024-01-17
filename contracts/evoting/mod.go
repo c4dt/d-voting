@@ -1,6 +1,8 @@
 package evoting
 
 import (
+	"fmt"
+
 	dvoting "github.com/c4dt/d-voting"
 	"github.com/c4dt/d-voting/contracts/evoting/types"
 	"github.com/c4dt/d-voting/services/dkg"
@@ -202,6 +204,7 @@ func (c Contract) Execute(snap store.Snapshot, step execution.Step) error {
 	case CmdCreateForm:
 		err = c.cmd.createForm(snap, step)
 		if err != nil {
+			fmt.Printf("Error: %+v\n", err)
 			return xerrors.Errorf("failed to create form: %v", err)
 		}
 	case CmdOpenForm:
