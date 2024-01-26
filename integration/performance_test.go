@@ -24,19 +24,18 @@ import (
 // Check the shuffled votes versus the cast votes and a few nodes.
 // One transaction contains one vote.
 func BenchmarkIntegration_CustomVotesScenario(b *testing.B) {
-	customVotesScenario(b, false)
+	customVotesScenario(b, 200, false)
 }
 
 // Check the shuffled votes versus the cast votes and a few nodes.
-// One transasction contains many votes
+// One transaction contains many votes
 func BenchmarkIntegration_CustomVotesScenario_StuffBallots(b *testing.B) {
-	customVotesScenario(b, true)
+	customVotesScenario(b, 10000, true)
 }
 
-func customVotesScenario(b *testing.B, stuffing bool) {
+func customVotesScenario(b *testing.B, numVotes int, stuffing bool) {
 	numNodes := 3
-	numVotes := 200
-	transactions := 200
+	transactions := numVotes
 	numChunksPerBallot := 3
 	if stuffing {
 		// Fill every block of ballots with bogus votes to test performance.
@@ -44,7 +43,6 @@ func customVotesScenario(b *testing.B, stuffing bool) {
 		defer func() {
 			types.TestCastBallots = false
 		}()
-		numVotes = 10000
 		transactions = numVotes / int(types.BallotsPerBlock)
 	}
 
@@ -132,7 +130,7 @@ func customVotesScenario(b *testing.B, stuffing bool) {
 	require.NoError(b, err)
 
 	err = waitForStatus(types.PubSharesSubmitted, formFac, formID, nodes,
-		numNodes, cosipbft.DefaultRoundTimeout*time.Duration(numNodes))
+		numNodes, cosipbft.DefaultRoundTimeout*time.Duration(1+numVotes/100))
 	require.NoError(b, err)
 
 	durationPubShares := b.Elapsed()
@@ -158,18 +156,18 @@ func customVotesScenario(b *testing.B, stuffing bool) {
 	form, err = getForm(formFac, formID, nodes[0].GetOrdering())
 	require.NoError(b, err)
 
-	fmt.Println("Title of the form : " + form.Configuration.Title.En)
-	fmt.Println("ID of the form : " + string(form.FormID))
-	fmt.Println("Status of the form : " + strconv.Itoa(int(form.Status)))
-	fmt.Println("Number of decrypted ballots : " + strconv.Itoa(len(form.DecryptedBallots)))
-	fmt.Println("Chunks per ballot : " + strconv.Itoa(form.ChunksPerBallot()))
+	fmt.Printf("Title of the form           : %s\n", form.Configuration.Title.En)
+	fmt.Printf("ID of the form              : %s\n", form.FormID)
+	fmt.Printf("Status of the form          : %d\n", form.Status)
+	fmt.Printf("Number of decrypted ballots : %d\n", len(form.DecryptedBallots))
+	fmt.Printf("Chunks per ballot           : %d\n", form.ChunksPerBallot())
+	// This is on purpose two characters short, because of the "%5d"
+	fmt.Printf("Casting %5d votes took    : %v\n", numVotes, durationCasting)
+	fmt.Printf("Shuffling took              : %v\n", durationShuffling)
+	fmt.Printf("Submitting shares took      : %v\n", durationPubShares)
+	fmt.Printf("Decryption took             : %v\n", durationDecrypt)
 
-	b.Logf("Casting %d votes took %v", numVotes, durationCasting)
-	b.Logf("Shuffling took: %v", durationShuffling)
-	b.Logf("Submitting shares took: %v", durationPubShares)
-	b.Logf("Decryption took: %v", durationDecrypt)
-
-	require.Len(b, form.DecryptedBallots, len(castedVotes)*int(types.BallotsPerBlock))
+	require.Len(b, form.DecryptedBallots, numVotes)
 
 	// There will be a lot of supplementary ballots, but at least the ones that were
 	// cast by the test should be present.
