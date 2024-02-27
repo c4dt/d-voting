@@ -202,7 +202,7 @@ func TestCommand_CastVote(t *testing.T) {
 	require.EqualError(t, err, unmarshalTransactionErr)
 
 	err = cmd.castVote(fake.NewBadSnapshot(), makeStep(t, FormArg, string(data)))
-	require.Contains(t, err.Error(), "failed to get key")
+	require.ErrorContains(t, err, "failed to get key")
 
 	snap := fake.NewSnapshot()
 
@@ -210,7 +210,7 @@ func TestCommand_CastVote(t *testing.T) {
 	require.NoError(t, err)
 
 	err = cmd.castVote(snap, makeStep(t, FormArg, string(data)))
-	require.Contains(t, err.Error(), deserializeErr)
+	require.ErrorContains(t, err, deserializeErr)
 
 	err = snap.Set(dummyFormIDBuff, formBuf)
 	require.NoError(t, err)
@@ -330,7 +330,7 @@ func TestCommand_CloseForm(t *testing.T) {
 	require.EqualError(t, err, unmarshalTransactionErr)
 
 	err = cmd.closeForm(fake.NewBadSnapshot(), makeStep(t, FormArg, string(data)))
-	require.Contains(t, err.Error(), "failed to get key")
+	require.ErrorContains(t, err, "failed to get key")
 
 	snap := fake.NewSnapshot()
 
@@ -338,7 +338,7 @@ func TestCommand_CloseForm(t *testing.T) {
 	require.NoError(t, err)
 
 	err = cmd.closeForm(snap, makeStep(t, FormArg, string(data)))
-	require.Contains(t, err.Error(), deserializeErr)
+	require.ErrorContains(t, err, deserializeErr)
 
 	err = snap.Set(dummyFormIDBuff, formBuf)
 	require.NoError(t, err)
@@ -533,7 +533,7 @@ func TestCommand_ShuffleBallotsFormatErrors(t *testing.T) {
 	require.EqualError(t, err, unmarshalTransactionErr)
 
 	err = cmd.shuffleBallots(fake.NewBadSnapshot(), makeStep(t, FormArg, string(data)))
-	require.Contains(t, err.Error(), "failed to get key")
+	require.ErrorContains(t, err, "failed to get key")
 
 	// Wrong form id format
 	snap := fake.NewSnapshot()
@@ -542,7 +542,7 @@ func TestCommand_ShuffleBallotsFormatErrors(t *testing.T) {
 	require.NoError(t, err)
 
 	err = cmd.shuffleBallots(snap, makeStep(t, FormArg, string(data)))
-	require.Contains(t, err.Error(), deserializeErr)
+	require.ErrorContains(t, err, deserializeErr)
 
 	// Form not closed
 	err = snap.Set(dummyFormIDBuff, formBuf)
@@ -759,7 +759,7 @@ func TestCommand_RegisterPubShares(t *testing.T) {
 	require.EqualError(t, err, unmarshalTransactionErr)
 
 	err = cmd.registerPubshares(fake.NewBadSnapshot(), makeStep(t, FormArg, string(data)))
-	require.Contains(t, err.Error(), "failed to get key")
+	require.ErrorContains(t, err, "failed to get key")
 
 	snap := fake.NewSnapshot()
 
@@ -767,7 +767,7 @@ func TestCommand_RegisterPubShares(t *testing.T) {
 	require.NoError(t, err)
 
 	err = cmd.registerPubshares(snap, makeStep(t, FormArg, string(data)))
-	require.Contains(t, err.Error(), deserializeErr)
+	require.ErrorContains(t, err, deserializeErr)
 
 	err = snap.Set(dummyFormIDBuff, formBuf)
 	require.NoError(t, err)
@@ -960,7 +960,7 @@ func TestCommand_DecryptBallots(t *testing.T) {
 	require.EqualError(t, err, unmarshalTransactionErr)
 
 	err = cmd.combineShares(fake.NewBadSnapshot(), makeStep(t, FormArg, string(data)))
-	require.Contains(t, err.Error(), "failed to get key")
+	require.ErrorContains(t, err, "failed to get key")
 
 	snap := fake.NewSnapshot()
 
@@ -968,7 +968,7 @@ func TestCommand_DecryptBallots(t *testing.T) {
 	require.NoError(t, err)
 
 	err = cmd.combineShares(snap, makeStep(t, FormArg, string(data)))
-	require.Contains(t, err.Error(), deserializeErr)
+	require.ErrorContains(t, err, deserializeErr)
 
 	err = snap.Set(dummyFormIDBuff, formBuf)
 	require.NoError(t, err)
@@ -1060,7 +1060,7 @@ func TestCommand_CancelForm(t *testing.T) {
 	require.EqualError(t, err, unmarshalTransactionErr)
 
 	err = cmd.cancelForm(fake.NewBadSnapshot(), makeStep(t, FormArg, string(data)))
-	require.Contains(t, err.Error(), "failed to get key")
+	require.ErrorContains(t, err, "failed to get key")
 
 	snap := fake.NewSnapshot()
 
@@ -1068,7 +1068,7 @@ func TestCommand_CancelForm(t *testing.T) {
 	require.NoError(t, err)
 
 	err = cmd.cancelForm(snap, makeStep(t, FormArg, string(data)))
-	require.Contains(t, err.Error(), deserializeErr)
+	require.ErrorContains(t, err, deserializeErr)
 
 	err = snap.Set(dummyFormIDBuff, formBuf)
 	require.NoError(t, err)
