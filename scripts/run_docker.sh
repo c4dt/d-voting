@@ -27,6 +27,10 @@ function teardown() {
   docker image rm ghcr.io/c4dt/d-voting-frontend:latest ghcr.io/c4dt/d-voting-backend:latest ghcr.io/c4dt/d-voting-dela:latest;
 }
 
+function dbreset() {
+  docker image rm postgres:15 -f;
+}
+
 function init_dela() {
   LEADER=dela-worker-0;
   echo "$LEADER is the initial leader node";
@@ -114,6 +118,10 @@ local_admin)
 add_proxies)
   local_login;
   add_proxies;
+  ;;
+
+db_reset)
+  dbreset;
   ;;
 
 *)
