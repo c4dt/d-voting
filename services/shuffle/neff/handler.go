@@ -91,7 +91,7 @@ func (h *Handler) handleStartShuffle(formID string) error {
 
 	// loop until the threshold is reached or our transaction has been accepted
 	for {
-		form, err := getForm(h.formFac, h.context, formID, h.service)
+		form, err := etypes.FormFromStore(h.context, h.formFac, formID, h.service.GetStore())
 		if err != nil {
 			return xerrors.Errorf("failed to get form: %v", err)
 		}
@@ -260,7 +260,11 @@ func (h *Handler) getShuffledBallots(form *etypes.Form) ([]etypes.Ciphervote,
 	var ciphervotes []etypes.Ciphervote
 
 	if round == 0 {
-		ciphervotes = form.Suffragia.Ciphervotes
+		suff, err := form.Suffragia(h.context, h.service.GetStore())
+		if err != nil {
+			return nil, nil, xerrors.Errorf("couldn't get ballots: %v", err)
+		}
+		ciphervotes = suff.Ciphervotes
 	} else {
 		ciphervotes = form.ShuffleInstances[round-1].ShuffledBallots
 	}

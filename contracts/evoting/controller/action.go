@@ -303,7 +303,7 @@ func (a *scenarioTestAction) Execute(ctx node.Context) error {
 
 	fmt.Fprintln(ctx.Out, "Get form")
 
-	form, err = getForm(serdecontext, formFac, formID, service)
+	form, err = types.FormFromStore(serdecontext, formFac, formID, service.GetStore())
 	if err != nil {
 		return xerrors.Errorf(getFormErr, err)
 	}
@@ -420,12 +420,16 @@ func (a *scenarioTestAction) Execute(ctx node.Context) error {
 
 	dela.Logger.Info().Msg(responseBody + respBody)
 
-	form, err = getForm(serdecontext, formFac, formID, service)
+	form, err = types.FormFromStore(serdecontext, formFac, formID, service.GetStore())
 	if err != nil {
 		return xerrors.Errorf(getFormErr, err)
 	}
 
-	encryptedBallots := form.Suffragia.Ciphervotes
+	suff, err := form.Suffragia(serdecontext, service.GetStore())
+	if err != nil {
+		return xerrors.Errorf(getFormErr, err)
+	}
+	encryptedBallots := suff.Ciphervotes
 	dela.Logger.Info().Msg("Length encrypted ballots: " + strconv.Itoa(len(encryptedBallots)))
 	dela.Logger.Info().Msgf("Ballot of user1: %s", encryptedBallots[0])
 	dela.Logger.Info().Msgf("Ballot of user2: %s", encryptedBallots[1])
@@ -440,7 +444,7 @@ func (a *scenarioTestAction) Execute(ctx node.Context) error {
 		return xerrors.Errorf("failed to close form: %v", err)
 	}
 
-	form, err = getForm(serdecontext, formFac, formID, service)
+	form, err = types.FormFromStore(serdecontext, formFac, formID, service.GetStore())
 	if err != nil {
 		return xerrors.Errorf(getFormErr, err)
 	}
@@ -478,14 +482,18 @@ func (a *scenarioTestAction) Execute(ctx node.Context) error {
 
 	// time.Sleep(20 * time.Second)
 
-	form, err = getForm(serdecontext, formFac, formID, service)
+	form, err = types.FormFromStore(serdecontext, formFac, formID, service.GetStore())
 	if err != nil {
 		return xerrors.Errorf(getFormErr, err)
 	}
 
 	logFormStatus(form)
 	dela.Logger.Info().Msg("Number of shuffled ballots : " + strconv.Itoa(len(form.ShuffleInstances)))
-	dela.Logger.Info().Msg("Number of encrypted ballots : " + strconv.Itoa(len(form.Suffragia.Ciphervotes)))
+	suff, err = form.Suffragia(serdecontext, service.GetStore())
+	if err != nil {
+		return xerrors.Errorf(getFormErr, err)
+	}
+	dela.Logger.Info().Msg("Number of encrypted ballots : " + strconv.Itoa(len(suff.Ciphervotes)))
 
 	// ###################################### REQUEST PUBLIC SHARES ############
 
@@ -498,7 +506,7 @@ func (a *scenarioTestAction) Execute(ctx node.Context) error {
 
 	time.Sleep(10 * time.Second)
 
-	form, err = getForm(serdecontext, formFac, formID, service)
+	form, err = types.FormFromStore(serdecontext, formFac, formID, service.GetStore())
 	if err != nil {
 		return xerrors.Errorf(getFormErr, err)
 	}
@@ -517,7 +525,7 @@ func (a *scenarioTestAction) Execute(ctx node.Context) error {
 		return xerrors.Errorf("failed to combine shares: %v", err)
 	}
 
-	form, err = getForm(serdecontext, formFac, formID, service)
+	form, err = types.FormFromStore(serdecontext, formFac, formID, service.GetStore())
 	if err != nil {
 		return xerrors.Errorf(getFormErr, err)
 	}
@@ -532,7 +540,7 @@ func (a *scenarioTestAction) Execute(ctx node.Context) error {
 
 	fmt.Fprintln(ctx.Out, "Get form result")
 
-	form, err = getForm(serdecontext, formFac, formID, service)
+	form, err = types.FormFromStore(serdecontext, formFac, formID, service.GetStore())
 	if err != nil {
 		return xerrors.Errorf(getFormErr, err)
 	}
@@ -631,7 +639,7 @@ func setupSimpleForm(ctx node.Context, secret kyber.Scalar, proxyAddr1 string,
 		return "", types.Form{}, nil, xerrors.Errorf("failed to decode formID '%s': %v", formID, err)
 	}
 
-	form, err := getForm(serdecontext, formFac, formID, service)
+	form, err := types.FormFromStore(serdecontext, formFac, formID, service.GetStore())
 	if err != nil {
 		return "", types.Form{}, nil, xerrors.Errorf(getFormErr, err)
 	}
@@ -801,41 +809,6 @@ func updateDKG(secret kyber.Scalar, proxyAddr, formIDHex, action string) (int, e
 	}
 
 	return 0, nil
-}
-
-// getForm gets the form from the snap. Returns the form ID NOT hex
-// encoded.
-func getForm(ctx serde.Context, formFac serde.Factory, formIDHex string,
-	srv ordering.Service) (types.Form, error) {
-
-	var form types.Form
-
-	formID, err := hex.DecodeString(formIDHex)
-	if err != nil {
-		return form, xerrors.Errorf("failed to decode formIDHex: %v", err)
-	}
-
-	proof, err := srv.GetProof(formID)
-	if err != nil {
-		return form, xerrors.Errorf("failed to get proof: %v", err)
-	}
-
-	formBuff := proof.GetValue()
-	if len(formBuff) == 0 {
-		return form, xerrors.Errorf("form does not exist")
-	}
-
-	message, err := formFac.Deserialize(ctx, formBuff)
-	if err != nil {
-		return form, xerrors.Errorf("failed to deserialize Form: %v", err)
-	}
-
-	form, ok := message.(types.Form)
-	if !ok {
-		return form, xerrors.Errorf("wrong message type: %T", message)
-	}
-
-	return form, nil
 }
 
 func createSignedErr(err error) error {

@@ -4,14 +4,17 @@ import (
 	"strconv"
 
 	"github.com/c4dt/d-voting/contracts/evoting/types"
+	"go.dedis.ch/dela/core/store"
+	"go.dedis.ch/dela/serde"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/suites"
 	"go.dedis.ch/kyber/v3/util/random"
+	"golang.org/x/xerrors"
 )
 
 var suite = suites.MustFind("Ed25519")
 
-func NewForm(formID string) types.Form {
+func NewForm(ctx serde.Context, snapshot store.Snapshot, formID string) (types.Form, error) {
 	k := 3
 	Ks, Cs, pubKey := NewKCPointsMarshalled(k)
 
@@ -23,12 +26,9 @@ func NewForm(formID string) types.Form {
 				De: "",
 			},
 		},
-		FormID: formID,
-		Status: types.Closed,
-		Pubkey: pubKey,
-		Suffragia: types.Suffragia{
-			Ciphervotes: []types.Ciphervote{},
-		},
+		FormID:           formID,
+		Status:           types.Closed,
+		Pubkey:           pubKey,
 		ShuffleInstances: []types.ShuffleInstance{},
 		DecryptedBallots: nil,
 		ShuffleThreshold: 1,
@@ -39,10 +39,13 @@ func NewForm(formID string) types.Form {
 			K: Ks[i],
 			C: Cs[i],
 		}
-		form.Suffragia.CastVote("dummyUser"+strconv.Itoa(i), types.Ciphervote{ballot})
+		err := form.CastVote(ctx, snapshot, "dummyUser"+strconv.Itoa(i), types.Ciphervote{ballot})
+		if err != nil {
+			return form, xerrors.Errorf("couldn't cast vote: %v", err)
+		}
 	}
 
-	return form
+	return form, nil
 }
 
 func NewKCPointsMarshalled(k int) ([]kyber.Point, []kyber.Point, kyber.Point) {
@@ -85,7 +88,7 @@ var BasicConfiguration = types.Configuration{
 					Title:   types.Title{En: "Select your favorite snacks", Fr: "", De: ""},
 					MaxN:    3,
 					MinN:    0,
-					Choices: []string{"snickers", "mars", "vodka", "babibel"},
+					Choices: []types.Choice{{Choice: "snickers", URL: ""}, {Choice: "mars", URL: ""}, {Choice: "vodka", URL: ""}, {Choice: "babibel", URL: ""}},
 				},
 			},
 			Ranks: []types.Rank{},
@@ -106,7 +109,7 @@ var BasicConfiguration = types.Configuration{
 					MinN:      1,
 					MaxLength: 3,
 					Regex:     "",
-					Choices:   []string{"write yes in your language"},
+					Choices:   []types.Choice{{Choice: "write yes in your language", URL: ""}},
 				},
 			},
 		},
