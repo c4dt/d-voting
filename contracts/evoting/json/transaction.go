@@ -21,7 +21,7 @@ func (transactionFormat) Encode(ctx serde.Context, msg serde.Message) ([]byte, e
 	case types.CreateForm:
 		ce := CreateFormJSON{
 			Configuration: t.Configuration,
-			AdminID:       t.AdminID,
+			UserID:        t.UserID,
 		}
 
 		m = TransactionJSON{CreateForm: &ce}
@@ -39,7 +39,7 @@ func (transactionFormat) Encode(ctx serde.Context, msg serde.Message) ([]byte, e
 
 		cv := CastVoteJSON{
 			FormID:     t.FormID,
-			UserID:     t.UserID,
+			VoterID:    t.VoterID,
 			Ciphervote: ballot,
 		}
 
@@ -143,7 +143,7 @@ func (transactionFormat) Decode(ctx serde.Context, data []byte) (serde.Message, 
 	case m.CreateForm != nil:
 		return types.CreateForm{
 			Configuration: m.CreateForm.Configuration,
-			AdminID:       m.CreateForm.AdminID,
+			UserID:        m.CreateForm.UserID,
 		}, nil
 	case m.OpenForm != nil:
 		return types.OpenForm{
@@ -211,7 +211,7 @@ type TransactionJSON struct {
 // CreateFormJSON is the JSON representation of a CreateForm transaction
 type CreateFormJSON struct {
 	Configuration types.Configuration
-	AdminID       string
+	UserID        string
 }
 
 // OpenFormJSON is the JSON representation of a OpenForm transaction
@@ -222,7 +222,7 @@ type OpenFormJSON struct {
 // CastVoteJSON is the JSON representation of a CastVote transaction
 type CastVoteJSON struct {
 	FormID     string
-	UserID     string
+	VoterID    string
 	Ciphervote json.RawMessage
 }
 
@@ -285,9 +285,9 @@ func decodeCastVote(ctx serde.Context, m CastVoteJSON) (serde.Message, error) {
 	}
 
 	return types.CastVote{
-		FormID: m.FormID,
-		UserID: m.UserID,
-		Ballot: ciphervote,
+		FormID:  m.FormID,
+		VoterID: m.VoterID,
+		Ballot:  ciphervote,
 	}, nil
 }
 

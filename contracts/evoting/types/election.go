@@ -275,7 +275,7 @@ func (s *Form) Suffragia(ctx serde.Context, rd store.Readable) (Suffragia, error
 			return suff, xerrors.Errorf("couldn't unmarshal ballots block in cast: %v", err)
 		}
 		suffTmp := msg.(Suffragia)
-		for i, uid := range suffTmp.UserIDs {
+		for i, uid := range suffTmp.VoterIDs {
 			suff.CastVote(uid, suffTmp.Ciphervotes[i])
 		}
 	}

@@ -92,7 +92,7 @@ func (t TransactionFactory) Deserialize(ctx serde.Context, data []byte) (serde.M
 // - implements serde.Message
 type CreateForm struct {
 	Configuration Configuration
-	AdminID       string
+	UserID        string
 }
 
 // Serialize implements serde.Message
@@ -132,9 +132,9 @@ func (oe OpenForm) Serialize(ctx serde.Context) ([]byte, error) {
 // - implements serde.Message
 type CastVote struct {
 	// FormID is hex-encoded
-	FormID string
-	UserID string
-	Ballot Ciphervote
+	FormID  string
+	VoterID string
+	Ballot  Ciphervote
 }
 
 // Serialize implements serde.Message

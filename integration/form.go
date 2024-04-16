@@ -40,7 +40,7 @@ func createForm(m txManager, title string, admin string) ([]byte, error) {
 
 	createForm := types.CreateForm{
 		Configuration: configuration,
-		AdminID:       admin,
+		UserID:        admin,
 	}
 
 	data, err := createForm.Serialize(serdecontext)
@@ -75,7 +75,7 @@ func createFormScenario(contentType, proxy string, secret kyber.Scalar, t *testi
 
 	createSimpleFormRequest := ptypes.CreateFormRequest{
 		Configuration: configuration,
-		AdminID:       "adminId",
+		UserID:        "adminId",
 	}
 
 	signed, err := createSignedRequest(secret, createSimpleFormRequest)
