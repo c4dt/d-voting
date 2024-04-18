@@ -98,6 +98,9 @@ type commands interface {
 	combineShares(snap store.Snapshot, step execution.Step) error
 	cancelForm(snap store.Snapshot, step execution.Step) error
 	deleteForm(snap store.Snapshot, step execution.Step) error
+
+	addAdminForm(snap store.Snapshot, step execution.Step) error
+	removeAdminForm(snap store.Snapshot, step execution.Step) error
 }
 
 // Command defines a type of command for the value contract
@@ -125,6 +128,11 @@ const (
 
 	// CmdDeleteForm is the command to delete a form
 	CmdDeleteForm Command = "DELETE_FORM"
+
+	// CmdAddAdminForm is the command to delete a form
+	CmdAddAdminForm Command = "ADD_ADMIN"
+	// CmdRemoveAdminForm is the command to delete a form
+	CmdRemoveAdminForm Command = "REMOVE_ADMIN"
 )
 
 // NewCreds creates new credentials for a evoting contract execution. We might
@@ -241,6 +249,16 @@ func (c Contract) Execute(snap store.Snapshot, step execution.Step) error {
 		}
 	case CmdDeleteForm:
 		err := c.cmd.deleteForm(snap, step)
+		if err != nil {
+			return xerrors.Errorf("failed to delete form: %v", err)
+		}
+	case CmdAddAdminForm:
+		err := c.cmd.addAdminForm(snap, step)
+		if err != nil {
+			return xerrors.Errorf("failed to delete form: %v", err)
+		}
+	case CmdRemoveAdminForm:
+		err := c.cmd.removeAdminForm(snap, step)
 		if err != nil {
 			return xerrors.Errorf("failed to delete form: %v", err)
 		}
