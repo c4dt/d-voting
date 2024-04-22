@@ -161,6 +161,7 @@ type Contract struct {
 	context serde.Context
 
 	formFac        serde.Factory
+	adminFormFac   serde.Factory
 	rosterFac      authority.Factory
 	transactionFac serde.Factory
 }
@@ -174,6 +175,7 @@ func NewContract(srvc access.Service,
 	ciphervoteFac := types.CiphervoteFactory{}
 	formFac := types.NewFormFactory(ciphervoteFac, rosterFac)
 	transactionFac := types.NewTransactionFactory(ciphervoteFac)
+	adminFormFac := types.AdminFormFactory{}
 
 	contract := Contract{
 		access:   srvc,
@@ -182,6 +184,7 @@ func NewContract(srvc access.Service,
 		context: ctx,
 
 		formFac:        formFac,
+		adminFormFac:   adminFormFac,
 		rosterFac:      rosterFac,
 		transactionFac: transactionFac,
 	}
