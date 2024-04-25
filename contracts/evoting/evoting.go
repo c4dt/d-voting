@@ -771,6 +771,56 @@ func (e evotingCommand) deleteForm(snap store.Snapshot, step execution.Step) err
 	return nil
 }
 
+// manageAdminForm implements commands. It performs the ADD or REMOVE ADMIN command
+func (e evotingCommand) manageAdminForm(snap store.Snapshot, step execution.Step) error {
+	msg, err := e.getTransaction(step.Current)
+	if err != nil {
+		return xerrors.Errorf(errGetTransaction, err)
+	}
+
+	var form types.AdminForm
+	var formID []byte
+
+	txAddAdmin, okAddAdmin := msg.(types.AddAdmin)
+	txRemoveAdmin, okRemoveAdmin := msg.(types.RemoveAdmin)
+
+	if okAddAdmin {
+		form, formID, err = e.getAdminForm(txAddAdmin.FormID, snap)
+		if err != nil {
+			return xerrors.Errorf("failed to get AdminForm: %v", err)
+		}
+
+		err = form.AddAdmin(txAddAdmin.UserID)
+		if err != nil {
+			return xerrors.Errorf("couldn't add admin: %v", err)
+		}
+	} else if okRemoveAdmin {
+		form, formID, err = e.getAdminForm(txRemoveAdmin.FormID, snap)
+		if err != nil {
+			return xerrors.Errorf("failed to get AdminForm: %v", err)
+		}
+
+		err = form.RemoveAdmin(txRemoveAdmin.UserID)
+		if err != nil {
+			return xerrors.Errorf("couldn't remove admin: %v", err)
+		}
+	} else {
+		return xerrors.Errorf(errWrongTx, msg)
+	}
+
+	formBuf, err := form.Serialize(e.context)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal Form : %v", err)
+	}
+
+	err = snap.Set(formID, formBuf)
+	if err != nil {
+		return xerrors.Errorf("failed to set value: %v", err)
+	}
+
+	return nil
+}
+
 // isMemberOf is a utility function to verify if a public key is associated to a
 // member of the roster or not. Returns nil if it's the case.
 func isMemberOf(roster authority.Authority, publicKey []byte) error {
@@ -849,6 +899,26 @@ func (e evotingCommand) getForm(formIDHex string,
 	}
 
 	form, err = types.FormFromStore(e.context, e.formFac, formIDHex, snap)
+	if err != nil {
+		return form, nil, xerrors.Errorf("failed to get key %q: %v", formIDBuf, err)
+	}
+
+	return form, formIDBuf, nil
+}
+
+// getAdminForm gets the AdminForm from the snap. Returns the form ID NOT hex
+// encoded.
+func (e evotingCommand) getAdminForm(formIDHex string,
+	snap store.Snapshot) (types.AdminForm, []byte, error) {
+
+	var form types.AdminForm
+
+	formIDBuf, err := hex.DecodeString(formIDHex)
+	if err != nil {
+		return form, nil, xerrors.Errorf("failed to decode adminFormIDHex: %v", err)
+	}
+
+	form, err = types.AdminFormFromStore(e.context, e.adminFormFac, formIDHex, snap)
 	if err != nil {
 		return form, nil, xerrors.Errorf("failed to get key %q: %v", formIDBuf, err)
 	}

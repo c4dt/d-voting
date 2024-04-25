@@ -98,6 +98,7 @@ type commands interface {
 	combineShares(snap store.Snapshot, step execution.Step) error
 	cancelForm(snap store.Snapshot, step execution.Step) error
 	deleteForm(snap store.Snapshot, step execution.Step) error
+	manageAdminForm(snap store.Snapshot, step execution.Step) error
 }
 
 // Command defines a type of command for the value contract
@@ -125,6 +126,11 @@ const (
 
 	// CmdDeleteForm is the command to delete a form
 	CmdDeleteForm Command = "DELETE_FORM"
+
+	// CmdAddAdminForm is the command to delete a form
+	CmdAddAdminForm Command = "ADD_ADMIN"
+	// CmdRemoveAdminForm is the command to delete a form
+	CmdRemoveAdminForm Command = "REMOVE_ADMIN"
 )
 
 // NewCreds creates new credentials for a evoting contract execution. We might
@@ -153,6 +159,7 @@ type Contract struct {
 	context serde.Context
 
 	formFac        serde.Factory
+	adminFormFac   serde.Factory
 	rosterFac      authority.Factory
 	transactionFac serde.Factory
 }
@@ -166,6 +173,7 @@ func NewContract(srvc access.Service,
 	ciphervoteFac := types.CiphervoteFactory{}
 	formFac := types.NewFormFactory(ciphervoteFac, rosterFac)
 	transactionFac := types.NewTransactionFactory(ciphervoteFac)
+	adminFormFac := types.AdminFormFactory{}
 
 	contract := Contract{
 		access:   srvc,
@@ -174,6 +182,7 @@ func NewContract(srvc access.Service,
 		context: ctx,
 
 		formFac:        formFac,
+		adminFormFac:   adminFormFac,
 		rosterFac:      rosterFac,
 		transactionFac: transactionFac,
 	}
@@ -243,6 +252,16 @@ func (c Contract) Execute(snap store.Snapshot, step execution.Step) error {
 		err := c.cmd.deleteForm(snap, step)
 		if err != nil {
 			return xerrors.Errorf("failed to delete form: %v", err)
+		}
+	case CmdAddAdminForm:
+		err := c.cmd.manageAdminForm(snap, step)
+		if err != nil {
+			return xerrors.Errorf("failed to add admin: %v", err)
+		}
+	case CmdRemoveAdminForm:
+		err := c.cmd.manageAdminForm(snap, step)
+		if err != nil {
+			return xerrors.Errorf("failed to remove admin: %v", err)
 		}
 	default:
 		return xerrors.Errorf("unknown command: %s", cmd)

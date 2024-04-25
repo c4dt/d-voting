@@ -30,7 +30,9 @@ import (
 )
 
 var dummyFormIDBuff = []byte("dummyID")
+var dummyAdminFormIDBuff = []byte("dummyAdminID")
 var fakeFormID = hex.EncodeToString(dummyFormIDBuff)
+var fakeAdminFormID = hex.EncodeToString(dummyAdminFormIDBuff)
 var fakeCommonSigner = bls.NewSigner()
 
 const getTransactionErr = "failed to get transaction: \"evoting:arg\" not found in tx arg"
@@ -44,11 +46,13 @@ var invalidForm = []byte("fake form")
 var ctx serde.Context
 
 var formFac serde.Factory
+var adminFormFac serde.Factory
 var transactionFac serde.Factory
 
 func init() {
 	ciphervoteFac := types.CiphervoteFactory{}
 	formFac = types.NewFormFactory(ciphervoteFac, fakeAuthorityFactory{})
+	adminFormFac = types.AdminFormFactory{}
 	transactionFac = types.NewTransactionFactory(ciphervoteFac)
 
 	ctx = sjson.NewContext()
@@ -96,6 +100,12 @@ func TestExecute(t *testing.T) {
 
 	err = contract.Execute(fakeStore{}, makeStep(t, CmdArg, string(CmdCancelForm)))
 	require.EqualError(t, err, fake.Err("failed to cancel form"))
+
+	err = contract.Execute(fakeStore{}, makeStep(t, CmdArg, string(CmdAddAdminForm)))
+	require.EqualError(t, err, fake.Err("failed to add admin"))
+
+	err = contract.Execute(fakeStore{}, makeStep(t, CmdArg, string(CmdRemoveAdminForm)))
+	require.EqualError(t, err, fake.Err("failed to remove admin"))
 
 	err = contract.Execute(fakeStore{}, makeStep(t, CmdArg, "fake"))
 	require.EqualError(t, err, "unknown command: fake")
@@ -1095,6 +1105,108 @@ func TestRegisterContract(t *testing.T) {
 	RegisterContract(native.NewExecution(), Contract{})
 }
 
+// ===============
+// Admin Form Test
+
+func TestCommand_AdminForm(t *testing.T) {
+	initMetrics()
+
+	// Initialize a contract and an AdminForm
+	adminForm, contract := initAdminFormAndContract()
+	_, err := adminForm.Serialize(ctx)
+	require.NoError(t, err)
+
+	// Initialize the command handler to post on the ledger
+	cmd := evotingCommand{
+		Contract: &contract,
+	}
+
+	// We define a dummy userID which we are going to add admin permission.
+	dummyUID := "123456"
+
+	// We initialize the command to add permission.
+	addAdmin := types.AddAdmin{FormID: fakeAdminFormID, UserID: dummyUID}
+	data, err := addAdmin.Serialize(ctx)
+	require.NoError(t, err)
+
+	// The following test are there to check error handling
+
+	// Checking that if no AdminForm is on the blockchain,
+	// It won't be able to find the transaction.
+	err = cmd.manageAdminForm(fake.NewSnapshot(), makeStep(t))
+	require.EqualError(t, err, getTransactionErr)
+
+	// Checking that providing a dummy data as argument, the form will not
+	// recognize it and won't be able to unmarshal it.
+	err = cmd.manageAdminForm(fake.NewSnapshot(), makeStep(t, FormArg, "dummy"))
+	require.EqualError(t, err, unmarshalTransactionErr)
+
+	// Checking that given a Blockchain that always returns an error,
+	// it will not be able to retrieve the AdminForm on the store.
+	err = cmd.manageAdminForm(fake.NewBadSnapshot(), makeStep(t, FormArg, string(data)))
+	require.ErrorContains(t, err, "failed to get key")
+
+	snap := fake.NewSnapshot()
+
+	// Checking that given the form set in the Snapshot which is invalid, then it
+	// will not be able to deserialize the AdminForm to perform the command.
+	err = snap.Set(dummyAdminFormIDBuff, invalidForm)
+	require.NoError(t, err)
+	err = cmd.manageAdminForm(snap, makeStep(t, FormArg, string(data)))
+	require.ErrorContains(t, err, "failed to deserialize AdminForm")
+
+	// We reset everything to perform the real test
+	adminFormBuf, err := adminForm.Serialize(ctx)
+	require.NoError(t, err)
+
+	err = snap.Set(dummyAdminFormIDBuff, adminFormBuf)
+	require.NoError(t, err)
+
+	data, err = addAdmin.Serialize(ctx)
+	require.NoError(t, err)
+
+	// We perform below the command on the ledger
+	err = cmd.manageAdminForm(snap, makeStep(t, FormArg, string(data)))
+	require.NoError(t, err)
+
+	// We retrieve the form on the ledger
+	res, err := snap.Get(dummyAdminFormIDBuff)
+	require.NoError(t, err)
+
+	message, err := adminFormFac.Deserialize(ctx, res)
+	require.NoError(t, err)
+
+	adminForm, ok := message.(types.AdminForm)
+	require.True(t, ok)
+
+	// We check that our dummy User is now admin
+	// (if not admin return -1; else return admin index in AdminForm).
+	require.True(t, adminForm.GetAdminIndex(dummyUID) > -1)
+
+	// Now we want to remove its admin privilege.
+	// Initialization of the command
+	removeAdmin := types.RemoveAdmin{FormID: fakeAdminFormID, UserID: dummyUID}
+	data, err = removeAdmin.Serialize(ctx)
+	require.NoError(t, err)
+
+	// Publish the command on the ledger.
+	err = cmd.manageAdminForm(snap, makeStep(t, FormArg, string(data)))
+	require.NoError(t, err)
+
+	// We retrieve the Admin Form from the ledger.
+	res, err = snap.Get(dummyAdminFormIDBuff)
+	require.NoError(t, err)
+
+	message, err = adminFormFac.Deserialize(ctx, res)
+	require.NoError(t, err)
+
+	adminForm, ok = message.(types.AdminForm)
+	require.True(t, ok)
+
+	// We check that now our dummy user is not admin anymore (return -1)
+	require.True(t, adminForm.GetAdminIndex(dummyUID) == -1)
+}
+
 // -----------------------------------------------------------------------------
 // Utility functions
 
@@ -1119,6 +1231,25 @@ func initFormAndContract() (types.Form, Contract) {
 		DecryptedBallots: nil,
 		ShuffleThreshold: 0,
 		Roster:           fake.Authority{},
+	}
+
+	service := fakeAccess{err: fake.GetError()}
+	rosterFac := fakeAuthorityFactory{}
+
+	contract := NewContract(service, fakeDkg, rosterFac)
+
+	return dummyForm, contract
+}
+
+func initAdminFormAndContract() (types.AdminForm, Contract) {
+	fakeDkg := fakeDKG{
+		actor: fakeDkgActor{},
+		err:   nil,
+	}
+
+	dummyForm := types.AdminForm{
+		FormID:    fakeAdminFormID,
+		AdminList: make([]int, 0),
 	}
 
 	service := fakeAccess{err: fake.GetError()}
@@ -1329,6 +1460,10 @@ func (s fakeStore) Set(key, value []byte) error {
 
 type fakeCmd struct {
 	err error
+}
+
+func (c fakeCmd) manageAdminForm(snap store.Snapshot, step execution.Step) error {
+	return c.err
 }
 
 func (c fakeCmd) createForm(snap store.Snapshot, step execution.Step) error {
