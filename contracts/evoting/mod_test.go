@@ -1484,7 +1484,7 @@ func TestCommand_VoterForm(t *testing.T) {
 	form, ok = message.(types.Form)
 	require.True(t, ok)
 
-	// We check that now our dummy user is an owner (return 0)
+	// We check that now our dummy user is a voter (return 0)
 	dummyUserVoterIndex, _ = form.GetVoterIndex(dummyUserID)
 	require.True(t, dummyUserVoterIndex == 0)
 
