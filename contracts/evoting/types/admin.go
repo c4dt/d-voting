@@ -76,7 +76,7 @@ func (adminForm *AdminForm) GetAdminIndex(userID string) (int, error) {
 func (adminForm *AdminForm) RemoveAdmin(userID string) error {
 	index, err := adminForm.GetAdminIndex(userID)
 	if err != nil {
-		return xerrors.Errorf("Failed GetAdnubIndex: %v", err)
+		return xerrors.Errorf("Failed to retrieve the Admin permission: %v", err)
 	}
 
 	if index < 0 {
