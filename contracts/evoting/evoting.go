@@ -85,6 +85,16 @@ func (e evotingCommand) createForm(snap store.Snapshot, step execution.Step) err
 		Indexes:   make([]int, 0),
 	}
 
+	// Initial owner is the creator
+	owners := make([]int, 1)
+
+	sciperInt, err := types.SciperToInt(tx.UserID)
+	if err != nil {
+		return xerrors.Errorf("failed to convert SCIPER to integer: %v", err)
+	}
+
+	owners[0] = sciperInt
+
 	form := types.Form{
 		FormID:        hex.EncodeToString(formIDBuf),
 		Configuration: tx.Configuration,
@@ -98,6 +108,8 @@ func (e evotingCommand) createForm(snap store.Snapshot, step execution.Step) err
 		// that 1/3 of the participants go away, the form will never end.
 		Roster:           roster,
 		ShuffleThreshold: threshold.ByzantineThreshold(roster.Len()),
+		Owners:           owners,
+		Voters:           make([]int, 0),
 	}
 
 	PromFormStatus.WithLabelValues(form.FormID).Set(float64(form.Status))
@@ -803,6 +815,79 @@ func (e evotingCommand) manageAdminForm(snap store.Snapshot, step execution.Step
 		err = form.RemoveAdmin(txRemoveAdmin.UserID)
 		if err != nil {
 			return xerrors.Errorf("couldn't remove admin: %v", err)
+		}
+	} else {
+		return xerrors.Errorf(errWrongTx, msg)
+	}
+
+	formBuf, err := form.Serialize(e.context)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal Form : %v", err)
+	}
+
+	err = snap.Set(formID, formBuf)
+	if err != nil {
+		return xerrors.Errorf("failed to set value: %v", err)
+	}
+
+	return nil
+}
+
+// manageVotersForm implements commands.
+// It performs the ADD or REMOVE VOTERS/OWNERS command
+func (e evotingCommand) manageOwnersVotersForm(snap store.Snapshot, step execution.Step) error {
+	msg, err := e.getTransaction(step.Current)
+	if err != nil {
+		return xerrors.Errorf(errGetTransaction, err)
+	}
+
+	var form types.Form
+	var formID []byte
+
+	txAddVoter, okAddVoter := msg.(types.AddVoter)
+	txRemoveVoter, okRemoveVoter := msg.(types.RemoveVoter)
+	txAddOwner, okAddOwner := msg.(types.AddOwner)
+	txRemoveOwner, okRemoveOwner := msg.(types.RemoveOwner)
+
+	if okAddVoter {
+		form, formID, err = e.getForm(txAddVoter.FormID, snap)
+		if err != nil {
+			return xerrors.Errorf(errGetForm, err)
+		}
+
+		err = form.AddVoter(txAddVoter.UserID)
+		if err != nil {
+			return xerrors.Errorf("couldn't add voter: %v", err)
+		}
+	} else if okRemoveVoter {
+		form, formID, err = e.getForm(txRemoveVoter.FormID, snap)
+		if err != nil {
+			return xerrors.Errorf(errGetForm, err)
+		}
+
+		err = form.RemoveVoter(txRemoveVoter.UserID)
+		if err != nil {
+			return xerrors.Errorf("couldn't remove voter: %v", err)
+		}
+	} else if okAddOwner {
+		form, formID, err = e.getForm(txAddOwner.FormID, snap)
+		if err != nil {
+			return xerrors.Errorf(errGetForm, err)
+		}
+
+		err = form.AddOwner(txAddOwner.UserID)
+		if err != nil {
+			return xerrors.Errorf("couldn't add owner: %v", err)
+		}
+	} else if okRemoveOwner {
+		form, formID, err = e.getForm(txRemoveOwner.FormID, snap)
+		if err != nil {
+			return xerrors.Errorf(errGetForm, err)
+		}
+
+		err = form.RemoveOwner(txRemoveOwner.UserID)
+		if err != nil {
+			return xerrors.Errorf("couldn't remove owner: %v", err)
 		}
 	} else {
 		return xerrors.Errorf(errWrongTx, msg)

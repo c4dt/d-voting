@@ -99,6 +99,7 @@ type commands interface {
 	cancelForm(snap store.Snapshot, step execution.Step) error
 	deleteForm(snap store.Snapshot, step execution.Step) error
 	manageAdminForm(snap store.Snapshot, step execution.Step) error
+	manageOwnersVotersForm(snap store.Snapshot, step execution.Step) error
 }
 
 // Command defines a type of command for the value contract
@@ -131,6 +132,16 @@ const (
 	CmdAddAdminForm Command = "ADD_ADMIN"
 	// CmdRemoveAdminForm is the command to delete a form
 	CmdRemoveAdminForm Command = "REMOVE_ADMIN"
+
+	// CmdAddOwnerForm is the command to add an Owner to a form
+	CmdAddOwnerForm Command = "ADD_OWNER"
+	// CmdRemoveOwnerForm is the command to remove an Owner to a form
+	CmdRemoveOwnerForm Command = "REMOVE_OWNER"
+
+	// CmdAddVoterForm is the command to add an Voter to a form
+	CmdAddVoterForm Command = "ADD_VOTER"
+	// CmdRemoveVoterForm is the command to remove an Voter to a form
+	CmdRemoveVoterForm Command = "REMOVE_VOTER"
 )
 
 // NewCreds creates new credentials for a evoting contract execution. We might
@@ -262,6 +273,26 @@ func (c Contract) Execute(snap store.Snapshot, step execution.Step) error {
 		err := c.cmd.manageAdminForm(snap, step)
 		if err != nil {
 			return xerrors.Errorf("failed to remove admin: %v", err)
+		}
+	case CmdAddOwnerForm:
+		err := c.cmd.manageOwnersVotersForm(snap, step)
+		if err != nil {
+			return xerrors.Errorf("failed to add owner: %v", err)
+		}
+	case CmdRemoveOwnerForm:
+		err := c.cmd.manageOwnersVotersForm(snap, step)
+		if err != nil {
+			return xerrors.Errorf("failed to remove owner: %v", err)
+		}
+	case CmdAddVoterForm:
+		err := c.cmd.manageOwnersVotersForm(snap, step)
+		if err != nil {
+			return xerrors.Errorf("failed to add voter: %v", err)
+		}
+	case CmdRemoveVoterForm:
+		err := c.cmd.manageOwnersVotersForm(snap, step)
+		if err != nil {
+			return xerrors.Errorf("failed to remove voter: %v", err)
 		}
 	default:
 		return xerrors.Errorf("unknown command: %s", cmd)

@@ -34,7 +34,8 @@ func getIntegrationTest(numNodes, numVotes int) func(*testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
 
-		adminID := "first admin"
+		// Dummy UserID in SCIPER format
+		adminID := "123456"
 
 		// ##### SETUP ENV #####
 
@@ -173,7 +174,8 @@ func getIntegrationTestCrash(numNodes, numVotes, failingNodes int) func(*testing
 	return func(t *testing.T) {
 		t.Parallel()
 
-		adminID := "first admin"
+		// Dummy UserID in SCIPER format
+		adminID := "123456"
 
 		// ##### SETUP ENV #####
 
@@ -321,7 +323,8 @@ func getIntegrationTestCrash(numNodes, numVotes, failingNodes int) func(*testing
 func getIntegrationBenchmark(numNodes, numVotes int) func(*testing.B) {
 	return func(b *testing.B) {
 
-		adminID := "first admin"
+		// Dummy UserID in SCIPER format
+		adminID := "123456"
 
 		// ##### SETUP ENV #####
 
