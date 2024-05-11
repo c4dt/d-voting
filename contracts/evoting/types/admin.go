@@ -48,7 +48,7 @@ func (adminForm AdminForm) Deserialize(ctx serde.Context, data []byte) (serde.Me
 func (adminForm *AdminForm) AddAdmin(userID string) error {
 	sciperInt, err := SciperToInt(userID)
 	if err != nil {
-		return xerrors.Errorf("Failed SciperToInt: %v", err)
+		return xerrors.Errorf("failed to convert SCIPER to integer: %v", err)
 	}
 
 	adminForm.AdminList = append(adminForm.AdminList, sciperInt)
@@ -60,7 +60,7 @@ func (adminForm *AdminForm) AddAdmin(userID string) error {
 func (adminForm *AdminForm) GetAdminIndex(userID string) (int, error) {
 	sciperInt, err := SciperToInt(userID)
 	if err != nil {
-		return -1, xerrors.Errorf("Failed SciperToInt: %v", err)
+		return -1, xerrors.Errorf("failed to convert SCIPER to integer: %v", err)
 	}
 
 	for i := 0; i < len(adminForm.AdminList); i++ {
@@ -76,7 +76,7 @@ func (adminForm *AdminForm) GetAdminIndex(userID string) (int, error) {
 func (adminForm *AdminForm) RemoveAdmin(userID string) error {
 	index, err := adminForm.GetAdminIndex(userID)
 	if err != nil {
-		return xerrors.Errorf("Failed GetAdnubIndex: %v", err)
+		return xerrors.Errorf("Failed to retrieve the Admin permission: %v", err)
 	}
 
 	if index < 0 {
