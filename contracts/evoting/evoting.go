@@ -36,36 +36,19 @@ const (
 	errWrongTx            = "wrong type of transaction: %T"
 )
 
-// EvotingCommand implements the commands of the Evoting contract.
+// evotingCommand implements the commands of the Evoting contract.
 //
 // - implements commands
-type EvotingCommand struct {
+type evotingCommand struct {
 	*Contract
 
-	prover      prover
-	adminFormID string
-}
-
-func NewEvotingCommand(contract *Contract, prover prover, snap store.Snapshot, step execution.Step, initialAdmin []int) (EvotingCommand, error) {
-	// TODO add error handling
-	adminFormID, err := initializeAdminForm(snap, step, initialAdmin, contract.context)
-	if err != nil {
-		return EvotingCommand{}, xerrors.Errorf("failed to create an Admin Form: %v", err)
-	}
-
-	evotingCommand := EvotingCommand{
-		Contract:    contract,
-		prover:      prover,
-		adminFormID: hex.EncodeToString(adminFormID),
-	}
-
-	return evotingCommand, nil
+	prover prover
 }
 
 type prover func(suite proof.Suite, protocolName string, verifier proof.Verifier, proof []byte) error
 
 // createForm implements commands. It performs the CREATE_FORM command
-func (e EvotingCommand) createForm(snap store.Snapshot, step execution.Step) error {
+func (e evotingCommand) createForm(snap store.Snapshot, step execution.Step) error {
 
 	msg, err := e.getTransaction(step.Current)
 	if err != nil {
@@ -83,9 +66,9 @@ func (e EvotingCommand) createForm(snap store.Snapshot, step execution.Step) err
 	}
 
 	// Check if has Admin Right to create a form
-	adminForm, _, err := e.getAdminForm(e.adminFormID, snap)
+	adminForm, err := e.getAdminForm(snap)
 	if err != nil {
-		return xerrors.Errorf("failed to get AdminForm: %v", err)
+		return xerrors.Errorf("failed to get AdminList: %v", err)
 	}
 	adminIndex, err := adminForm.GetAdminIndex(tx.UserID)
 	if err != nil {
@@ -193,7 +176,7 @@ func (e EvotingCommand) createForm(snap store.Snapshot, step execution.Step) err
 
 // openForm set the public key on the form. The public key is fetched
 // from the DKG actor. It works only if DKG is set up.
-func (e EvotingCommand) openForm(snap store.Snapshot, step execution.Step) error {
+func (e evotingCommand) openForm(snap store.Snapshot, step execution.Step) error {
 
 	msg, err := e.getTransaction(step.Current)
 	if err != nil {
@@ -247,7 +230,7 @@ func (e EvotingCommand) openForm(snap store.Snapshot, step execution.Step) error
 }
 
 // castVote implements commands. It performs the CAST_VOTE command
-func (e EvotingCommand) castVote(snap store.Snapshot, step execution.Step) error {
+func (e evotingCommand) castVote(snap store.Snapshot, step execution.Step) error {
 
 	msg, err := e.getTransaction(step.Current)
 	if err != nil {
@@ -294,7 +277,7 @@ func (e EvotingCommand) castVote(snap store.Snapshot, step execution.Step) error
 }
 
 // shuffleBallots implements commands. It performs the SHUFFLE_BALLOTS command
-func (e EvotingCommand) shuffleBallots(snap store.Snapshot, step execution.Step) error {
+func (e evotingCommand) shuffleBallots(snap store.Snapshot, step execution.Step) error {
 
 	msg, err := e.getTransaction(step.Current)
 	if err != nil {
@@ -466,7 +449,7 @@ func (e EvotingCommand) shuffleBallots(snap store.Snapshot, step execution.Step)
 
 // checkPreviousTransactions checks if a ShuffleBallotsTransaction has already
 // been accepted and executed for a specific round.
-func (e EvotingCommand) checkPreviousTransactions(step execution.Step, round int) error {
+func (e evotingCommand) checkPreviousTransactions(step execution.Step, round int) error {
 	for _, tx := range step.Previous {
 		// skip tx not concerning the evoting contract
 		if string(tx.GetArg(native.ContractArg)) != ContractName {
@@ -498,7 +481,7 @@ func (e EvotingCommand) checkPreviousTransactions(step execution.Step, round int
 }
 
 // closeForm implements commands. It performs the CLOSE_FORM command
-func (e EvotingCommand) closeForm(snap store.Snapshot, step execution.Step) error {
+func (e evotingCommand) closeForm(snap store.Snapshot, step execution.Step) error {
 
 	msg, err := e.getTransaction(step.Current)
 	if err != nil {
@@ -541,7 +524,7 @@ func (e EvotingCommand) closeForm(snap store.Snapshot, step execution.Step) erro
 
 // registerPubshares implements commands. It performs the
 // REGISTER_PUB_SHARES command
-func (e EvotingCommand) registerPubshares(snap store.Snapshot, step execution.Step) error {
+func (e evotingCommand) registerPubshares(snap store.Snapshot, step execution.Step) error {
 	msg, err := e.getTransaction(step.Current)
 	if err != nil {
 		return xerrors.Errorf(errGetTransaction, err)
@@ -652,7 +635,7 @@ func (e EvotingCommand) registerPubshares(snap store.Snapshot, step execution.St
 }
 
 // combineShares implements commands. It performs the COMBINE_SHARES command
-func (e EvotingCommand) combineShares(snap store.Snapshot, step execution.Step) error {
+func (e evotingCommand) combineShares(snap store.Snapshot, step execution.Step) error {
 
 	msg, err := e.getTransaction(step.Current)
 	if err != nil {
@@ -725,7 +708,7 @@ func (e EvotingCommand) combineShares(snap store.Snapshot, step execution.Step) 
 }
 
 // cancelForm implements commands. It performs the CANCEL_FORM command
-func (e EvotingCommand) cancelForm(snap store.Snapshot, step execution.Step) error {
+func (e evotingCommand) cancelForm(snap store.Snapshot, step execution.Step) error {
 
 	msg, err := e.getTransaction(step.Current)
 	if err != nil {
@@ -759,7 +742,7 @@ func (e EvotingCommand) cancelForm(snap store.Snapshot, step execution.Step) err
 }
 
 // deleteForm implements commands. It performs the DELETE_FORM command
-func (e EvotingCommand) deleteForm(snap store.Snapshot, step execution.Step) error {
+func (e evotingCommand) deleteForm(snap store.Snapshot, step execution.Step) error {
 
 	msg, err := e.getTransaction(step.Current)
 	if err != nil {
@@ -815,22 +798,41 @@ func (e EvotingCommand) deleteForm(snap store.Snapshot, step execution.Step) err
 }
 
 // manageAdminForm implements commands. It performs the ADD or REMOVE ADMIN command
-func (e EvotingCommand) manageAdminForm(snap store.Snapshot, step execution.Step) error {
+func (e evotingCommand) manageAdminForm(snap store.Snapshot, step execution.Step) error {
 	msg, err := e.getTransaction(step.Current)
 	if err != nil {
 		return xerrors.Errorf(errGetTransaction, err)
 	}
 
-	var form types.AdminForm
-	var formID []byte
+	var form types.AdminList
+
+	h := sha256.New()
+	h.Write([]byte(AdminListId))
+	formIDBuf := h.Sum(nil)
 
 	txAddAdmin, okAddAdmin := msg.(types.AddAdmin)
 	txRemoveAdmin, okRemoveAdmin := msg.(types.RemoveAdmin)
 
 	if okAddAdmin {
-		form, formID, err = e.getAdminForm(txAddAdmin.FormID, snap)
+		form, err = e.getAdminForm(snap)
 		if err != nil {
-			return xerrors.Errorf("failed to get AdminForm: %v", err)
+			if !strings.Contains(err.Error(), "No form found") {
+				return xerrors.Errorf("failed to get AdminList: %v", err)
+			}
+
+			intSciper, err := types.SciperToInt(txAddAdmin.UserID)
+			if err != nil {
+				return xerrors.Errorf("Invalid Sciper: %v", err)
+			}
+
+			err = initializeAdminList(snap, intSciper, e.context)
+			if err != nil {
+				return xerrors.Errorf("Failed to initialize admin list: %v", err)
+			}
+
+			// Adding the initial admin is performed by the initialize Admin List
+			// Therefore return
+			return nil
 		}
 
 		err = form.AddAdmin(txAddAdmin.UserID)
@@ -838,9 +840,9 @@ func (e EvotingCommand) manageAdminForm(snap store.Snapshot, step execution.Step
 			return xerrors.Errorf("couldn't add admin: %v", err)
 		}
 	} else if okRemoveAdmin {
-		form, formID, err = e.getAdminForm(txRemoveAdmin.FormID, snap)
+		form, err = e.getAdminForm(snap)
 		if err != nil {
-			return xerrors.Errorf("failed to get AdminForm: %v", err)
+			return xerrors.Errorf("failed to get AdminList: %v", err)
 		}
 
 		err = form.RemoveAdmin(txRemoveAdmin.UserID)
@@ -856,7 +858,7 @@ func (e EvotingCommand) manageAdminForm(snap store.Snapshot, step execution.Step
 		return xerrors.Errorf("failed to marshal Form : %v", err)
 	}
 
-	err = snap.Set(formID, formBuf)
+	err = snap.Set(formIDBuf, formBuf)
 	if err != nil {
 		return xerrors.Errorf("failed to set value: %v", err)
 	}
@@ -864,32 +866,30 @@ func (e EvotingCommand) manageAdminForm(snap store.Snapshot, step execution.Step
 	return nil
 }
 
-func initializeAdminForm(snap store.Snapshot, step execution.Step, initialAdmin []int, ctx serde.Context) ([]byte, error) {
-	// Get the formID, which is the SHA256 of the transaction ID
+func initializeAdminList(snap store.Snapshot, initialAdmin int, ctx serde.Context) error {
 	h := sha256.New()
-	h.Write(step.Current.GetID())
+	h.Write([]byte(AdminListId))
 	formIDBuf := h.Sum(nil)
 
-	adminForm := types.AdminForm{
-		FormID:    hex.EncodeToString(formIDBuf),
-		AdminList: initialAdmin,
+	adminForm := types.AdminList{
+		AdminList: []int{initialAdmin},
 	}
 
 	formBuf, err := adminForm.Serialize(ctx)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to marshal Admin Form : %v", err)
+		return xerrors.Errorf("failed to marshal Admin Form : %v", err)
 	}
 
 	err = snap.Set(formIDBuf, formBuf)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to set value: %v", err)
+		return xerrors.Errorf("failed to set value: %v", err)
 	}
 
 	// Update the form metadata store
 
 	formsMetadataBuf, err := snap.Get([]byte(FormsMetadataKey))
 	if err != nil {
-		return nil, xerrors.Errorf("failed to get key '%s': %v", formsMetadataBuf, err)
+		return xerrors.Errorf("failed to get key '%s': %v", formsMetadataBuf, err)
 	}
 
 	formsMetadata := &types.FormsMetadata{
@@ -899,31 +899,31 @@ func initializeAdminForm(snap store.Snapshot, step execution.Step, initialAdmin 
 	if len(formsMetadataBuf) != 0 {
 		err := json.Unmarshal(formsMetadataBuf, formsMetadata)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to unmarshal FormsMetadata: %v", err)
+			return xerrors.Errorf("failed to unmarshal FormsMetadata: %v", err)
 		}
 	}
 
-	err = formsMetadata.FormsIDs.Add(adminForm.FormID)
+	err = formsMetadata.FormsIDs.Add(hex.EncodeToString(formIDBuf))
 	if err != nil {
-		return nil, xerrors.Errorf("couldn't add new form: %v", err)
+		return xerrors.Errorf("couldn't add new form: %v", err)
 	}
 
 	formMetadataJSON, err := json.Marshal(formsMetadata)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to marshal FormsMetadata: %v", err)
+		return xerrors.Errorf("failed to marshal FormsMetadata: %v", err)
 	}
 
 	err = snap.Set([]byte(FormsMetadataKey), formMetadataJSON)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to set value: %v", err)
+		return xerrors.Errorf("failed to set value: %v", err)
 	}
 
-	return formIDBuf, nil
+	return nil
 }
 
 // manageVotersForm implements commands.
 // It performs the ADD or REMOVE VOTERS/OWNERS command
-func (e EvotingCommand) manageOwnersVotersForm(snap store.Snapshot, step execution.Step) error {
+func (e evotingCommand) manageOwnersVotersForm(snap store.Snapshot, step execution.Step) error {
 	msg, err := e.getTransaction(step.Current)
 	if err != nil {
 		return xerrors.Errorf(errGetTransaction, err)
@@ -1061,7 +1061,7 @@ func (s SemiRandomStream) XORKeyStream(dst, src []byte) {
 
 // getForm gets the form from the snap. Returns the form ID NOT hex
 // encoded.
-func (e EvotingCommand) getForm(formIDHex string,
+func (e evotingCommand) getForm(formIDHex string,
 	snap store.Snapshot) (types.Form, []byte, error) {
 
 	var form types.Form
@@ -1079,28 +1079,22 @@ func (e EvotingCommand) getForm(formIDHex string,
 	return form, formIDBuf, nil
 }
 
-// getAdminForm gets the AdminForm from the snap. Returns the form ID NOT hex
+// getAdminForm gets the AdminList from the snap. Returns the form ID NOT hex
 // encoded.
-func (e EvotingCommand) getAdminForm(formIDHex string,
-	snap store.Snapshot) (types.AdminForm, []byte, error) {
+func (e evotingCommand) getAdminForm(snap store.Snapshot) (types.AdminList, error) {
 
-	var form types.AdminForm
+	var form types.AdminList
 
-	formIDBuf, err := hex.DecodeString(formIDHex)
+	form, err := types.AdminFormFromStore(e.context, e.adminFormFac, snap, AdminListId)
 	if err != nil {
-		return form, nil, xerrors.Errorf("failed to decode adminFormIDHex: %v", err)
+		return form, xerrors.Errorf("failed to get the AdminList: %v", err)
 	}
 
-	form, err = types.AdminFormFromStore(e.context, e.adminFormFac, formIDHex, snap)
-	if err != nil {
-		return form, nil, xerrors.Errorf("failed to get key %q: %v", formIDBuf, err)
-	}
-
-	return form, formIDBuf, nil
+	return form, nil
 }
 
 // getTransaction extracts the argument from the transaction.
-func (e EvotingCommand) getTransaction(tx txn.Transaction) (serde.Message, error) {
+func (e evotingCommand) getTransaction(tx txn.Transaction) (serde.Message, error) {
 	buff := tx.GetArg(FormArg)
 	if len(buff) == 0 {
 		return nil, xerrors.Errorf("%q not found in tx arg", FormArg)
