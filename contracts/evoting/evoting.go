@@ -65,6 +65,15 @@ func (e evotingCommand) createForm(snap store.Snapshot, step execution.Step) err
 		return xerrors.Errorf("failed to get roster")
 	}
 
+	// Check if has Admin Right to create a form
+	isAdmin, _, err := e.fetchAdmin(snap, tx.UserID)
+	if err != nil {
+		return err
+	}
+	if !isAdmin {
+		return xerrors.Errorf("The performing user is not an admin.")
+	}
+
 	roster, err := e.rosterFac.AuthorityOf(e.context, rosterBuf)
 	if err != nil {
 		return xerrors.Errorf("failed to get roster: %v", err)
@@ -124,8 +133,16 @@ func (e evotingCommand) createForm(snap store.Snapshot, step execution.Step) err
 		return xerrors.Errorf("failed to set value: %v", err)
 	}
 
-	// Update the form metadata store
+	err = updateFormMetadataStore(snap, form.FormID)
+	if err != nil {
+		return xerrors.Errorf("failed to update the metadata in the store: %v", err)
+	}
 
+	return nil
+}
+
+// updateFormMetadataStore Update the form metadata store
+func updateFormMetadataStore(snap store.Snapshot, formID string) error {
 	formsMetadataBuf, err := snap.Get([]byte(FormsMetadataKey))
 	if err != nil {
 		return xerrors.Errorf("failed to get key '%s': %v", formsMetadataBuf, err)
@@ -142,7 +159,7 @@ func (e evotingCommand) createForm(snap store.Snapshot, step execution.Step) err
 		}
 	}
 
-	err = formsMetadata.FormsIDs.Add(form.FormID)
+	err = formsMetadata.FormsIDs.Add(formID)
 	if err != nil {
 		return xerrors.Errorf("couldn't add new form: %v", err)
 	}
@@ -156,7 +173,6 @@ func (e evotingCommand) createForm(snap store.Snapshot, step execution.Step) err
 	if err != nil {
 		return xerrors.Errorf("failed to set value: %v", err)
 	}
-
 	return nil
 }
 
@@ -750,69 +766,74 @@ func (e evotingCommand) deleteForm(snap store.Snapshot, step execution.Step) err
 		return xerrors.Errorf("failed to delete form: %v", err)
 	}
 
-	// Update the form metadata store
-
-	formsMetadataBuf, err := snap.Get([]byte(FormsMetadataKey))
+	err = updateFormMetadataStore(snap, form.FormID)
 	if err != nil {
-		return xerrors.Errorf("failed to get key '%s': %v", formsMetadataBuf, err)
-	}
-
-	if len(formsMetadataBuf) == 0 {
-		return nil
-	}
-
-	var formsMetadata types.FormsMetadata
-
-	err = json.Unmarshal(formsMetadataBuf, &formsMetadata)
-	if err != nil {
-		return xerrors.Errorf("failed to unmarshal FormsMetadata: %v", err)
-	}
-
-	formsMetadata.FormsIDs.Remove(form.FormID)
-
-	formMetadataJSON, err := json.Marshal(formsMetadata)
-	if err != nil {
-		return xerrors.Errorf("failed to marshal FormsMetadata: %v", err)
-	}
-
-	err = snap.Set([]byte(FormsMetadataKey), formMetadataJSON)
-	if err != nil {
-		return xerrors.Errorf("failed to set value: %v", err)
+		return xerrors.Errorf("failed to update the metadata in the store: %v", err)
 	}
 
 	return nil
 }
 
-// manageAdminForm implements commands. It performs the ADD or REMOVE ADMIN command
-func (e evotingCommand) manageAdminForm(snap store.Snapshot, step execution.Step) error {
+// manageAdminList implements commands. It performs the ADD or REMOVE ADMIN command
+func (e evotingCommand) manageAdminList(snap store.Snapshot, step execution.Step) error {
 	msg, err := e.getTransaction(step.Current)
 	if err != nil {
 		return xerrors.Errorf(errGetTransaction, err)
 	}
 
-	var form types.AdminForm
-	var formID []byte
+	var list types.AdminList
+
+	h := sha256.New()
+	h.Write([]byte(AdminListId))
+	formIDBuf := h.Sum(nil)
 
 	txAddAdmin, okAddAdmin := msg.(types.AddAdmin)
 	txRemoveAdmin, okRemoveAdmin := msg.(types.RemoveAdmin)
 
 	if okAddAdmin {
-		form, formID, err = e.getAdminForm(txAddAdmin.FormID, snap)
+		isAdmin, listRetrieved, err := e.fetchAdmin(snap, txAddAdmin.PerformingUserID)
+		list = listRetrieved
 		if err != nil {
-			return xerrors.Errorf("failed to get AdminForm: %v", err)
+			// Exact string matching of the error
+			if err.Error() != "failed to get the AdminList: No list found" {
+				return xerrors.Errorf("failed to get AdminList: %v", err)
+			}
+
+			// Trust On First Use System -> if no AdminList, will create one by default.
+
+			intSciper, err := types.SciperToInt(txAddAdmin.TargetUserID)
+			if err != nil {
+				return xerrors.Errorf("Invalid Sciper: %v", err)
+			}
+
+			err = initializeAdminList(snap, intSciper, e.context)
+			if err != nil {
+				return xerrors.Errorf("Failed to initialize admin list: %v", err)
+			}
+
+			// Adding the initial admin is performed by the initialize Admin List
+			// Therefore return
+			return nil
+		}
+		if !isAdmin {
+			return xerrors.Errorf("The performing user is not an admin.")
 		}
 
-		err = form.AddAdmin(txAddAdmin.UserID)
+		err = list.AddAdmin(txAddAdmin.TargetUserID)
 		if err != nil {
 			return xerrors.Errorf("couldn't add admin: %v", err)
 		}
 	} else if okRemoveAdmin {
-		form, formID, err = e.getAdminForm(txRemoveAdmin.FormID, snap)
+		isAdmin, listRetrieved, err := e.fetchAdmin(snap, txRemoveAdmin.PerformingUserID)
+		list = listRetrieved
 		if err != nil {
-			return xerrors.Errorf("failed to get AdminForm: %v", err)
+			return err
+		}
+		if !isAdmin {
+			return xerrors.Errorf("The performing user is not an admin.")
 		}
 
-		err = form.RemoveAdmin(txRemoveAdmin.UserID)
+		err = list.RemoveAdmin(txRemoveAdmin.TargetUserID)
 		if err != nil {
 			return xerrors.Errorf("couldn't remove admin: %v", err)
 		}
@@ -820,14 +841,63 @@ func (e evotingCommand) manageAdminForm(snap store.Snapshot, step execution.Step
 		return xerrors.Errorf(errWrongTx, msg)
 	}
 
-	formBuf, err := form.Serialize(e.context)
+	formBuf, err := list.Serialize(e.context)
 	if err != nil {
 		return xerrors.Errorf("failed to marshal Form : %v", err)
 	}
 
-	err = snap.Set(formID, formBuf)
+	err = snap.Set(formIDBuf, formBuf)
 	if err != nil {
 		return xerrors.Errorf("failed to set value: %v", err)
+	}
+
+	return nil
+}
+
+// fetchAdmin Check whether a user is in an Admin List
+func (e evotingCommand) fetchAdmin(snap store.Snapshot, txPerformingUser string) (bool, types.AdminList, error) {
+	// If it found the AdminList
+	// Check that the performing user is Admin
+	form, err := e.getAdminList(snap)
+	if err != nil {
+		return false, types.AdminList{}, err
+	}
+
+	performingUserPerm, err := form.GetAdminIndex(txPerformingUser)
+	if err != nil {
+		return false, form, xerrors.Errorf("couldn't retrieve admin permission of the performing user: %v", err)
+	}
+
+	if performingUserPerm < 0 {
+		return false, form, nil
+	}
+	return true, form, nil
+}
+
+// initializeAdminList initialize an AdminList on the blockchain. It is called the first time that
+// we attempt to add an admin.
+func initializeAdminList(snap store.Snapshot, initialAdmin int, ctx serde.Context) error {
+	h := sha256.New()
+	h.Write([]byte(AdminListId))
+	formIDBuf := h.Sum(nil)
+
+	adminList := types.AdminList{
+		AdminList: []int{initialAdmin},
+	}
+
+	formBuf, err := adminList.Serialize(ctx)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal AdminList : %v", err)
+	}
+
+	err = snap.Set(formIDBuf, formBuf)
+	if err != nil {
+		return xerrors.Errorf("failed to set value: %v", err)
+	}
+
+	err = updateFormMetadataStore(snap, hex.EncodeToString(formIDBuf))
+	if err != nil {
+		return xerrors.Errorf("failed to update the metadata in the store: %v", err)
 	}
 
 	return nil
@@ -855,7 +925,7 @@ func (e evotingCommand) manageOwnersVotersForm(snap store.Snapshot, step executi
 			return xerrors.Errorf(errGetForm, err)
 		}
 
-		err = form.AddVoter(txAddVoter.UserID)
+		err = form.AddVoter(txAddVoter.TargetUserID)
 		if err != nil {
 			return xerrors.Errorf("couldn't add voter: %v", err)
 		}
@@ -865,7 +935,7 @@ func (e evotingCommand) manageOwnersVotersForm(snap store.Snapshot, step executi
 			return xerrors.Errorf(errGetForm, err)
 		}
 
-		err = form.RemoveVoter(txRemoveVoter.UserID)
+		err = form.RemoveVoter(txRemoveVoter.TargetUserID)
 		if err != nil {
 			return xerrors.Errorf("couldn't remove voter: %v", err)
 		}
@@ -875,7 +945,7 @@ func (e evotingCommand) manageOwnersVotersForm(snap store.Snapshot, step executi
 			return xerrors.Errorf(errGetForm, err)
 		}
 
-		err = form.AddOwner(txAddOwner.UserID)
+		err = form.AddOwner(txAddOwner.TargetUserID)
 		if err != nil {
 			return xerrors.Errorf("couldn't add owner: %v", err)
 		}
@@ -885,7 +955,7 @@ func (e evotingCommand) manageOwnersVotersForm(snap store.Snapshot, step executi
 			return xerrors.Errorf(errGetForm, err)
 		}
 
-		err = form.RemoveOwner(txRemoveOwner.UserID)
+		err = form.RemoveOwner(txRemoveOwner.TargetUserID)
 		if err != nil {
 			return xerrors.Errorf("couldn't remove owner: %v", err)
 		}
@@ -991,24 +1061,18 @@ func (e evotingCommand) getForm(formIDHex string,
 	return form, formIDBuf, nil
 }
 
-// getAdminForm gets the AdminForm from the snap. Returns the form ID NOT hex
+// getAdminList gets the AdminList from the snap. Returns the form ID NOT hex
 // encoded.
-func (e evotingCommand) getAdminForm(formIDHex string,
-	snap store.Snapshot) (types.AdminForm, []byte, error) {
+func (e evotingCommand) getAdminList(snap store.Snapshot) (types.AdminList, error) {
 
-	var form types.AdminForm
+	var form types.AdminList
 
-	formIDBuf, err := hex.DecodeString(formIDHex)
+	form, err := types.AdminListFromStore(e.context, e.adminListFac, snap, AdminListId)
 	if err != nil {
-		return form, nil, xerrors.Errorf("failed to decode adminFormIDHex: %v", err)
+		return form, xerrors.Errorf("failed to get the AdminList: %v", err)
 	}
 
-	form, err = types.AdminFormFromStore(e.context, e.adminFormFac, formIDHex, snap)
-	if err != nil {
-		return form, nil, xerrors.Errorf("failed to get key %q: %v", formIDBuf, err)
-	}
-
-	return form, formIDBuf, nil
+	return form, nil
 }
 
 // getTransaction extracts the argument from the transaction.

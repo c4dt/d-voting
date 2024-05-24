@@ -23,51 +23,54 @@ func init() {
 
 // This test create an Admin Form structure which is then serialized and
 // deserialized to check whether these operations work as intended.
-// Serialization/Deserialization of an AdminForm should not change its values.
+// Serialization/Deserialization of an AdminList should not change its values.
 func TestAdmin_Serde(t *testing.T) {
-	adminFormID := "myID"
-	adminFormList := []int{111111, 222222, 333333, 123456}
+	initialAdminList := []int{111111, 222222, 333333, 123456}
 
-	adminForm := types.AdminForm{FormID: adminFormID, AdminList: adminFormList}
+	adminList := types.AdminList{AdminList: initialAdminList}
 
-	value, err := adminForm.Serialize(ctxAdminTest)
+	value, err := adminList.Serialize(ctxAdminTest)
 
 	require.NoError(t, err)
 
 	// deserialization
-	newAdminForm := types.AdminForm{}
+	deserializedAdminList := types.AdminList{}
 
-	msgs, err := newAdminForm.Deserialize(ctxAdminTest, value)
+	msgs, err := deserializedAdminList.Deserialize(ctxAdminTest, value)
 
 	require.NoError(t, err)
 
-	updatedAdminForm := msgs.(types.AdminForm)
+	updatedAdminList := msgs.(types.AdminList)
 
-	require.Equal(t, adminFormID, updatedAdminForm.FormID)
-	require.Equal(t, adminFormList, updatedAdminForm.AdminList)
+	require.Equal(t, initialAdminList, updatedAdminList.AdminList)
 }
 
 func TestAdmin_AddAdminAndRemoveAdmin(t *testing.T) {
-	adminFormID := "myID"
-	adminFormList := []int{}
+	initialAdminList := []int{}
 
 	myTestID := "123456"
 
-	adminForm := types.AdminForm{FormID: adminFormID, AdminList: adminFormList}
+	adminList := types.AdminList{AdminList: initialAdminList}
 
-	res, err := adminForm.GetAdminIndex(myTestID)
+	res, err := adminList.GetAdminIndex(myTestID)
 	require.Equal(t, -1, res)
 	require.NoError(t, err)
 
-	err = adminForm.AddAdmin(myTestID)
+	err = adminList.AddAdmin(myTestID)
 	require.NoError(t, err)
-	res, err = adminForm.GetAdminIndex(myTestID)
+	res, err = adminList.GetAdminIndex(myTestID)
 	require.Equal(t, 0, res)
 	require.NoError(t, err)
 
-	err = adminForm.RemoveAdmin(myTestID)
+	err = adminList.RemoveAdmin(myTestID)
+	require.ErrorContains(t, err, "cannot remove this Admin because it is the only one remaining")
+
+	err = adminList.AddAdmin("654321")
 	require.NoError(t, err)
-	res, err = adminForm.GetAdminIndex(myTestID)
+
+	err = adminList.RemoveAdmin(myTestID)
+	require.NoError(t, err)
+	res, err = adminList.GetAdminIndex(myTestID)
 	require.Equal(t, -1, res)
 	require.NoError(t, err)
 }
