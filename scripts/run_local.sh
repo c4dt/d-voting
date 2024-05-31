@@ -14,14 +14,16 @@ fi
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 . "$SCRIPT_DIR/local_vars.sh"
 
-asdf_shell() {
-  if ! asdf list "$1" | grep -wq "$2"; then
-    asdf install "$1" "$2"
-  fi
-  asdf local "$1" "$2"
-}
-asdf_shell nodejs 16.20.2
-asdf_shell golang 1.21.0
+CLI_BIN=dvoting-libp2p
+
+#asdf_shell() {
+#  if ! asdf list "$1" | grep -wq "$2"; then
+#    asdf install "$1" "$2"
+#  fi
+#  asdf local "$1" "$2"
+#}
+#asdf_shell nodejs 16.20.2
+#asdf_shell golang 1.21.0
 mkdir -p nodes
 export GOBIN=$(pwd)/bin
 PATH="$PATH":"$GOBIN"
@@ -31,8 +33,8 @@ function build_dela() {
   if ! [[ -f $GOBIN/crypto ]]; then
     go install go.dedis.ch/dela/cli/crypto
   fi
-  if ! [[ -f $GOBIN/dvoting ]]; then
-    go install ./cli/dvoting
+  if ! [[ -f $GOBIN/$CLI_BIN ]]; then
+    go install ./cli/$CLI_BIN
   fi
 
   echo "Installing node directories"
@@ -56,7 +58,7 @@ function keypair() {
 }
 
 function kill_nodes() {
-  pkill dvoting || true
+  pkill $CLI_BIN || true
 
   echo "Waiting for nodes to stop"
   for n in $(seq 4); do
@@ -78,8 +80,8 @@ function init_nodes() {
     NODEDIR=./nodes/node-$n
     mkdir -p $NODEDIR
     rm -f $NODEDIR/node.log
-    dvoting --config $NODEDIR start --postinstall --proxyaddr :$PROXYPORT --proxykey $PUBLIC_KEY \
-      --listen tcp://0.0.0.0:$NODEPORT --public grpc://localhost:$NODEPORT --routing tree --noTLS |
+    $CLI_BIN --config $NODEDIR start --postinstall --proxyaddr :$PROXYPORT --proxykey $PUBLIC_KEY \
+      --listen /ip4/127.0.0.1/tcp/$NODEPORT/ws |
       ts "Node-$n: " | tee $NODEDIR/node.log &
   done
 
@@ -98,9 +100,9 @@ function init_dela() {
   for n in $(seq 4); do
     NODEDIR=./nodes/node-$n
     # add node to the chain
-    MEMBERS="$MEMBERS --member $(dvoting --config $NODEDIR ordering export)"
+    MEMBERS="$MEMBERS --member $($CLI_BIN --config $NODEDIR ordering export)"
   done
-  dvoting --config ./nodes/node-1 ordering setup $MEMBERS
+  $CLI_BIN --config ./nodes/node-1 ordering setup $MEMBERS
 
   echo "  Authorize the signer to handle the access contract on each node"
   for s in $(seq 4); do
@@ -108,7 +110,7 @@ function init_dela() {
     IDENTITY=$(crypto bls signer read --path $NODEDIR/private.key --format BASE64_PUBKEY)
     for n in $(seq 4); do
       NODEDIR=./nodes/node-$n
-      dvoting --config $NODEDIR access add --identity "$IDENTITY"
+      $CLI_BIN --config $NODEDIR access add --identity "$IDENTITY"
     done
   done
 
@@ -116,7 +118,7 @@ function init_dela() {
   for n in $(seq 4); do
     NODEDIR=./nodes/node-$n
     IDENTITY=$(crypto bls signer read --path $NODEDIR/private.key --format BASE64_PUBKEY)
-    dvoting --config ./nodes/node-1 pool add --key ./nodes/node-1/private.key --args go.dedis.ch/dela.ContractArg \
+    $CLI_BIN --config ./nodes/node-1 pool add --key ./nodes/node-1/private.key --args go.dedis.ch/dela.ContractArg \
       --args go.dedis.ch/dela.Access --args access:grant_id \
       --args 45564f54 --args access:grant_contract \
       --args go.dedis.ch/dela.Evoting --args access:grant_command --args all --args access:identity --args $IDENTITY \
