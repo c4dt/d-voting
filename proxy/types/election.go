@@ -10,6 +10,13 @@ type CreateFormRequest struct {
 	Configuration etypes.Configuration
 }
 
+// PermissionOperationRequest defines the HTTP request for performing
+// an operation request
+type PermissionOperationRequest struct {
+	TargetUserID     string
+	PerformingUserID string
+}
+
 // CreateFormResponse defines the HTTP response when creating a form
 type CreateFormResponse struct {
 	FormID string // hex-encoded
@@ -35,6 +42,7 @@ type EGPairJSON struct {
 // UpdateFormRequest defines the HTTP request for updating a form
 type UpdateFormRequest struct {
 	Action string
+	UserID string
 }
 
 // GetFormResponse defines the HTTP response when getting the form info
