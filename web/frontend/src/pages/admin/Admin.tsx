@@ -7,6 +7,7 @@ import { fetchCall } from 'components/utils/fetchCall';
 import AdminTable from './AdminTable';
 import DKGTable from './DKGTable';
 import * as endpoints from 'components/utils/Endpoints';
+import { UserRole } from '../../types/userRole';
 
 const Admin: FC = () => {
   const { t } = useTranslation();
@@ -73,8 +74,11 @@ const Admin: FC = () => {
         if (resp.status === 200) {
           const jsonData = resp.json();
           jsonData.then((result) => {
-            result.map((x) => ({ sciper: x.toString(), role: 'admin' }));
-            setUsers(result.Admins);
+            const admins = result.Admins.map((x) => ({
+              sciper: x.toString(),
+              role: UserRole.Admin,
+            }));
+            setUsers(admins);
           });
         } else {
           setUsers([]);
