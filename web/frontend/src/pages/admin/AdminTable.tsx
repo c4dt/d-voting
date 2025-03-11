@@ -1,9 +1,11 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { User } from 'types/userRole';
 import AddAdminUserModal from './components/AddAdminUserModal';
 import RemoveAdminUserModal from './components/RemoveAdminUserModal';
+import { AuthContext } from '../../index';
+import { useNavigate } from 'react-router-dom';
 
 const SCIPERS_PER_PAGE = 5;
 
@@ -15,10 +17,12 @@ type AdminTableProps = {
 const AdminTable: FC<AdminTableProps> = ({ users, setUsers }) => {
   const { t } = useTranslation();
 
+  const navigate = useNavigate();
+  const authctx = useContext(AuthContext);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [newUserOpen, setNewUserOpen] = useState(false);
   const [scipersToDisplay, setScipersToDisplay] = useState([]);
-  const [sciperToDelete, setSciperToDelete] = useState(0);
+  const [sciperToDelete, setSciperToDelete] = useState('');
   const [pageIndex, setPageIndex] = useState(0);
 
   const openModal = () => setNewUserOpen(true);
@@ -34,7 +38,7 @@ const AdminTable: FC<AdminTableProps> = ({ users, setUsers }) => {
     }
   }, [users, pageIndex]);
 
-  const handleDelete = (sciper: number): void => {
+  const handleDelete = (sciper: string): void => {
     setSciperToDelete(sciper);
     setShowDeleteModal(true);
   };
@@ -52,16 +56,30 @@ const AdminTable: FC<AdminTableProps> = ({ users, setUsers }) => {
   };
 
   const handleAddRoleUser = (user: User): void => {
+    // Pulling the new admin list from the server would be a better way, but it leads to a race condition.
     const newUsers = [...users, user];
-    setUsers(newUsers);
-    setPageIndex(partitionArray(newUsers, SCIPERS_PER_PAGE).length - 1);
+    if (users.length === 0 && user.sciper !== authctx.sciper.toString()) {
+      authctx.isAdmin = false;
+      authctx.isOperator = false;
+      navigate('/');
+    } else {
+      setUsers(newUsers);
+      setPageIndex(partitionArray(newUsers, SCIPERS_PER_PAGE).length - 1);
+    }
   };
 
   const handleRemoveRoleUser = (): void => {
-    const newUsers = users.filter((user) => user.sciper !== sciperToDelete.toString());
-    setUsers(newUsers);
-    if (newUsers.length % SCIPERS_PER_PAGE === 0) {
-      setPageIndex(pageIndex - 1);
+    // Pulling the new admin list from the server would be a better way, but it leads to a race condition.
+    const newUsers = users.filter((user) => user.sciper !== sciperToDelete);
+    if (sciperToDelete === authctx.sciper.toString() && users.length > 1) {
+      authctx.isAdmin = false;
+      authctx.isOperator = false;
+      navigate('/');
+    } else if (newUsers.length > 0) {
+      setUsers(newUsers);
+      if (newUsers.length % SCIPERS_PER_PAGE === 0) {
+        setPageIndex(pageIndex - 1);
+      }
     }
   };
 
@@ -117,17 +135,19 @@ const AdminTable: FC<AdminTableProps> = ({ users, setUsers }) => {
           <tbody>
             {scipersToDisplay !== undefined &&
               scipersToDisplay.map((user) => (
-                <tr key={user.id} className="bg-white border-b hover:bg-gray-50">
+                <tr key={user.sciper} className="bg-white border-b hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {user.sciper}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.role}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div
-                      className="cursor-pointer text-[#ff0000] hover:text-indigo-900"
-                      onClick={() => handleDelete(user.sciper)}>
-                      {t('delete')}
-                    </div>
+                    {users.length > 1 && (
+                      <div
+                        className="cursor-pointer text-[#ff0000] hover:text-indigo-900"
+                        onClick={() => handleDelete(user.sciper)}>
+                        {t('delete')}
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}

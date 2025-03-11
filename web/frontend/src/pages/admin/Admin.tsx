@@ -1,5 +1,4 @@
 import React, { FC, useContext, useEffect, useMemo, useState } from 'react';
-import { adminlist } from 'components/utils/Endpoints';
 import { AuthContext, FlashContext, FlashLevel, ProxyContext } from 'index';
 import Loading from 'pages/Loading';
 import { useTranslation } from 'react-i18next';
@@ -68,7 +67,7 @@ const Admin: FC = () => {
   }, [abortController, t, nodeProxyObject, nodeProxyError]);
 
   useEffect(() => {
-    fetch(adminlist(proxyCtx.getProxy()))
+    fetch(endpoints.adminlist(proxyCtx.getProxy()))
       .then((resp) => {
         setLoading(false);
         if (resp.status === 200) {
@@ -87,6 +86,7 @@ const Admin: FC = () => {
       })
       .catch((error) => {
         setLoading(false);
+        setUsers([]);
         fctx.addMessage(`${t('errorFetchingUsers')}: ${error.message}`, FlashLevel.Error);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps

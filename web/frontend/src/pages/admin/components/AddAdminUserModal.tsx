@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import SpinnerIcon from 'components/utils/SpinnerIcon';
 import { UserAddIcon } from '@heroicons/react/outline';
 import { AuthContext, FlashContext, FlashLevel } from 'index';
-import { UserRole } from 'types/userRole';
+import { User, UserRole } from 'types/userRole';
 import { ENDPOINT_ADD_ADMIN } from 'components/utils/Endpoints';
 import AdminModal from './AdminModal';
 import usePostCall from 'components/utils/usePostCall';
@@ -15,7 +15,7 @@ import usePostCall from 'components/utils/usePostCall';
 type AddAdminUserModalProps = {
   open: boolean;
   setOpen(opened: boolean): void;
-  handleAddRoleUser(user: object): void;
+  handleAddRoleUser(user: User): void;
 };
 
 const roles: string[] = [UserRole.Admin, UserRole.Operator];
@@ -65,10 +65,10 @@ const AddAdminUserModal: FC<AddAdminUserModalProps> = ({ open, setOpen, handleAd
     if (sciperValue !== '') {
       try {
         const res = await saveMapping();
-        if (!res) {
+        if (res) {
+          handleAddRoleUser({ sciper: sciperValue, role: selectedRole });
+          setSelectedRole(UserRole.Operator);
           setSciperValue('');
-          setSelectedRole(selectedRole);
-          handleAddRoleUser(userToAdd);
           fctx.addMessage(`${t('successAddUser')}`, FlashLevel.Info);
         }
         setOpen(false);
