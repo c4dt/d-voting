@@ -272,7 +272,6 @@ delaRouter.use('/*', (req, res) => {
       res.status(400).send('Unauthorized');
       return;
     }
-    console.log(`Base url in auth router:${req.baseUrl}`);
     bodyData.PerformingUserID = req.session.userId.toString();
   } else {
     // UserID for permission
