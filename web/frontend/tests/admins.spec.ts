@@ -159,7 +159,7 @@ test('Assert "Edit proxy" button is working', async ({ page, baseURL }) => {
   await expect(
     page.getByRole('row').filter({ has: page.getByText(Worker0.NodeAddr) })
   ).toBeVisible();
-  // Use of first is discouraged but no other solution gave satisfaction (include ids)
+  // Not the most elegant version, but the best option so far
   await page
     .getByRole('row')
     .filter({ has: page.getByText(Worker0.Proxy) })
