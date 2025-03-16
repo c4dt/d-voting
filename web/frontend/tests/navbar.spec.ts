@@ -7,13 +7,19 @@ import {
   logIn,
   setUp,
 } from './shared';
-import { SCIPER_USER, mockLogout, mockPersonalInfo } from './mocks/api';
+import {
+  SCIPER_ADMIN,
+  SCIPER_OTHER_ADMIN,
+  SCIPER_USER,
+  mockLogout,
+  mockPersonalInfo,
+} from './mocks/api';
 import { mockAdminList } from './mocks/evoting';
 
 initI18n();
 
 test.beforeEach(async ({ page }) => {
-  await mockAdminList(page, [123456, 987564]);
+  await mockAdminList(page, [SCIPER_ADMIN, SCIPER_OTHER_ADMIN]);
   await mockPersonalInfo(page);
   await setUp(page, '/about');
 });

@@ -32,21 +32,22 @@ import ClientError from './ClientError';
 const App = () => {
   const RequireAuth = ({
     children,
-    admin = false,
-    operator = false,
+    requireAdmin = false,
+    requireOperator = false,
   }: {
     children: JSX.Element;
-    admin?: boolean;
-    operator?: boolean;
+    requireAdmin?: boolean;
+    requireOperator?: boolean;
   }): JSX.Element => {
     let location = useLocation();
 
     const authCtx = useContext(AuthContext);
+    // Rejects the navigation to the path if the user does not have sufficient rights
     if (!authCtx.isLogged) {
       return <Navigate to={ROUTE_LOGIN} state={{ from: location }} replace />;
-    } else if (admin && !authCtx.isAdmin) {
+    } else if (requireAdmin && !authCtx.isAdmin) {
       return <Navigate to={ROUTE_UNAUTHORIZED} state={{ from: location }} replace />;
-    } else if (operator && !authCtx.isOperator) {
+    } else if (requireOperator && !authCtx.isOperator) {
       return <Navigate to={ROUTE_UNAUTHORIZED} state={{ from: location }} replace />;
     }
     return children;
@@ -66,7 +67,7 @@ const App = () => {
               <Route
                 path={ROUTE_FORM_CREATE}
                 element={
-                  <RequireAuth operator>
+                  <RequireAuth requireOperator>
                     <FormCreate />
                   </RequireAuth>
                 }
@@ -74,7 +75,7 @@ const App = () => {
               <Route
                 path={'/forms/:formId'}
                 element={
-                  <RequireAuth operator>
+                  <RequireAuth requireOperator>
                     <FormShow />
                   </RequireAuth>
                 }
@@ -91,7 +92,7 @@ const App = () => {
               <Route
                 path={ROUTE_ADMIN}
                 element={
-                  <RequireAuth admin>
+                  <RequireAuth requireAdmin>
                     <Admin />
                   </RequireAuth>
                 }
