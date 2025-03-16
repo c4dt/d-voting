@@ -1,6 +1,6 @@
 import { assertHasFooter, assertHasNavBar, initI18n, logIn, setUp } from './shared';
 import { expect, test } from '@playwright/test';
-import { mockProxyList, SCIPER_ADMIN } from './mocks/api';
+import { SCIPER_ADMIN, mockProxyList } from './mocks/api';
 import { default as i18n } from 'i18next';
 import Worker0 from './json/api/proxies/dela-worker-0.json';
 
@@ -124,9 +124,7 @@ test('Assert "Add proxy" button is working', async ({ page, baseURL }) => {
 });
 
 test('Assert "Remove proxy" button is working', async ({ page, baseURL }) => {
-  const proxyToAdd = { NodeAddr: 'grpc://dela-worker-4:2000', Proxy: 'http://172.19.44.251:8080' };
   page.waitForRequest(async (request) => {
-    const body = await request.postDataJSON();
     return (
       request.url() === `${baseURL}/api/proxies/${encodeURIComponent(Worker0.NodeAddr)}` &&
       request.method() === 'DELETE'

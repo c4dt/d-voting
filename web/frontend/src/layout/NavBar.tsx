@@ -27,12 +27,6 @@ import { Popover, Transition } from '@headlessui/react';
 import { LoginIcon, LogoutIcon, MenuIcon, XIcon } from '@heroicons/react/outline';
 import { PlusIcon } from '@heroicons/react/solid';
 
-const SUBJECT_ELECTION = 'election';
-const ACTION_CREATE = 'create';
-const SUBJECT_ROLES = 'roles';
-const ACTION_ADD = 'add';
-const ACTION_LIST = 'list';
-
 const MobileMenu = ({ authCtx, handleLogout, fctx, t }) => (
   <Popover>
     <div className="-mr-2 -my-2 md:hidden">

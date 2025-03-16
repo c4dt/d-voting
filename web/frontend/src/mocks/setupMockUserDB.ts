@@ -1,7 +1,4 @@
-import ShortUniqueId from 'short-unique-id';
 import { User, UserRole } from 'types/userRole';
-
-const uid = new ShortUniqueId({ length: 8 });
 
 const mockUser1: User = {
   sciper: '123456',

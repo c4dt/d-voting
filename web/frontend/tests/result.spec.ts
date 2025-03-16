@@ -4,7 +4,7 @@ import { assertHasFooter, assertHasNavBar, initI18n, setUp } from './shared';
 import { FORMID } from './mocks/shared';
 import { mockAdminList, mockFormsFormID } from './mocks/evoting';
 import Form from './json/evoting/forms/combined.json';
-import {mockPersonalInfo, SCIPER_ADMIN, SCIPER_OTHER_ADMIN} from './mocks/api';
+import { SCIPER_ADMIN, SCIPER_OTHER_ADMIN, mockPersonalInfo } from './mocks/api';
 
 initI18n();
 
