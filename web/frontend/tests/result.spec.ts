@@ -2,14 +2,17 @@ import { expect, test } from '@playwright/test';
 import { default as i18n } from 'i18next';
 import { assertHasFooter, assertHasNavBar, initI18n, setUp } from './shared';
 import { FORMID } from './mocks/shared';
-import { mockFormsFormID } from './mocks/evoting';
+import { mockAdminList, mockFormsFormID } from './mocks/evoting';
 import Form from './json/evoting/forms/combined.json';
+import {mockPersonalInfo, SCIPER_ADMIN, SCIPER_OTHER_ADMIN} from './mocks/api';
 
 initI18n();
 
 test.beforeEach(async ({ page }) => {
   // TODO integrate localisation
   i18n.changeLanguage('en'); // force 'en' for these tests
+  await mockAdminList(page, [SCIPER_ADMIN, SCIPER_OTHER_ADMIN]);
+  await mockPersonalInfo(page);
   await mockFormsFormID(page, 5); // mock clear election result per default
   await setUp(page, `/forms/${FORMID}/result`);
 });

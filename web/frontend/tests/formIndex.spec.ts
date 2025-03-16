@@ -1,8 +1,8 @@
 import { Locator, Page, expect, test } from '@playwright/test';
 import { default as i18n } from 'i18next';
 import { assertHasFooter, assertHasNavBar, initI18n, logIn, setUp, translate } from './shared';
-import { SCIPER_ADMIN, SCIPER_USER, mockPersonalInfo } from './mocks/api';
-import { mockForms } from './mocks/evoting';
+import { SCIPER_ADMIN, SCIPER_OTHER_ADMIN, SCIPER_USER, mockPersonalInfo } from './mocks/api';
+import { mockAdminList, mockForms } from './mocks/evoting';
 import Forms from './json/formIndex.json';
 import User from './json/api/personal_info/789012.json';
 import Admin from './json/api/personal_info/123456.json';
@@ -20,6 +20,7 @@ async function disableFilter(page: Page) {
 
 test.beforeEach(async ({ page }) => {
   // mock empty list per default
+  await mockAdminList(page, [SCIPER_ADMIN, SCIPER_OTHER_ADMIN]);
   await mockForms(page, 'empty');
   await mockPersonalInfo(page);
   await setUp(page, '/form/index');
