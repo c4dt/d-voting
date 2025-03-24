@@ -230,6 +230,25 @@ delaRouter.delete('/forms/:formID', (req, res) => {
   revokeUserPermissionToOwnElection(String(req.session.userId), formID);
 });
 
+// New middleware for auth request which use the field PerformingUsedID instead
+// of UserID
+delaRouter.use('/auth/*', (req, res) => {
+  if (!req.session.userId) {
+    res.status(401).send('Authentication required');
+    return;
+  }
+  req.baseUrl = `/api/evoting${req.baseUrl.slice(17)}`; // From '/api/evoting/auth/addadmin' to '/api/evoting/addadmin'
+  if (!req.session.userId) {
+    res.status(400).send('Unauthorized');
+    return;
+  }
+  const bodyData = req.body;
+  bodyData.PerformingUserID = req.session.userId.toString();
+  const dataStr = JSON.stringify(bodyData);
+
+  sendToDela(dataStr, req, res);
+});
+
 // This API call is used redirect all the calls for DELA to the DELAs nodes.
 // During this process the data are processed : the user is authenticated and
 // controlled. Once this is done the data are signed before it's sent to the
@@ -265,18 +284,8 @@ delaRouter.use('/*', (req, res) => {
     }
   }
 
-  const authorizationRegex = /\/evoting\/auth\/.*$/;
-  if (req.baseUrl.match(authorizationRegex)) {
-    req.baseUrl = req.baseUrl.slice(0, 12) + req.baseUrl.slice(17); // From '/api/evoting/auth/addadmin' to '/evoting/addadmin'
-    if (!req.session.userId) {
-      res.status(400).send('Unauthorized');
-      return;
-    }
-    bodyData.PerformingUserID = req.session.userId.toString();
-  } else {
-    // UserID for permission
-    bodyData.UserID = req.session.userId.toString();
-  }
+  // UserID for permission
+  bodyData.UserID = req.session.userId.toString();
 
   const dataStr = JSON.stringify(bodyData);
 
