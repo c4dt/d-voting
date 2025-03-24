@@ -8,6 +8,7 @@ initEnforcer().catch((e) => console.error(`Couldn't initialize enforcer: ${e}`))
 
 const proxiesDB = lmdb.open<string, string>({ path: `${process.env.DB_PATH}proxies` });
 
+// Middleware checking that the user is an admin
 const isAdmin: RequestHandler = async (req, res, next) => {
   if (proxiesDB.getCount({}) === 0) {
     next();
@@ -27,6 +28,7 @@ const isAdmin: RequestHandler = async (req, res, next) => {
     res.status(400).send('Unauthorized - only admins and operators allowed');
     return;
   }
+  // Calls the next middleware on the chain, since the request is issued by an admin
   next();
 };
 
