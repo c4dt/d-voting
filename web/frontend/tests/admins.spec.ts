@@ -157,7 +157,9 @@ test('Assert "Edit proxy" button is working', async ({ page, baseURL }) => {
   await expect(
     page.getByRole('row').filter({ has: page.getByText(Worker0.NodeAddr) })
   ).toBeVisible();
-  // Not the most elegant version, but the best option so far
+  // Would be better to use the same "locators" that the user would use.
+  // But there are 2 different buttons one for mobile and the other for
+  // desktop that have the same description. Using a class tag is the best way to distinguish them
   await page
     .getByRole('row')
     .filter({ has: page.getByText(Worker0.Proxy) })

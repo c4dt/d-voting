@@ -36,9 +36,7 @@ const ProxyRow: FC<ProxyRowProps> = ({
 
       <td className="px-2 py-4 text-right">
         <div className="block sm:hidden">
-          <button
-            onClick={handleEdit}
-            className="font-medium text-[#ff0000] hover:underline test-small-edit">
+          <button onClick={handleEdit} className="font-medium text-[#ff0000] hover:underline">
             {t('edit')}
           </button>
         </div>
