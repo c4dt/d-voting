@@ -48,10 +48,12 @@ const AddAdminUserModal: FC<AddAdminUserModalProps> = ({ open, setOpen, handleAd
     } else if (sciper > 999999 && sciper <= 9999999) {
       fctx.addMessage(t('sciperOutOfRange', { sciper: sciper }), FlashLevel.Error);
     } else {
+      // The value is not trimmed to not restrict the user input
+      // The user could think there is a problem if he can't input a space in the field
       setSciperValue(e.target.value);
     }
   };
-  const userToAdd = { TargetUserID: sciperValue };
+  const userToAdd = { TargetUserID: sciperValue.trim() };
   const saveMapping = async () => {
     const request = {
       method: 'POST',
