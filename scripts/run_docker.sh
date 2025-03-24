@@ -78,11 +78,14 @@ function add_single_proxy() {
       curl -sk "$FRONT_END_URL/api/proxies/" -X POST -H 'Content-Type: application/json' -b cookies.txt --data "{\"NodeAddr\":\"grpc://dela-worker-0:$NODEPORT\",\"Proxy\":\"http://172.19.44.254:$PROXYPORT\"}";
 }
 
+# Adds the default admin to the dela blockchain. This is needed to add more proxies.
 function add_admin() {
   echo "adding admin user $REACT_APP_SCIPER_ADMIN";
   curl -sk "$FRONT_END_URL/api/evoting/auth/addadmin" -X POST -H 'Content-Type: application/json'  -b cookies.txt --data "{\"TargetUserID\": \"$REACT_APP_SCIPER_ADMIN\"}";
 }
 
+# Adds the other proxies. Note that you need an admin account to do it.
+# This is checked through the first proxy added in the "add_single_proxy" function.
 function add_remaining_proxies() {
   for node in $(seq 1 3); do
     echo "adding proxy for node dela-worker-$node";
