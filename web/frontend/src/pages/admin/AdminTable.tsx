@@ -58,6 +58,8 @@ const AdminTable: FC<AdminTableProps> = ({ users, setUsers }) => {
   const handleAddRoleUser = (user: User): void => {
     // Pulling the new admin list from the server would be a better way, but it leads to a race condition.
     const newUsers = [...users, user];
+    // All users are considered admins as long as there is none on the admin list. So when someone gives admins rights
+    // to someone else, he will lose its own "by default" admins rights
     if (users.length === 0 && user.sciper !== authctx.sciper.toString()) {
       authctx.isAdmin = false;
       authctx.isOperator = false;
@@ -71,6 +73,7 @@ const AdminTable: FC<AdminTableProps> = ({ users, setUsers }) => {
   const handleRemoveRoleUser = (): void => {
     // Pulling the new admin list from the server would be a better way, but it leads to a race condition.
     const newUsers = users.filter((user) => user.sciper !== sciperToDelete);
+    // If the user removes his own admin rights, we remove his rights client side and redirect it to the homepage
     if (sciperToDelete === authctx.sciper.toString() && users.length > 1) {
       authctx.isAdmin = false;
       authctx.isOperator = false;
