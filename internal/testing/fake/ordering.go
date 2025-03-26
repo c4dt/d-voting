@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/hex"
 
-	formTypes "go.dedis.ch/d-voting/contracts/evoting/types"
+	formTypes "github.com/dedis/d-voting/contracts/evoting/types"
 	"go.dedis.ch/dela/core/ordering"
 	"go.dedis.ch/dela/core/store"
 	"go.dedis.ch/dela/core/validation"
