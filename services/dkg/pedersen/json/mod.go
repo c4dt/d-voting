@@ -1,7 +1,7 @@
 package json
 
 import (
-	"go.dedis.ch/d-voting/services/dkg/pedersen/types"
+	"github.com/dedis/d-voting/services/dkg/pedersen/types"
 	"go.dedis.ch/dela/mino"
 	"go.dedis.ch/dela/serde"
 	"go.dedis.ch/kyber/v3"

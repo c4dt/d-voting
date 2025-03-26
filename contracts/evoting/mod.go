@@ -1,16 +1,15 @@
 package evoting
 
 import (
+	dvoting "github.com/dedis/d-voting"
+	"github.com/dedis/d-voting/contracts/evoting/types"
+	"github.com/dedis/d-voting/services/dkg"
 	"github.com/prometheus/client_golang/prometheus"
-	dvoting "go.dedis.ch/d-voting"
-	"go.dedis.ch/d-voting/contracts/evoting/types"
-	"go.dedis.ch/d-voting/services/dkg"
 	"go.dedis.ch/dela/core/access"
 	"go.dedis.ch/dela/core/execution"
 	"go.dedis.ch/dela/core/execution/native"
 	"go.dedis.ch/dela/core/ordering/cosipbft/authority"
 	"go.dedis.ch/dela/core/store"
-	"go.dedis.ch/dela/core/store/prefixed"
 	"go.dedis.ch/dela/serde"
 	"go.dedis.ch/dela/serde/json"
 
@@ -19,7 +18,7 @@ import (
 	"golang.org/x/xerrors"
 
 	// Register the JSON format for the form
-	_ "go.dedis.ch/d-voting/contracts/evoting/json"
+	_ "github.com/dedis/d-voting/contracts/evoting/json"
 )
 
 var (
@@ -198,8 +197,6 @@ func (c Contract) Execute(snap store.Snapshot, step execution.Step) error {
 	if len(cmd) == 0 {
 		return xerrors.Errorf("%q not found in tx arg", CmdArg)
 	}
-
-	snap = prefixed.NewSnapshot(ContractUID, snap)
 
 	switch Command(cmd) {
 	case CmdCreateForm:

@@ -8,11 +8,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dedis/d-voting/contracts/evoting/types"
+	_ "github.com/dedis/d-voting/services/dkg/pedersen/json"
+	_ "github.com/dedis/d-voting/services/shuffle/neff/json"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/d-voting/contracts/evoting/types"
-	_ "go.dedis.ch/d-voting/services/dkg/pedersen/json"
-	_ "go.dedis.ch/d-voting/services/shuffle/neff/json"
 	delaPkg "go.dedis.ch/dela"
 )
 
@@ -21,7 +21,7 @@ func TestIntegration(t *testing.T) {
 
 }
 
-func IgnoreTestCrash(t *testing.T) {
+func TestCrash(t *testing.T) {
 	t.Run("5 nodes, 5 votes, 1 fail", getIntegrationTestCrash(5, 5, 1))
 	//t.Run("5 nodes, 5 votes, 2 fails", getIntegrationTestCrash(5, 5, 2))
 }

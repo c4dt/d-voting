@@ -1,11 +1,11 @@
 version=$(shell git describe --abbrev=0 --tags || echo '0.0.0')
-versionFlag="go.dedis.ch/d-voting.Version=$(version)"
+versionFlag="github.com/dedis/d-voting.Version=$(version)"
 versionFile=$(shell echo $(version) | tr . _)
-timeFlag="go.dedis.ch/d-voting.BuildTime=$(shell date +'%d/%m/%y_%H:%M')"
+timeFlag="github.com/dedis/d-voting.BuildTime=$(shell date +'%d/%m/%y_%H:%M')"
 
 lint:
 	# Coding style static check.
-	@go install honnef.co/go/tools/cmd/staticcheck@v0.6.1
+	@go install honnef.co/go/tools/cmd/staticcheck@latest
 	@go mod tidy
 	staticcheck ./...
 #	golint -set_exit_status ./...
@@ -21,7 +21,7 @@ check: lint vet
 	go test `go list ./... | grep -v /integration`
 
 test_integration:
-	go test ./integration
+	go test ./integration -timeout 50s
 
 build:
 	go build -ldflags="-X $(versionFlag) -X $(timeFlag)" -o dvoting ./cli/dvoting
