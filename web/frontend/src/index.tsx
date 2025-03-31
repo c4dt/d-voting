@@ -1,5 +1,6 @@
 import React, { FC, ReactElement, createContext, useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
+import * as endpoints from 'components/utils/Endpoints';
 import { ENDPOINT_PERSONAL_INFO, adminlist } from 'components/utils/Endpoints';
 
 import 'index.css';
@@ -8,8 +9,6 @@ import reportWebVitals from 'reportWebVitals';
 import ShortUniqueId from 'short-unique-id';
 
 import { useTranslation } from 'react-i18next';
-
-import * as endpoints from 'components/utils/Endpoints';
 
 const flashTimeout = 4000;
 
@@ -261,7 +260,8 @@ const AppContainer = () => {
       } else {
         adminResult = { Admins: [] };
       }
-      const isAdmin = adminResult.Admins.includes(result.sciper) || adminResult.Admins.length === 0;
+      const isAdmin =
+        adminResult.Admins.includes(result.sciper.toString()) || adminResult.Admins.length === 0;
       setAuth({
         isLogged: result.isLoggedIn,
         firstName: result.firstName,

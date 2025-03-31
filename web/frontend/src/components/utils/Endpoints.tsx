@@ -6,6 +6,8 @@ export const ENDPOINT_LOGOUT = '/api/logout';
 export const ENDPOINT_USER_RIGHTS = '/api/user_rights';
 export const ENDPOINT_ADD_ROLE = '/api/add_role';
 export const ENDPOINT_REMOVE_ROLE = '/api/remove_role';
+export const ENDPOINT_ADD_ADMIN = '/api/evoting/auth/addadmin';
+export const ENDPOINT_REMOVE_ADMIN = '/api/evoting/auth/removeadmin';
 export const checkTransaction = (token: string) => `/api/evoting/transactions/${token}`;
 
 export const newForm = '/api/evoting/forms';

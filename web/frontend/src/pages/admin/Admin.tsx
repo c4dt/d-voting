@@ -1,5 +1,4 @@
 import React, { FC, useContext, useEffect, useMemo, useState } from 'react';
-import { adminlist } from 'components/utils/Endpoints';
 import { AuthContext, FlashContext, FlashLevel, ProxyContext } from 'index';
 import Loading from 'pages/Loading';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +6,7 @@ import { fetchCall } from 'components/utils/fetchCall';
 import AdminTable from './AdminTable';
 import DKGTable from './DKGTable';
 import * as endpoints from 'components/utils/Endpoints';
+import { UserRole } from '../../types/userRole';
 
 const Admin: FC = () => {
   const { t } = useTranslation();
@@ -67,14 +67,17 @@ const Admin: FC = () => {
   }, [abortController, t, nodeProxyObject, nodeProxyError]);
 
   useEffect(() => {
-    fetch(adminlist(proxyCtx.getProxy()))
+    fetch(endpoints.adminlist(proxyCtx.getProxy()))
       .then((resp) => {
         setLoading(false);
         if (resp.status === 200) {
           const jsonData = resp.json();
           jsonData.then((result) => {
-            result.map((x) => ({ sciper: x.toString(), role: 'admin' }));
-            setUsers(result.Admins);
+            const admins = result.Admins.map((x) => ({
+              sciper: x.toString(),
+              role: UserRole.Admin,
+            }));
+            setUsers(admins);
           });
         } else {
           setUsers([]);
@@ -83,6 +86,7 @@ const Admin: FC = () => {
       })
       .catch((error) => {
         setLoading(false);
+        setUsers([]);
         fctx.addMessage(`${t('errorFetchingUsers')}: ${error.message}`, FlashLevel.Error);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps

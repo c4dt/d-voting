@@ -6,19 +6,16 @@ import { CheckIcon, SelectorIcon } from '@heroicons/react/solid';
 import { useTranslation } from 'react-i18next';
 import SpinnerIcon from 'components/utils/SpinnerIcon';
 import { UserAddIcon } from '@heroicons/react/outline';
-import ShortUniqueId from 'short-unique-id';
 import { AuthContext, FlashContext, FlashLevel } from 'index';
-import { UserRole } from 'types/userRole';
-import { ENDPOINT_ADD_ROLE } from 'components/utils/Endpoints';
+import { User, UserRole } from 'types/userRole';
+import { ENDPOINT_ADD_ADMIN } from 'components/utils/Endpoints';
 import AdminModal from './AdminModal';
 import usePostCall from 'components/utils/usePostCall';
-
-const uid = new ShortUniqueId({ length: 8 });
 
 type AddAdminUserModalProps = {
   open: boolean;
   setOpen(opened: boolean): void;
-  handleAddRoleUser(user: object): void;
+  handleAddRoleUser(user: User): void;
 };
 
 const roles: string[] = [UserRole.Admin, UserRole.Operator];
@@ -45,26 +42,35 @@ const AddAdminUserModal: FC<AddAdminUserModalProps> = ({ open, setOpen, handleAd
     }
   }, [fctx, t, postError]);
   const handleUserInput = (e: any) => {
-    setSciperValue(e.target.value);
+    const sciper = parseInt(e.target.value.trim());
+    if (isNaN(sciper)) {
+      fctx.addMessage(t('sciperNaN', { sciperStr: e.target.value.trim() }), FlashLevel.Error);
+    } else if (sciper > 999999 && sciper <= 9999999) {
+      fctx.addMessage(t('sciperOutOfRange', { sciper: sciper }), FlashLevel.Error);
+    } else {
+      // The value is not trimmed to not restrict the user input
+      // The user could think there is a problem if he can't input a space in the field
+      setSciperValue(e.target.value);
+    }
   };
-  const userToAdd = { id: uid(), sciper: sciperValue, role: selectedRole };
+  const userToAdd = { TargetUserID: sciperValue.trim() };
   const saveMapping = async () => {
     const request = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userToAdd),
     };
-    return sendFetchRequest(ENDPOINT_ADD_ROLE, request, setIsPosting);
+    return sendFetchRequest(ENDPOINT_ADD_ADMIN, request, setIsPosting);
   };
   const handleAddUser = async () => {
     setLoading(true);
     if (sciperValue !== '') {
       try {
         const res = await saveMapping();
-        if (!res) {
+        if (res) {
+          handleAddRoleUser({ sciper: sciperValue, role: selectedRole });
+          setSelectedRole(UserRole.Operator);
           setSciperValue('');
-          setSelectedRole(selectedRole);
-          handleAddRoleUser(userToAdd);
           fctx.addMessage(`${t('successAddUser')}`, FlashLevel.Info);
         }
         setOpen(false);

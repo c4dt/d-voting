@@ -116,7 +116,7 @@ const EditProxyModal: FC<EditProxyModalProps> = ({
           {t('node')}:{' '}
         </label>
         <input
-          id={currentNode}
+          id="node"
           type="text"
           className="border pl-2 w-1/2 py-1 flex rounded-lg"
           onChange={(e) => handleNodeInput(e)}
@@ -129,7 +129,7 @@ const EditProxyModal: FC<EditProxyModalProps> = ({
           {t('proxy')}:{' '}
         </label>
         <input
-          id={currentProxy}
+          id="proxy"
           type="text"
           className="border pl-2 w-1/2 py-1 flex rounded-lg"
           onChange={(e) => handleTextInput(e)}

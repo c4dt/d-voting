@@ -10,7 +10,6 @@ import (
 	"go.dedis.ch/dela/core/execution/native"
 	"go.dedis.ch/dela/core/ordering/cosipbft/authority"
 	"go.dedis.ch/dela/core/store"
-	"go.dedis.ch/dela/core/store/prefixed"
 	"go.dedis.ch/dela/serde"
 	"go.dedis.ch/dela/serde/json"
 
@@ -220,8 +219,6 @@ func (c Contract) Execute(snap store.Snapshot, step execution.Step) error {
 	if len(cmd) == 0 {
 		return xerrors.Errorf("%q not found in tx arg", CmdArg)
 	}
-
-	snap = prefixed.NewSnapshot(ContractUID, snap)
 
 	switch Command(cmd) {
 	case CmdCreateForm:

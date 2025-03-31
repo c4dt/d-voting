@@ -181,6 +181,7 @@ func (a *RegisterAction) Execute(ctx node.Context) error {
 	router.HandleFunc(evotingPathSlash+"addadmin", ep.AddAdmin).Methods("POST")
 	router.HandleFunc(evotingPathSlash+"removeadmin", ep.RemoveAdmin).Methods("POST")
 	router.HandleFunc(evotingPathSlash+"adminlist", ep.AdminList).Methods("GET")
+	router.HandleFunc(evotingPathSlash+"adminlist", eproxy.AllowCORS).Methods("OPTIONS")
 	router.HandleFunc(formIDPath+"/addowner", ep.AddOwnerToForm).Methods("POST")
 	router.HandleFunc(formIDPath+"/removeowner", ep.RemoveOwnerToForm).Methods("POST")
 	router.HandleFunc(formIDPath+"/addvoter", ep.AddVoterToForm).Methods("POST")

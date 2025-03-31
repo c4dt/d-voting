@@ -137,6 +137,7 @@ function makeid(length: number) {
   }
   return result;
 }
+
 delaRouter.put('/forms/:formID', (req, res, next) => {
   const { formID } = req.params;
   if (!isAuthorized(req.session.userId, formID, PERMISSIONS.ACTIONS.OWN)) {
@@ -227,6 +228,25 @@ delaRouter.delete('/forms/:formID', (req, res) => {
         .send(`failed to proxy request: ${req.method} ${uri} - ${error.message} - ${resp}`);
     });
   revokeUserPermissionToOwnElection(String(req.session.userId), formID);
+});
+
+// New middleware for auth request which use the field PerformingUsedID instead
+// of UserID
+delaRouter.use('/auth/*', (req, res) => {
+  if (!req.session.userId) {
+    res.status(401).send('Authentication required');
+    return;
+  }
+  req.baseUrl = `/api/evoting${req.baseUrl.slice(17)}`; // From '/api/evoting/auth/addadmin' to '/api/evoting/addadmin'
+  if (!req.session.userId) {
+    res.status(400).send('Unauthorized');
+    return;
+  }
+  const bodyData = req.body;
+  bodyData.PerformingUserID = req.session.userId.toString();
+  const dataStr = JSON.stringify(bodyData);
+
+  sendToDela(dataStr, req, res);
 });
 
 // This API call is used redirect all the calls for DELA to the DELAs nodes.
