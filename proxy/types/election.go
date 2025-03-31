@@ -56,6 +56,7 @@ type GetFormResponse struct {
 	Roster          []string
 	ChunksPerBallot int
 	BallotSize      int
+	BallotCount     int
 	Voters          []string
 }
 
