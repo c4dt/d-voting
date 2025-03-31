@@ -6,6 +6,8 @@ interface User {
 export const enum UserRole {
   Admin = 'admin',
   Operator = 'operator',
+  Voter = 'voter',
+  Owner = 'owner',
 }
 
 export type { User };
