@@ -58,6 +58,7 @@ type GetFormResponse struct {
 	BallotSize      int
 	BallotCount     int
 	Voters          []string
+	Owners          []string
 }
 
 // LightForm represents a light version of the form

@@ -462,6 +462,11 @@ func (form *form) Form(w http.ResponseWriter, r *http.Request) {
 		votersAsStr[i] = strconv.Itoa(formFromStore.Voters[i])
 	}
 
+	ownersAsStr := make([]string, len(formFromStore.Owners))
+	for i := range formFromStore.Owners {
+		ownersAsStr[i] = strconv.Itoa(formFromStore.Owners[i])
+	}
+
 	response := ptypes.GetFormResponse{
 		FormID:          string(formFromStore.FormID),
 		Configuration:   formFromStore.Configuration,
@@ -473,6 +478,7 @@ func (form *form) Form(w http.ResponseWriter, r *http.Request) {
 		BallotCount:     len(suff.VoterIDs),
 		BallotSize:      formFromStore.BallotSize,
 		Voters:          votersAsStr,
+		Owners:          ownersAsStr,
 	}
 
 	txnmanager.SendResponse(w, response)
