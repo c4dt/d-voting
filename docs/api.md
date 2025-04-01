@@ -142,9 +142,11 @@ Return:
   ],
   "Roster": ["<string>"],
   "ChunksPerBallot": "<int>",
+  "BallotCount": "<int>",
   "BallotSize": "<int>",
   "Configuration": {<Configuration>},
-  "Voters": ["<string>"]
+  "Voters": ["<string>"],
+  "Owners": ["<string>"],
 }
 ```
 

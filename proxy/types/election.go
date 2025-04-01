@@ -56,7 +56,9 @@ type GetFormResponse struct {
 	Roster          []string
 	ChunksPerBallot int
 	BallotSize      int
+	BallotCount     int
 	Voters          []string
+	Owners          []string
 }
 
 // LightForm represents a light version of the form
