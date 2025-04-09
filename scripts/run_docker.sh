@@ -17,13 +17,13 @@ export COMPOSE_FILE=${COMPOSE_FILE:-./docker-compose/docker-compose.yml};
 
 
 function setup() {
-  docker compose build;
-  docker compose up -d;
+  docker compose --profile dela --profile client build;
+  docker compose --profile dela --profile client up -d;
 }
 
 function teardown() {
   rm -f cookies.txt;
-  docker compose down -v;
+  docker compose --profile dela --profile client down -v;
   docker image rm ghcr.io/dedis/d-voting-frontend:latest ghcr.io/dedis/d-voting-backend:latest ghcr.io/dedis/d-voting-dela:latest;
 }
 
