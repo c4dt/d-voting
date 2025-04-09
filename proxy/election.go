@@ -20,6 +20,7 @@ import (
 	"go.dedis.ch/dela/core/txn/pool"
 	"go.dedis.ch/dela/serde"
 	"go.dedis.ch/kyber/v3"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 )
 
@@ -537,8 +538,6 @@ func (form *form) Forms(w http.ResponseWriter, r *http.Request) {
 
 // DeleteForm implements proxy.Proxy
 func (form *form) DeleteForm(w http.ResponseWriter, r *http.Request) {
-	var req ptypes.UpdateFormRequest
-
 	vars := mux.Vars(r)
 
 	// check if the formID is valid
@@ -561,16 +560,20 @@ func (form *form) DeleteForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// get the signed request
-	signed, err := ptypes.NewSignedRequest(r.Body)
+	// auth should contain the hex-encoded signature on the hex-encoded form
+	// ID
+	auth := r.Header.Get("Authorization")
+
+	signature, err := hex.DecodeString(auth)
 	if err != nil {
-		InternalError(w, r, newSignedErr(err), nil)
+		BadRequestError(w, r, xerrors.Errorf("failed to decode auth: %v", err), nil)
 		return
 	}
 
-	err = signed.GetAndVerify(form.pk, &req)
+	// check if the signature is valid
+	err = schnorr.Verify(suite, form.pk, []byte(formID), signature)
 	if err != nil {
-		InternalError(w, r, getSignedErr(err), nil)
+		ForbiddenError(w, r, xerrors.Errorf("signature verification failed: %v", err), nil)
 		return
 	}
 
