@@ -9,7 +9,6 @@ import reportWebVitals from 'reportWebVitals';
 import ShortUniqueId from 'short-unique-id';
 
 import { useTranslation } from 'react-i18next';
-import { UserRole } from "./types/userRole";
 
 const flashTimeout = 4000;
 
