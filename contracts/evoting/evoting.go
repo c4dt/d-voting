@@ -57,6 +57,13 @@ const (
 
 type prover func(suite proof.Suite, protocolName string, verifier proof.Verifier, proof []byte) error
 
+type FormMetadaStoreAction string
+
+const (
+	Add    FormMetadaStoreAction = "add"
+	Delete FormMetadaStoreAction = "delete"
+)
+
 // createForm implements commands. It performs the CREATE_FORM command
 func (e evotingCommand) createForm(snap store.Snapshot, step execution.Step) error {
 
@@ -143,7 +150,7 @@ func (e evotingCommand) createForm(snap store.Snapshot, step execution.Step) err
 		return xerrors.Errorf("failed to set value: %v", err)
 	}
 
-	err = updateFormMetadataStore(snap, form.FormID)
+	err = updateFormMetadataStore(snap, form.FormID, Add)
 	if err != nil {
 		return xerrors.Errorf("failed to update the metadata in the store: %v", err)
 	}
@@ -152,7 +159,7 @@ func (e evotingCommand) createForm(snap store.Snapshot, step execution.Step) err
 }
 
 // updateFormMetadataStore Update the form metadata store
-func updateFormMetadataStore(snap store.Snapshot, formID string) error {
+func updateFormMetadataStore(snap store.Snapshot, formID string, action FormMetadaStoreAction) error {
 	formsMetadataBuf, err := snap.Get([]byte(FormsMetadataKey))
 	if err != nil {
 		return xerrors.Errorf("failed to get key '%s': %v", formsMetadataBuf, err)
@@ -169,9 +176,14 @@ func updateFormMetadataStore(snap store.Snapshot, formID string) error {
 		}
 	}
 
-	err = formsMetadata.FormsIDs.Add(formID)
-	if err != nil {
-		return xerrors.Errorf("couldn't add new form: %v", err)
+	switch action {
+	case Add:
+		err = formsMetadata.FormsIDs.Add(formID)
+		if err != nil {
+			return xerrors.Errorf("couldn't add new form: %v", err)
+		}
+	case Delete:
+		formsMetadata.FormsIDs.Remove(formID)
 	}
 
 	formMetadataJSON, err := json.Marshal(formsMetadata)
@@ -839,7 +851,7 @@ func (e evotingCommand) deleteForm(snap store.Snapshot, step execution.Step) err
 		return xerrors.Errorf("failed to delete form: %v", err)
 	}
 
-	err = updateFormMetadataStore(snap, form.FormID)
+	err = updateFormMetadataStore(snap, form.FormID, Delete)
 	if err != nil {
 		return xerrors.Errorf("failed to update the metadata in the store: %v", err)
 	}
@@ -992,7 +1004,7 @@ func initializeAdminList(snap store.Snapshot, initialAdmin int, ctx serde.Contex
 		return xerrors.Errorf("failed to set value: %v", err)
 	}
 
-	err = updateFormMetadataStore(snap, hex.EncodeToString(formIDBuf))
+	err = updateFormMetadataStore(snap, hex.EncodeToString(formIDBuf), Add)
 	if err != nil {
 		return xerrors.Errorf("failed to update the metadata in the store: %v", err)
 	}
