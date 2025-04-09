@@ -1,8 +1,7 @@
+import * as endpoints from 'components/utils/Endpoints';
 import { ENDPOINT_ADD_ROLE } from 'components/utils/Endpoints';
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import * as endpoints from 'components/utils/Endpoints';
 import { ID } from 'types/configuration';
 import { Action, OngoingAction, Status } from 'types/form';
 import { pollForm } from './PollStatus';
@@ -27,6 +26,7 @@ import ResultButton from '../ActionButtons/ResultButton';
 import ShuffleButton from '../ActionButtons/ShuffleButton';
 import VoteButton from '../ActionButtons/VoteButton';
 import handleLogin from 'pages/session/HandleLogin';
+import { isManager } from '../../../../utils/auth';
 
 const useChangeAction = (
   status: Status,
@@ -68,11 +68,7 @@ const useChangeAction = (
   const fctx = useContext(FlashContext);
   const navigate = useNavigate();
   const pctx = useContext(ProxyContext);
-  const { authorization, isLogged } = useContext(AuthContext);
-
-  function hasAuthorization(subject: string, action: string): boolean {
-    return authorization.has(subject) && authorization.get(subject).indexOf(action) !== -1;
-  }
+  const authctx = useContext(AuthContext);
 
   const POLLING_INTERVAL = 1000;
   const MAX_ATTEMPTS = 20;
@@ -481,7 +477,7 @@ const useChangeAction = (
   const getAction = () => {
     // Except for seeing the results, all actions at least require the users
     // to be logged in
-    if (!isLogged && status !== Status.ResultAvailable) {
+    if (!authctx.isLogged && status !== Status.ResultAvailable) {
       return (
         <div>
           {t('notLoggedInActionText1')}
@@ -494,18 +490,11 @@ const useChangeAction = (
     }
 
     // Voters cannot perform any actions except voting and seeing the result
-    if (
-      !hasAuthorization('election', 'create') &&
-      (status < Status.Open || status > Status.Canceled)
-    ) {
+    if (!isManager(formID, authctx) && (status < Status.Open || status > Status.Canceled)) {
       return <div>{t('actionTextVoter1')}</div>;
     }
 
-    if (
-      !hasAuthorization('election', 'create') &&
-      status >= Status.Closed &&
-      status < Status.ResultAvailable
-    ) {
+    if (!isManager(formID, authctx) && status >= Status.Closed && status < Status.ResultAvailable) {
       return <div>{t('actionTextVoter2')}</div>;
     }
 
