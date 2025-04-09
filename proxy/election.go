@@ -563,6 +563,7 @@ func (form *form) DeleteForm(w http.ResponseWriter, r *http.Request) {
 	// auth should contain the hex-encoded signature on the hex-encoded form
 	// ID
 	auth := r.Header.Get("Authorization")
+	userID := r.Header.Get("UserId")
 
 	signature, err := hex.DecodeString(auth)
 	if err != nil {
@@ -579,7 +580,7 @@ func (form *form) DeleteForm(w http.ResponseWriter, r *http.Request) {
 
 	deleteForm := types.DeleteForm{
 		FormID: formID,
-		UserID: req.UserID,
+		UserID: userID,
 	}
 
 	data, err := deleteForm.Serialize(form.context)
