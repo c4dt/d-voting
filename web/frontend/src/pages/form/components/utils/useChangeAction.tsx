@@ -27,6 +27,7 @@ import ShuffleButton from '../ActionButtons/ShuffleButton';
 import VoteButton from '../ActionButtons/VoteButton';
 import handleLogin from 'pages/session/HandleLogin';
 import { isManager } from '../../../../utils/auth';
+import pollTransaction from './TransactionPoll';
 
 const useChangeAction = (
   status: Status,
@@ -297,9 +298,19 @@ const useChangeAction = (
           fctx.addMessage(`failed to send delete request: ${txt}`, FlashLevel.Error);
           return;
         }
-
-        fctx.addMessage('form deleted', FlashLevel.Info);
-        navigate(ROUTE_FORM_INDEX);
+        try {
+          const body = await res.json();
+          pollTransaction(endpoints.checkTransaction, body.Token, 1000, 30)
+            .then(() => {
+              fctx.addMessage('form deleted', FlashLevel.Info);
+              navigate(ROUTE_FORM_INDEX);
+            })
+            .catch((err) => {
+              fctx.addMessage(`failed to get a valid response: ${err}`, FlashLevel.Error);
+            });
+        } catch {
+          fctx.addMessage(`failed to get a valid response`, FlashLevel.Error);
+        }
       };
 
       deleteForm();
