@@ -137,7 +137,6 @@ function makeid(length: number) {
   return result;
 }
 
-
 delaRouter.delete('/forms/:formID', (req, res) => {
   if (!req.session.userId) {
     res.status(401).send('Unauthenticated');
@@ -149,7 +148,6 @@ delaRouter.delete('/forms/:formID', (req, res) => {
 
   const priv = Buffer.from(process.env.PRIVATE_KEY as string, 'hex');
   const pub = Buffer.from(process.env.PUBLIC_KEY as string, 'hex');
-
   const scalar = edCurve.scalar();
   scalar.unmarshalBinary(priv);
 
@@ -157,9 +155,8 @@ delaRouter.delete('/forms/:formID', (req, res) => {
   point.unmarshalBinary(pub);
 
   const sign = kyber.sign.schnorr.sign(edCurve, scalar, Buffer.from(formID));
-
-  // we strip the `/api` part: /api/form/xxx => /form/xxx
-  const uri = process.env.DELA_PROXY_URL + xss(req.url.slice(4));
+  // we only get the url as /forms/xxx , so we add the first part to get : /evoting/forms/xxx
+  const uri = process.env.DELA_PROXY_URL + xss(`/evoting${req.url}`);
 
   axios({
     method: req.method as Method,
