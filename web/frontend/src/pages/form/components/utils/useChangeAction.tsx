@@ -615,7 +615,6 @@ const useChangeAction = (
         return (
           <>
             <ResultButton status={status} formID={formID} />
-            <DeleteButton handleDelete={handleDelete} formID={formID} />
           </>
         );
       default:
