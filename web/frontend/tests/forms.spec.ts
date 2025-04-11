@@ -4,6 +4,7 @@ import { assertHasFooter, assertHasNavBar, initI18n, logIn, setUp } from './shar
 import {
   SCIPER_ADMIN,
   SCIPER_OTHER_ADMIN,
+  SCIPER_OTHER_USER,
   SCIPER_USER,
   mockDKGActors as mockAPIDKGActors,
   mockAddRole,
@@ -11,7 +12,7 @@ import {
   mockForms,
   mockPersonalInfo,
   mockProxies,
-  mockServicesShuffle, SCIPER_OTHER_USER,
+  mockServicesShuffle,
 } from './mocks/api';
 import { mockAdminList, mockDKGActors, mockFormsFormID } from './mocks/evoting';
 import { FORMID } from './mocks/shared';
@@ -398,5 +399,5 @@ test('Assert "Vote" button gets voting form', async ({ page }) => {
   await setUpMocks(page, 1, 6);
   await logIn(page, SCIPER_ADMIN);
   page.waitForRequest(`${process.env.DELA_PROXY_URL}/evoting/forms/${FORMID}`);
-  await page.getByRole('button', { name: i18n.t('vote') }).click();
+  await page.getByRole('button', { name: i18n.t('vote'), exact: true }).click();
 });
