@@ -11,7 +11,7 @@ import {
   mockForms,
   mockPersonalInfo,
   mockProxies,
-  mockServicesShuffle,
+  mockServicesShuffle, SCIPER_OTHER_USER,
 } from './mocks/api';
 import { mockAdminList, mockDKGActors, mockFormsFormID } from './mocks/evoting';
 import { FORMID } from './mocks/shared';
@@ -70,12 +70,16 @@ test('Assert footer is present', async ({ page }) => {
 });
 
 async function assertIsOnlyVisibleToOwner(page: Page, locator: Locator) {
-  await test.step('Assert is hidden to non-owner admin', async () => {
-    await logIn(page, SCIPER_ADMIN);
+  await test.step('Assert is hidden to non-owner non-admin', async () => {
+    await logIn(page, SCIPER_OTHER_USER);
     await expect(locator).toBeHidden();
   });
-  await test.step('Assert is visible to owner admin', async () => {
-    await logIn(page, SCIPER_OTHER_ADMIN);
+  await test.step('Assert is visible to non-owner admin', async () => {
+    await logIn(page, SCIPER_ADMIN);
+    await expect(locator).toBeVisible();
+  });
+  await test.step('Assert is visible to owner non-admin', async () => {
+    await logIn(page, SCIPER_USER);
     await expect(locator).toBeVisible();
   });
 }
