@@ -55,6 +55,7 @@ const setupMockForm = () => {
     BallotSize: 174,
     ChunksPerBallot: 6,
     Voters: [],
+    Owners: [],
   });
 
   mockResults.set(formID1, [mockFormResult11, mockFormResult12]);
@@ -71,6 +72,7 @@ const setupMockForm = () => {
     BallotSize: 174,
     ChunksPerBallot: 6,
     Voters: ['aefae', 'ozeivn', 'ovaeop'],
+    Owners: [],
   });
 
   mockResults.set(formID2, [mockFormResult21, mockFormResult22, mockFormResult23]);
@@ -86,6 +88,7 @@ const setupMockForm = () => {
     BallotSize: 291,
     ChunksPerBallot: 11,
     Voters: [],
+    Owners: [],
   });
 
   mockResults.set(formID3, [mockFormResult31, mockFormResult32, mockFormResult33]);

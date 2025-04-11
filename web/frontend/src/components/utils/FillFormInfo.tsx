@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ID, Title } from 'types/configuration';
 import { FormInfo, LightFormInfo, Results, Status } from 'types/form';
+import { AuthContext } from '../../index';
+import { UserRole } from '../../types/userRole';
 
 const useFillFormInfo = (formData: FormInfo) => {
+  const authContext = useContext(AuthContext);
   const [id, setId] = useState<ID>('');
   const [status, setStatus] = useState<Status>(null);
   const [pubKey, setPubKey] = useState<string>('');
@@ -12,6 +15,7 @@ const useFillFormInfo = (formData: FormInfo) => {
   const [ballotSize, setBallotSize] = useState<number>(0);
   const [configObj, setConfigObj] = useState(null);
   const [voters, setVoters] = useState<string[]>(null);
+  const [owners, setOwners] = useState<string[]>(null);
   const [isResultSet, setIsResultSet] = useState<boolean>(false);
 
   useEffect(() => {
@@ -27,11 +31,21 @@ const useFillFormInfo = (formData: FormInfo) => {
     setBallotSize(formData.BallotSize);
     setConfigObj(formData.Configuration);
     setVoters(formData.Voters);
+    setOwners(formData.Owners);
+
+    const roles = [];
+    if (formData.Voters.includes(authContext.sciper.toString())) {
+      roles.push(UserRole.Voter);
+    }
+    if (formData.Owners.includes(authContext.sciper.toString())) {
+      roles.push(UserRole.Owner);
+    }
+    authContext.formsAuthorizations.set(formData.FormID, roles);
 
     if (formData.Result.length > 0) {
       setIsResultSet(true);
     }
-  }, [formData]);
+  }, [authContext.formsAuthorizations, authContext.sciper, formData]);
 
   return {
     id,
@@ -47,6 +61,7 @@ const useFillFormInfo = (formData: FormInfo) => {
     isResultSet,
     setIsResultSet,
     voters,
+    owners,
   };
 };
 

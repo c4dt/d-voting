@@ -36,6 +36,7 @@ const useForm = (formID: ID) => {
     isResultSet,
     setIsResultSet,
     voters,
+    owners,
   } = useFillFormInfo(data);
 
   return {
@@ -53,6 +54,7 @@ const useForm = (formID: ID) => {
     isResultSet,
     setIsResultSet,
     voters,
+    owners,
     error,
   };
 };
