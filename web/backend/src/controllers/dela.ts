@@ -212,6 +212,7 @@ delaRouter.delete('/forms/:formID', (req, res) => {
     url: uri,
     headers: {
       Authorization: sign.toString('hex'),
+      UserId: req.session.userId.toString(),
     },
   })
     .then((resp) => {

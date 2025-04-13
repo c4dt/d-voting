@@ -308,7 +308,7 @@ Return:
 | URL     | `/evoting/forms/{FormID}`  |
 | Method  | `DELETE`                   |
 | Input   |                            |
-| Headers | {Authorization: `<token>`} |
+| Headers | {Authorization: `<token>`, UserId: `<SCIPER>`} |
 
 The `<token>` value must be the hex-encoded signature of the hex-encoded
 formID:

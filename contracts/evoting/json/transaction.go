@@ -117,6 +117,7 @@ func (transactionFormat) Encode(ctx serde.Context, msg serde.Message) ([]byte, e
 	case types.DeleteForm:
 		de := DeleteFormJSON{
 			FormID: t.FormID,
+			UserID: t.UserID,
 		}
 
 		m = TransactionJSON{DeleteForm: &de}
@@ -237,6 +238,7 @@ func (transactionFormat) Decode(ctx serde.Context, data []byte) (serde.Message, 
 	case m.DeleteForm != nil:
 		return types.DeleteForm{
 			FormID: m.DeleteForm.FormID,
+			UserID: m.DeleteForm.UserID,
 		}, nil
 	case m.AddAdmin != nil:
 		return types.AddAdmin{
@@ -357,6 +359,7 @@ type CancelFormJSON struct {
 // DeleteFormJSON is the JSON representation of a DeleteForm transaction
 type DeleteFormJSON struct {
 	FormID string
+	UserID string
 }
 
 // AdminList
