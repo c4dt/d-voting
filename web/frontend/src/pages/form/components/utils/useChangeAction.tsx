@@ -28,6 +28,7 @@ import VoteButton from '../ActionButtons/VoteButton';
 import handleLogin from 'pages/session/HandleLogin';
 import { isManager } from '../../../../utils/auth';
 import pollTransaction from './TransactionPoll';
+import AddOwnersButton from '../ActionButtons/AddOwnersButton';
 
 const useChangeAction = (
   status: Status,
@@ -347,7 +348,7 @@ const useChangeAction = (
       (async () => {
         try {
           const chunkSize = 1000;
-          setOngoingAction(OngoingAction.AddVoters);
+          setOngoingAction(OngoingAction.ManageAuthorization);
           for (let i = 0; i < providedScipers.length; i += chunkSize) {
             await sendFetchRequest(
               ENDPOINT_ADD_ROLE,
@@ -485,6 +486,10 @@ const useChangeAction = (
     setShowModalAddVoters(true);
   };
 
+  const handleAddOwners = () => {
+    return;
+  };
+
   const getAction = () => {
     // Except for seeing the results, all actions at least require the users
     // to be logged in
@@ -520,6 +525,11 @@ const useChangeAction = (
               formID={formID}
             />
             <DeleteButton handleDelete={handleDelete} formID={formID} />
+            <AddOwnersButton
+              handleAddOwners={handleAddOwners}
+              ongoingAction={ongoingAction}
+              formID={formID}
+            />
           </>
         );
       case Status.Initialized:
@@ -532,6 +542,11 @@ const useChangeAction = (
               formID={formID}
             />
             <DeleteButton handleDelete={handleDelete} formID={formID} />
+            <AddOwnersButton
+              handleAddOwners={handleAddOwners}
+              ongoingAction={ongoingAction}
+              formID={formID}
+            />
           </>
         );
       case Status.Setup:
@@ -544,6 +559,11 @@ const useChangeAction = (
               formID={formID}
             />
             <DeleteButton handleDelete={handleDelete} formID={formID} />
+            <AddOwnersButton
+              handleAddOwners={handleAddOwners}
+              ongoingAction={ongoingAction}
+              formID={formID}
+            />
             <AddVotersButton
               handleAddVoters={handleAddVoters}
               formID={formID}
@@ -568,6 +588,11 @@ const useChangeAction = (
             />
             <VoteButton status={status} formID={formID} />
             <DeleteButton handleDelete={handleDelete} formID={formID} />
+            <AddOwnersButton
+              handleAddOwners={handleAddOwners}
+              ongoingAction={ongoingAction}
+              formID={formID}
+            />
             <AddVotersButton
               handleAddVoters={handleAddVoters}
               formID={formID}
@@ -584,6 +609,11 @@ const useChangeAction = (
               ongoingAction={ongoingAction}
               formID={formID}
             />
+            <AddOwnersButton
+              handleAddOwners={handleAddOwners}
+              ongoingAction={ongoingAction}
+              formID={formID}
+            />
             <DeleteButton handleDelete={handleDelete} formID={formID} />
           </>
         );
@@ -596,6 +626,11 @@ const useChangeAction = (
               ongoingAction={ongoingAction}
               formID={formID}
             />
+            <AddOwnersButton
+              handleAddOwners={handleAddOwners}
+              ongoingAction={ongoingAction}
+              formID={formID}
+            />
             <DeleteButton handleDelete={handleDelete} formID={formID} />
           </>
         );
@@ -605,6 +640,11 @@ const useChangeAction = (
             <CombineButton
               status={status}
               handleCombine={handleCombine}
+              ongoingAction={ongoingAction}
+              formID={formID}
+            />
+            <AddOwnersButton
+              handleAddOwners={handleAddOwners}
               ongoingAction={ongoingAction}
               formID={formID}
             />

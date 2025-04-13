@@ -84,6 +84,7 @@
     "exportJSON": "Exportieren als JSON",
     "delete": "Löschen",
     "addVoters": "Neue WählerInnen",
+    "manageOwners": "LeiterInnen verwalten",
     "combineShares": "Aktien zusammenlegen",
     "createElec": "Formular erstellen",
     "clearForm": "Das Formular löschen",
@@ -294,6 +295,7 @@
     "voteNotVoter": "Wählen nicht erlaubt.",
     "voteNotVoterDescription": "Sie sind nicht wahlberechtigt in dieser Wahl. Falls Sie denken, dass ein Fehler vorliegt, wenden Sie sich bitte an die verantwortliche Stelle.",
     "addVotersLoading": "WählerInnen werden hinzugefügt...",
+    "manageOwnersLoading": "Fortschreibung der LeiterInnen...",
     "sciperNaN": "'{{sciperStr}}' ist keine Zahl; ",
     "sciperOutOfRange": "{{sciper}} ist nicht in dem erlaubten Bereich (100000-999999); ",
     "invalidScipersFound": "Ungültige SCIPERs wurden gefunden. Es wurde keine Anfrage gesendet. Bitte korrigieren Sie folgende Fehler: {{sciperErrs}}"

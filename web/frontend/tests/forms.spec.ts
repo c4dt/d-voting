@@ -401,3 +401,12 @@ test('Assert "Vote" button gets voting form', async ({ page }) => {
   page.waitForRequest(`${process.env.DELA_PROXY_URL}/evoting/forms/${FORMID}`);
   await page.getByRole('button', { name: i18n.t('vote'), exact: true }).click();
 });
+
+test('Assert "Add Owners" button is only visible to owner', async ({ page }) => {
+  await assertIsOnlyVisibleInStates(
+    page,
+    page.getByRole('button', { name: i18n.t('manageOwners') }),
+    [0, 1, 2, 3, 4, 6],
+    assertIsOnlyVisibleToOwner
+  );
+});

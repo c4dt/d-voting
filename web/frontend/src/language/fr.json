@@ -84,6 +84,7 @@
     "exportJSON": "Exporter en JSON",
     "delete": "Supprimer",
     "addVoters": "Ajouter des électeur·rice·s",
+    "manageOwners": "Gérer les responsables",
     "combineShares": "Combiner les actions",
     "createElec": "Créer un sondage",
     "clearForm": "Effacer un sondage",
@@ -294,6 +295,7 @@
     "voteNotVoter": "Interdit de voter.",
     "voteNotVoterDescription": "Vous n'avez pas le droit de voter dans cette élection. Si vous pensez qu'il s'agit d'une erreur, veuillez contacter le/la reponsable de service.",
     "addVotersLoading": "Ajout d'électeur·rice·s...",
+    "manageOwnersLoading": "Mise à jour des responsables",
     "sciperNaN": "'{{sciperStr}}' n'est pas une nombre; ",
     "sciperOutOfRange": "{{sciper}} n'est pas dans les valeurs acceptées (100000-999999); ",
     "invalidScipersFound": "Des SCIPERs invalides ont été trouvés. Aucune requête n'a été envoyée. Veuillez corriger les erreurs suivants: {{sciperErrs}}"
