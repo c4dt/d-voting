@@ -402,11 +402,21 @@ test('Assert "Vote" button gets voting form', async ({ page }) => {
   await page.getByRole('button', { name: i18n.t('vote'), exact: true }).click();
 });
 
-test('Assert "Add Owners" button is only visible to owner', async ({ page }) => {
+// The test is in 2 parts to avoid hitting the timeout which would mark the test as failed
+test('Assert "Add Owners" button is only visible to owner (Part 1)', async ({ page }) => {
   await assertIsOnlyVisibleInStates(
     page,
     page.getByRole('button', { name: i18n.t('manageOwners') }),
-    [0, 1, 2, 3, 4, 6],
+    [0, 1, 2],
+    assertIsOnlyVisibleToOwner
+  );
+});
+
+test('Assert "Add Owners" button is only visible to owner (Part 2)', async ({ page }) => {
+  await assertIsOnlyVisibleInStates(
+    page,
+    page.getByRole('button', { name: i18n.t('manageOwners') }),
+    [3, 4, 6],
     assertIsOnlyVisibleToOwner
   );
 });
