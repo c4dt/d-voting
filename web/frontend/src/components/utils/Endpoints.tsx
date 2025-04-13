@@ -12,6 +12,9 @@ export const checkTransaction = (token: string) => `/api/evoting/transactions/${
 
 export const newForm = '/api/evoting/forms';
 export const editForm = (FormID: string) => `/api/evoting/forms/${FormID}`;
+export const addOwnerToForm = (FormID: string) => `/api/evoting/auth/forms/${FormID}/addowner`;
+export const removeOwnerOfForm = (FormID: string) =>
+  `/api/evoting/auth/forms/${FormID}/removeowner`;
 export const newFormVote = (FormID: string) => `/api/evoting/forms/${FormID}/vote`;
 export const editShuffle = (FormID: string) => `/api/evoting/services/shuffle/${FormID}`;
 export const addFormAuthorization = `/api/evoting/authorizations`;
