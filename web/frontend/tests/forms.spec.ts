@@ -1,18 +1,18 @@
-import { Locator, Page, expect, test } from '@playwright/test';
+import { expect, Locator, Page, test } from '@playwright/test';
 import { default as i18n } from 'i18next';
 import { assertHasFooter, assertHasNavBar, initI18n, logIn, setUp } from './shared';
 import {
-  SCIPER_ADMIN,
-  SCIPER_OTHER_ADMIN,
-  SCIPER_OTHER_USER,
-  SCIPER_USER,
-  mockDKGActors as mockAPIDKGActors,
   mockAddRole,
+  mockDKGActors as mockAPIDKGActors,
   mockDKGActorsFormID,
   mockForms,
   mockPersonalInfo,
   mockProxies,
   mockServicesShuffle,
+  SCIPER_ADMIN,
+  SCIPER_OTHER_ADMIN,
+  SCIPER_OTHER_USER,
+  SCIPER_USER,
 } from './mocks/api';
 import { mockAdminList, mockDKGActors, mockFormsFormID } from './mocks/evoting';
 import { FORMID } from './mocks/shared';
@@ -149,16 +149,17 @@ test('Assert "Add voters" button allows to add voters', async ({ page, baseURL }
   await setUpMocks(page, 0, 6);
   await mockAddRole(page);
   await logIn(page, SCIPER_OTHER_ADMIN);
-  page.waitForRequest(async (request) => {
-    const body = await request.postDataJSON();
-    return (
-      request.url() === `${baseURL}/api/add_role` &&
-      request.method() === 'POST' &&
-      body.permission === 'vote' &&
-      body.subject === FORMID &&
-      body.userIds.toString() === [SCIPER_OTHER_ADMIN, SCIPER_ADMIN, SCIPER_USER].join(',')
-    );
-  });
+  for (const sciper of [SCIPER_OTHER_ADMIN, SCIPER_ADMIN, SCIPER_USER]) {
+    page.waitForRequest(async (request) => {
+      const body = await request.postDataJSON();
+      return (
+        request.url() === `${baseURL}/api/evoting/auth/forms/${FORMID}/addvoter` &&
+        request.method() === 'POST' &&
+        body.TargetUserID === sciper
+      );
+    });
+  }
+
   await page.getByTestId('addVotersButton').click();
   // menu should be visible
   const textbox = await page.getByRole('textbox', { name: 'SCIPERs' });
@@ -166,7 +167,7 @@ test('Assert "Add voters" button allows to add voters', async ({ page, baseURL }
   // add 3 voters (owner admin, non-owner admin, user)
   await textbox.fill(`${SCIPER_OTHER_ADMIN}\n${SCIPER_ADMIN}\n${SCIPER_USER}`);
   // click on confirmation
-  await page.getByTestId('addVotersConfirm').click();
+  await page.getByTestId('addUserRoleConfirm').click();
 });
 
 test('Assert "Initialize" button is only visible to owner', async ({ page }) => {
@@ -419,4 +420,29 @@ test('Assert "Add Owners" button is only visible to owner (Part 2)', async ({ pa
     [3, 4, 6],
     assertIsOnlyVisibleToOwner
   );
+});
+
+test('Assert "Add Owners" button allows to add Owners', async ({ page, baseURL }) => {
+  await setUpMocks(page, 0, 6);
+  await mockAddRole(page);
+  await logIn(page, SCIPER_OTHER_ADMIN);
+  for (const sciper of [SCIPER_OTHER_ADMIN, SCIPER_ADMIN, SCIPER_USER]) {
+    page.waitForRequest(async (request) => {
+      const body = await request.postDataJSON();
+      return (
+        request.url() === `${baseURL}/api/evoting/auth/forms/${FORMID}/addowner` &&
+        request.method() === 'POST' &&
+        body.TargetUserID === sciper
+      );
+    });
+  }
+
+  await page.getByTestId('addVotersButton').click();
+  // menu should be visible
+  const textbox = await page.getByRole('textbox', { name: 'SCIPERs' });
+  await expect(textbox).toBeVisible();
+  // add 3 voters (owner admin, non-owner admin, user)
+  await textbox.fill(`${SCIPER_OTHER_ADMIN}\n${SCIPER_ADMIN}\n${SCIPER_USER}`);
+  // click on confirmation
+  await page.getByTestId('addUserRoleConfirm').click();
 });
