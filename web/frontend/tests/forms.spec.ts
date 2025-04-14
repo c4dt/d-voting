@@ -403,21 +403,12 @@ test('Assert "Vote" button gets voting form', async ({ page }) => {
   await page.getByRole('button', { name: i18n.t('vote'), exact: true }).click();
 });
 
-// The test is in 2 parts to avoid hitting the timeout which would mark the test as failed
 test('Assert "Add Owners" button is only visible to owner (Part 1)', async ({ page }) => {
+  test.slow();
   await assertIsOnlyVisibleInStates(
     page,
     page.getByRole('button', { name: i18n.t('manageOwners') }),
-    [0, 1, 2],
-    assertIsOnlyVisibleToOwner
-  );
-});
-
-test('Assert "Add Owners" button is only visible to owner (Part 2)', async ({ page }) => {
-  await assertIsOnlyVisibleInStates(
-    page,
-    page.getByRole('button', { name: i18n.t('manageOwners') }),
-    [3, 4, 6],
+    [0, 1, 2, 3, 4, 6],
     assertIsOnlyVisibleToOwner
   );
 });
@@ -437,7 +428,7 @@ test('Assert "Add Owners" button allows to add Owners', async ({ page, baseURL }
     });
   }
 
-  await page.getByTestId('addVotersButton').click();
+  await page.getByTestId('manageOwnersButton').click();
   // menu should be visible
   const textbox = await page.getByRole('textbox', { name: 'SCIPERs' });
   await expect(textbox).toBeVisible();
