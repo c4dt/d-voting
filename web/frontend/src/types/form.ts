@@ -55,6 +55,7 @@ interface FormInfo {
   BallotSize: number;
   Configuration: any;
   Voters: string[];
+  Owners: string[];
 }
 
 interface LightFormInfo {

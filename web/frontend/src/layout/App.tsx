@@ -75,7 +75,7 @@ const App = () => {
               <Route
                 path={'/forms/:formId'}
                 element={
-                  <RequireAuth requireOperator>
+                  <RequireAuth>
                     <FormShow />
                   </RequireAuth>
                 }

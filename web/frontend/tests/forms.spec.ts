@@ -4,6 +4,7 @@ import { assertHasFooter, assertHasNavBar, initI18n, logIn, setUp } from './shar
 import {
   SCIPER_ADMIN,
   SCIPER_OTHER_ADMIN,
+  SCIPER_OTHER_USER,
   SCIPER_USER,
   mockDKGActors as mockAPIDKGActors,
   mockAddRole,
@@ -70,12 +71,16 @@ test('Assert footer is present', async ({ page }) => {
 });
 
 async function assertIsOnlyVisibleToOwner(page: Page, locator: Locator) {
-  await test.step('Assert is hidden to non-owner admin', async () => {
-    await logIn(page, SCIPER_ADMIN);
+  await test.step('Assert is hidden to non-owner non-admin', async () => {
+    await logIn(page, SCIPER_OTHER_USER);
     await expect(locator).toBeHidden();
   });
-  await test.step('Assert is visible to owner admin', async () => {
-    await logIn(page, SCIPER_OTHER_ADMIN);
+  await test.step('Assert is visible to non-owner admin', async () => {
+    await logIn(page, SCIPER_ADMIN);
+    await expect(locator).toBeVisible();
+  });
+  await test.step('Assert is visible to owner non-admin', async () => {
+    await logIn(page, SCIPER_USER);
     await expect(locator).toBeVisible();
   });
 }
@@ -394,5 +399,5 @@ test('Assert "Vote" button gets voting form', async ({ page }) => {
   await setUpMocks(page, 1, 6);
   await logIn(page, SCIPER_ADMIN);
   page.waitForRequest(`${process.env.DELA_PROXY_URL}/evoting/forms/${FORMID}`);
-  await page.getByRole('button', { name: i18n.t('vote') }).click();
+  await page.getByRole('button', { name: i18n.t('vote'), exact: true }).click();
 });

@@ -27,6 +27,7 @@ const defaultAuth = {
   isAdmin: false,
   isOperator: false,
   authorization: arr,
+  formsAuthorizations: arr,
   isAllowed: () => false,
 };
 
@@ -44,6 +45,7 @@ export interface AuthState {
   isAdmin: boolean;
   isOperator: boolean;
   authorization: Map<String, Array<String>>;
+  formsAuthorizations: Map<String, Array<String>>;
   isAllowed: (subject: string, action: string) => boolean;
 }
 
@@ -269,6 +271,7 @@ const AppContainer = () => {
         sciper: result.sciper,
         isAdmin: isAdmin,
         isOperator: isAdmin,
+        formsAuthorizations: arr,
         authorization: result.isLoggedIn ? new Map(Object.entries(result.authorization)) : arr,
         isAllowed: function (subject: string, action: string) {
           return (

@@ -8,7 +8,6 @@ import {
   initEnforcer,
   isAuthorized,
   PERMISSIONS,
-  revokeUserPermissionToOwnElection,
 } from '../authManager';
 
 export const delaRouter = express.Router();
@@ -111,7 +110,7 @@ function sendToDela(dataStr: string, req: express.Request, res: express.Response
     });
 }
 
-// Secure /api/evoting to admins and operators
+// TODO Remove in favor of direct call to dela API
 delaRouter.put('/authorizations', (req, res) => {
   if (!req.session.userId) {
     res.status(400).send('Unauthorized');
@@ -138,64 +137,17 @@ function makeid(length: number) {
   return result;
 }
 
-delaRouter.put('/forms/:formID', (req, res, next) => {
-  const { formID } = req.params;
-  if (!isAuthorized(req.session.userId, formID, PERMISSIONS.ACTIONS.OWN)) {
-    res.status(400).send('Unauthorized');
-    return;
-  }
-  next();
-});
-
-delaRouter.post('/services/dkg/actors', (req, res, next) => {
-  const { FormID } = req.body;
-  if (!isAuthorized(req.session.userId, FormID, PERMISSIONS.ACTIONS.OWN)) {
-    res.status(400).send('Unauthorized');
-    return;
-  }
-  if (FormID === undefined) {
-    return;
-  }
-  next();
-});
-
-delaRouter.use('/services/dkg/actors/:formID', (req, res, next) => {
-  const { formID } = req.params;
-  if (!isAuthorized(req.session.userId, formID, PERMISSIONS.ACTIONS.OWN)) {
-    res.status(400).send('Unauthorized');
-    return;
-  }
-  next();
-});
-
-delaRouter.use('/services/shuffle/:formID', (req, res, next) => {
-  if (!req.session.userId) {
-    res.status(401).send('Unauthenticated');
-    return;
-  }
-  const { formID } = req.params;
-  if (!isAuthorized(req.session.userId, formID, PERMISSIONS.ACTIONS.OWN)) {
-    res.status(400).send('Unauthorized');
-    return;
-  }
-  next();
-});
-
 delaRouter.delete('/forms/:formID', (req, res) => {
   if (!req.session.userId) {
     res.status(401).send('Unauthenticated');
     return;
   }
   const { formID } = req.params;
-  if (!isAuthorized(req.session.userId, formID, PERMISSIONS.ACTIONS.OWN)) {
-    res.status(400).send('Unauthorized');
-    return;
-  }
+
   const edCurve = kyber.curve.newCurve('edwards25519');
 
   const priv = Buffer.from(process.env.PRIVATE_KEY as string, 'hex');
   const pub = Buffer.from(process.env.PUBLIC_KEY as string, 'hex');
-
   const scalar = edCurve.scalar();
   scalar.unmarshalBinary(priv);
 
@@ -203,9 +155,8 @@ delaRouter.delete('/forms/:formID', (req, res) => {
   point.unmarshalBinary(pub);
 
   const sign = kyber.sign.schnorr.sign(edCurve, scalar, Buffer.from(formID));
-
-  // we strip the `/api` part: /api/form/xxx => /form/xxx
-  const uri = process.env.DELA_PROXY_URL + xss(req.url.slice(4));
+  // we only get the url as /forms/xxx , so we add the first part to get : /evoting/forms/xxx
+  const uri = process.env.DELA_PROXY_URL + xss(`/evoting${req.url}`);
 
   axios({
     method: req.method as Method,
@@ -228,10 +179,9 @@ delaRouter.delete('/forms/:formID', (req, res) => {
         .status(500)
         .send(`failed to proxy request: ${req.method} ${uri} - ${error.message} - ${resp}`);
     });
-  revokeUserPermissionToOwnElection(String(req.session.userId), formID);
 });
 
-// New middleware for auth request which use the field PerformingUsedID instead
+// New middleware for auth request which use the field PerformingUserID instead
 // of UserID
 delaRouter.use('/auth/*', (req, res) => {
   if (!req.session.userId) {
