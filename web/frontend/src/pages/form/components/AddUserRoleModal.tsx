@@ -2,14 +2,17 @@ import { Dialog, Transition } from '@headlessui/react';
 import { CogIcon } from '@heroicons/react/outline';
 import { FC, Fragment, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { UserRole } from '../../../types/userRole';
 
-type AddVotersModalSuccessProps = {
+type AddUserRoleModalSuccessProps = {
+  role: UserRole;
   showModal: boolean;
   setShowModal: (show: boolean) => void;
   newVoters: string;
 };
 
-export const AddVotersModalSuccess: FC<AddVotersModalSuccessProps> = ({
+export const AddUserRoleModalSuccess: FC<AddUserRoleModalSuccessProps> = ({
+  role,
   showModal,
   setShowModal,
   newVoters,
@@ -57,10 +60,12 @@ export const AddVotersModalSuccess: FC<AddVotersModalSuccessProps> = ({
                   </div>
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                     <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">
-                      {t('addVotersDialog')}
+                      {role === UserRole.Owner ? t('addOwnersDialog') : t('addVotersDialog')}
                     </Dialog.Title>
                     <div className="mt-2">
-                      <p className="text-sm text-gray-500">{t('votersAdded')}</p>
+                      <p className="text-sm text-gray-500">
+                        {role === UserRole.Owner ? t('ownersAdded') : t('votersAdded')}
+                      </p>
                     </div>
                     <pre>{newVoters}</pre>
                   </div>
@@ -81,20 +86,22 @@ export const AddVotersModalSuccess: FC<AddVotersModalSuccessProps> = ({
     </Transition.Root>
   );
 };
-type AddVotersModalProps = {
+type AddUserRoleModalProps = {
+  role: UserRole;
   showModal: boolean;
   setShowModal: (show: boolean) => void;
   setUserConfirmedAction: (voters: string) => void;
 };
 
-export const AddVotersModal: FC<AddVotersModalProps> = ({
+export const AddUserRoleModal: FC<AddUserRoleModalProps> = ({
+  role,
   showModal,
   setShowModal,
   setUserConfirmedAction,
 }) => {
   const { t } = useTranslation();
   const cancelButtonRef = useRef(null);
-  const [voters, setVoters] = useState('');
+  const [users, setUsers] = useState('');
 
   const cancelModal = () => {
     setUserConfirmedAction('');
@@ -102,17 +109,17 @@ export const AddVotersModal: FC<AddVotersModalProps> = ({
   };
 
   const confirmChoice = () => {
-    setUserConfirmedAction(voters);
+    setUserConfirmedAction(users);
     setShowModal(false);
   };
 
-  const votersBox = () => {
+  const usersBox = () => {
     return (
       <div>
         <textarea
           autoFocus={true}
-          onChange={(e) => setVoters(e.target.value)}
-          name="Voters"
+          onChange={(e) => setUsers(e.target.value)}
+          name="Users"
           placeholder="SCIPERs"
           className="m-3 px-1 w-100 text-lg border rounded-md"
           rows={10}
@@ -158,12 +165,14 @@ export const AddVotersModal: FC<AddVotersModalProps> = ({
                   </div>
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                     <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">
-                      {t('addVotersDialog')}
+                      {role === UserRole.Owner ? t('addOwnersDialog') : t('addVotersDialog')}
                     </Dialog.Title>
                     <div className="mt-2">
-                      <p className="text-sm text-gray-500">{t('inputAddVoters')}</p>
+                      <p className="text-sm text-gray-500">
+                        {role === UserRole.Owner ? t('inputAddOwners') : t('inputAddVoters')}
+                      </p>
                     </div>
-                    {votersBox()}
+                    {usersBox()}
                   </div>
                 </div>
               </div>
@@ -173,7 +182,7 @@ export const AddVotersModal: FC<AddVotersModalProps> = ({
                   type="button"
                   className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#ff0000] text-base font-medium text-white hover:bg-[#b51f1f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ff0000] sm:ml-3 sm:w-auto sm:text-sm"
                   onClick={confirmChoice}>
-                  {t('addVotersConfirm')}
+                  {role === UserRole.Owner ? t('addOwnersConfirm') : t('addVotersConfirm')}
                 </button>
                 <button
                   type="button"

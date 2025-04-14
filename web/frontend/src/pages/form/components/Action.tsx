@@ -40,8 +40,8 @@ const Action: FC<ActionProps> = ({
     modalCancel,
     modalDelete,
     modalSetup,
-    modalAddVoters,
-    modalAddVotersSuccess,
+    modalAddRole,
+    modalAddRoleSuccess,
   } = useChangeAction(
     status,
     formID,
@@ -63,8 +63,8 @@ const Action: FC<ActionProps> = ({
       {modalClose}
       {modalCancel}
       {modalDelete}
-      {modalAddVoters}
-      {modalAddVotersSuccess}
+      {modalAddRole}
+      {modalAddRoleSuccess}
       {modalSetup}
     </>
   );

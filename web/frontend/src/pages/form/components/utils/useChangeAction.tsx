@@ -1,5 +1,4 @@
 import * as endpoints from 'components/utils/Endpoints';
-import { ENDPOINT_ADD_ROLE } from 'components/utils/Endpoints';
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ID } from 'types/configuration';
@@ -9,7 +8,7 @@ import { AuthContext, FlashContext, FlashLevel, ProxyContext } from 'index';
 import { useNavigate } from 'react-router';
 import { ROUTE_FORM_INDEX } from 'Routes';
 
-import { AddVotersModal, AddVotersModalSuccess } from 'pages/form/components/AddVotersModal';
+import { AddUserRoleModal, AddUserRoleModalSuccess } from '../AddUserRoleModal';
 import ChooseProxyModal from 'pages/form/components/ChooseProxyModal';
 import ConfirmModal from 'components/modal/ConfirmModal';
 import usePostCall from 'components/utils/usePostCall';
@@ -29,6 +28,7 @@ import handleLogin from 'pages/session/HandleLogin';
 import { isManager } from '../../../../utils/auth';
 import pollTransaction from './TransactionPoll';
 import AddOwnersButton from '../ActionButtons/AddOwnersButton';
+import { UserRole } from '../../../../types/userRole';
 
 const useChangeAction = (
   status: Status,
@@ -51,15 +51,16 @@ const useChangeAction = (
   const [showModalClose, setShowModalClose] = useState(false);
   const [showModalCancel, setShowModalCancel] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
-  const [showModalAddVoters, setShowModalAddVoters] = useState(false);
-  const [showModalAddVotersSucccess, setShowModalAddVotersSuccess] = useState(false);
-  const [newVoters] = useState('');
+  const [showModalAddRole, setShowModalAddRole] = useState(false);
+  const [showModalAddRoleSuccess, setShowModalAddRoleSuccess] = useState(false);
+  const [addedRole, setAddedRole] = useState<UserRole>(UserRole.None);
+  const [newUsers] = useState('');
 
   const [userConfirmedProxySetup, setUserConfirmedProxySetup] = useState(false);
   const [userConfirmedClosing, setUserConfirmedClosing] = useState(false);
   const [userConfirmedCanceling, setUserConfirmedCanceling] = useState(false);
   const [userConfirmedDeleting, setUserConfirmedDeleting] = useState(false);
-  const [userConfirmedAddVoters, setUserConfirmedAddVoters] = useState('');
+  const [userConfirmedAddRole, setUserConfirmedAddRole] = useState('');
 
   const [getError, setGetError] = useState(null);
   const [postError, setPostError] = useState(null);
@@ -99,18 +100,20 @@ const useChangeAction = (
       setUserConfirmedAction={setUserConfirmedDeleting}
     />
   );
-  const modalAddVoters = (
-    <AddVotersModal
-      showModal={showModalAddVoters}
-      setShowModal={setShowModalAddVoters}
-      setUserConfirmedAction={setUserConfirmedAddVoters}
+  const modalAddRole = (
+    <AddUserRoleModal
+      role={addedRole}
+      showModal={showModalAddRole}
+      setShowModal={setShowModalAddRole}
+      setUserConfirmedAction={setUserConfirmedAddRole}
     />
   );
-  const modalAddVotersSuccess = (
-    <AddVotersModalSuccess
-      showModal={showModalAddVotersSucccess}
-      setShowModal={setShowModalAddVotersSuccess}
-      newVoters={newVoters}
+  const modalAddRoleSuccess = (
+    <AddUserRoleModalSuccess
+      role={addedRole}
+      showModal={showModalAddRoleSuccess}
+      setShowModal={setShowModalAddRoleSuccess}
+      newVoters={newUsers}
     />
   );
 
@@ -137,6 +140,21 @@ const useChangeAction = (
       },
     };
     return sendFetchRequest(endpoint, req, setIsPosting);
+  };
+
+  const getAddRolePromise = (sciper) => {
+    return () =>
+      sendFetchRequest(
+        endpoints.addRoleToForm(formID, addedRole),
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            TargetUserID: sciper,
+          }),
+        },
+        setIsPosting
+      );
   };
 
   const onFullFilled = (nextStatus: Status) => {
@@ -321,11 +339,11 @@ const useChangeAction = (
   }, [userConfirmedDeleting]);
 
   useEffect(() => {
-    if (userConfirmedAddVoters.length > 0) {
+    if (userConfirmedAddRole.length > 0) {
       let sciperErrs = '';
 
-      const providedScipers = userConfirmedAddVoters.split('\n');
-      setUserConfirmedAddVoters('');
+      const providedScipers = userConfirmedAddRole.split('\n');
+      setUserConfirmedAddRole('');
 
       for (const sciperStr of providedScipers) {
         const sciper = parseInt(sciperStr, 10);
@@ -347,38 +365,61 @@ const useChangeAction = (
       // See isAuthorized, addPolicy, and addListPolicy in backend/src/authManager.ts
       (async () => {
         try {
-          const chunkSize = 1000;
           setOngoingAction(OngoingAction.ManageAuthorization);
-          for (let i = 0; i < providedScipers.length; i += chunkSize) {
-            await sendFetchRequest(
-              ENDPOINT_ADD_ROLE,
-              {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  userIds: providedScipers.slice(i, i + chunkSize),
-                  subject: formID,
-                  permission: 'vote',
-                }),
-              },
-              setIsPosting
-            );
-          }
+
+          const addPromises = providedScipers.map(getAddRolePromise);
+          // Create a promise to limit the parallelism. See reference
+          // http://medium.com/@blendedidea/promises-with-limited-parallelism-in-javascript-171291f94c59
+          const addingAll = new Promise((resolve) => {
+            const errors = [];
+            let currIndex = 0;
+            let active = 0;
+
+            function runNext() {
+              if (currIndex >= addPromises.length && active === 0) {
+                resolve(errors);
+                return;
+              }
+              if (currIndex >= addPromises.length) {
+                active--;
+                return;
+              }
+              active++;
+              addPromises[currIndex++]()
+                .catch((err) => {
+                  errors.push(err);
+                })
+                .finally(() => {
+                  active--;
+                  runNext();
+                });
+            }
+
+            for (let i = 0; i < 20; ++i) {
+              runNext();
+            }
+          });
+
+          const errors = await addingAll;
+          console.log(`Ẁhile adding ${addedRole}: ${errors}`);
         } catch (e) {
-          console.error(`While adding voter: ${e}`);
-          setShowModalAddVoters(false);
+          console.error(`While adding ${addedRole}: ${e}`);
+          setShowModalAddRole(false);
         }
+        setAddedRole(UserRole.None);
         setOngoingAction(OngoingAction.None);
       })();
     }
   }, [
     formID,
     sendFetchRequest,
-    userConfirmedAddVoters,
+    userConfirmedAddRole,
     t,
     setTextModalError,
     setShowModalError,
     setOngoingAction,
+    addedRole,
+    getAddRolePromise,
   ]);
 
   useEffect(() => {
@@ -483,11 +524,13 @@ const useChangeAction = (
   };
 
   const handleAddVoters = () => {
-    setShowModalAddVoters(true);
+    setAddedRole(UserRole.Voter);
+    setShowModalAddRole(true);
   };
 
   const handleAddOwners = () => {
-    return;
+    setAddedRole(UserRole.Owner);
+    setShowModalAddRole(true);
   };
 
   const getAction = () => {
@@ -671,8 +714,8 @@ const useChangeAction = (
     modalCancel,
     modalDelete,
     modalSetup,
-    modalAddVoters,
-    modalAddVotersSuccess,
+    modalAddRole,
+    modalAddRoleSuccess,
   };
 };
 
