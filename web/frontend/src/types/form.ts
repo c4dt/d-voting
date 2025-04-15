@@ -63,6 +63,8 @@ interface LightFormInfo {
   Title: Title;
   Status: Status;
   Pubkey: string;
+  Voters: string[];
+  Owners: string[];
 }
 
 interface Results {

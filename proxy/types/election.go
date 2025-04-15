@@ -67,6 +67,8 @@ type LightForm struct {
 	Title  etypes.Title
 	Status uint16
 	Pubkey string
+	Voters []string
+	Owners []string
 }
 
 // GetFormsResponse defines the HTTP response when getting all forms
