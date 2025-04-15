@@ -370,7 +370,9 @@ const useChangeAction = (
       // See isAuthorized, addPolicy, and addListPolicy in backend/src/authManager.ts
       (async () => {
         try {
-          setOngoingAction(OngoingAction.ManageAuthorization);
+          setOngoingAction(
+            addedRole === UserRole.Owner ? OngoingAction.ManageOwners : OngoingAction.ManageVoters
+          );
 
           const addPromises = providedScipers.map(getAddRolePromise);
           // Create a promise to limit the parallelism. See reference
