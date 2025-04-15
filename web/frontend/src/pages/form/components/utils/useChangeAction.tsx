@@ -142,6 +142,8 @@ const useChangeAction = (
     return sendFetchRequest(endpoint, req, setIsPosting);
   };
 
+  // The function does not need to be updated
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const getAddRolePromise = (sciper) => {
     return () =>
       sendFetchRequest(
@@ -381,7 +383,6 @@ const useChangeAction = (
                 return;
               }
               if (currIndex >= addPromises.length) {
-                active--;
                 return;
               }
               active++;
