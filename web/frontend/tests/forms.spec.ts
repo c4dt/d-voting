@@ -139,7 +139,7 @@ async function assertRouteIsCalled(
 test('Assert "Add voters" button is only visible to owner', async ({ page }) => {
   await assertIsOnlyVisibleInStates(
     page,
-    page.getByTestId('addVotersButton'),
+    page.getByTestId('manageVotersButton'),
     [0, 1],
     assertIsOnlyVisibleToOwner
   );
@@ -160,14 +160,14 @@ test('Assert "Add voters" button allows to add voters', async ({ page, baseURL }
     });
   }
 
-  await page.getByTestId('addVotersButton').click();
+  await page.getByTestId('manageVotersButton').click();
   // menu should be visible
   const textbox = await page.getByRole('textbox', { name: 'SCIPERs' });
   await expect(textbox).toBeVisible();
   // add 3 voters (owner admin, non-owner admin, user)
   await textbox.fill(`${SCIPER_OTHER_ADMIN}\n${SCIPER_ADMIN}\n${SCIPER_USER}`);
   // click on confirmation
-  await page.getByTestId('addUserRoleConfirm').click();
+  await page.getByTestId('manageUserRoleConfirm').click();
 });
 
 test('Assert "Initialize" button is only visible to owner', async ({ page }) => {
@@ -435,5 +435,5 @@ test('Assert "Add Owners" button allows to add Owners', async ({ page, baseURL }
   // add 3 voters (owner admin, non-owner admin, user)
   await textbox.fill(`${SCIPER_OTHER_ADMIN}\n${SCIPER_ADMIN}\n${SCIPER_USER}`);
   // click on confirmation
-  await page.getByTestId('addUserRoleConfirm').click();
+  await page.getByTestId('manageUserRoleConfirm').click();
 });

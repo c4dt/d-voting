@@ -4,14 +4,14 @@ import { FC, Fragment, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UserRole } from '../../../types/userRole';
 
-type AddUserRoleModalSuccessProps = {
+type ManageUserRoleModalSuccessProps = {
   role: UserRole;
   showModal: boolean;
   setShowModal: (show: boolean) => void;
   newUsers: string;
 };
 
-export const AddUserRoleModalSuccess: FC<AddUserRoleModalSuccessProps> = ({
+export const ManageUserRoleModalSuccess: FC<ManageUserRoleModalSuccessProps> = ({
   role,
   showModal,
   setShowModal,
@@ -86,7 +86,7 @@ export const AddUserRoleModalSuccess: FC<AddUserRoleModalSuccessProps> = ({
     </Transition.Root>
   );
 };
-type AddUserRoleModalProps = {
+type ManageUserRoleModalProps = {
   role: UserRole;
   scipers: string[];
   showModal: boolean;
@@ -94,7 +94,7 @@ type AddUserRoleModalProps = {
   setUserConfirmedAction: (voters: string) => void;
 };
 
-export const AddUserRoleModal: FC<AddUserRoleModalProps> = ({
+export const ManageUserRoleModal: FC<ManageUserRoleModalProps> = ({
   role,
   scipers,
   showModal,
@@ -174,11 +174,11 @@ export const AddUserRoleModal: FC<AddUserRoleModalProps> = ({
                   </div>
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                     <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">
-                      {role === UserRole.Owner ? t('addOwnersDialog') : t('addVotersDialog')}
+                      {role === UserRole.Owner ? t('manageOwnersDialog') : t('manageVotersDialog')}
                     </Dialog.Title>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        {role === UserRole.Owner ? t('inputAddOwners') : t('inputAddVoters')}
+                        {role === UserRole.Owner ? t('inputManageOwners') : t('inputManageVoters')}
                       </p>
                     </div>
                     {usersBox()}
@@ -187,11 +187,11 @@ export const AddUserRoleModal: FC<AddUserRoleModalProps> = ({
               </div>
               <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                 <button
-                  data-testid="addUserRoleConfirm"
+                  data-testid="manageUserRoleConfirm"
                   type="button"
                   className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#ff0000] text-base font-medium text-white hover:bg-[#b51f1f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ff0000] sm:ml-3 sm:w-auto sm:text-sm"
                   onClick={confirmChoice}>
-                  {role === UserRole.Owner ? t('addOwnersConfirm') : t('addVotersConfirm')}
+                  {role === UserRole.Owner ? t('manageOwnersConfirm') : t('manageVotersConfirm')}
                 </button>
                 <button
                   type="button"

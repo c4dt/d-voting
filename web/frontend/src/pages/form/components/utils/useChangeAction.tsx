@@ -8,13 +8,13 @@ import { AuthContext, FlashContext, FlashLevel, ProxyContext } from 'index';
 import { useNavigate } from 'react-router';
 import { ROUTE_FORM_INDEX } from 'Routes';
 
-import { AddUserRoleModal, AddUserRoleModalSuccess } from '../AddUserRoleModal';
+import { ManageUserRoleModal, ManageUserRoleModalSuccess } from '../ManageUserRoleModal';
 import ChooseProxyModal from 'pages/form/components/ChooseProxyModal';
 import ConfirmModal from 'components/modal/ConfirmModal';
 import usePostCall from 'components/utils/usePostCall';
 import InitializeButton from '../ActionButtons/InitializeButton';
 import DeleteButton from '../ActionButtons/DeleteButton';
-import AddVotersButton from '../ActionButtons/AddVotersButton';
+import ManageVotersButton from '../ActionButtons/ManageVotersButton';
 import SetupButton from '../ActionButtons/SetupButton';
 import CancelButton from '../ActionButtons/CancelButton';
 import CloseButton from '../ActionButtons/CloseButton';
@@ -27,7 +27,7 @@ import VoteButton from '../ActionButtons/VoteButton';
 import handleLogin from 'pages/session/HandleLogin';
 import { isManager } from '../../../../utils/auth';
 import pollTransaction from './TransactionPoll';
-import AddOwnersButton from '../ActionButtons/AddOwnersButton';
+import ManageOwnersButton from '../ActionButtons/ManageOwnersButton';
 import { UserRole } from '../../../../types/userRole';
 
 const useChangeAction = (
@@ -102,8 +102,8 @@ const useChangeAction = (
       setUserConfirmedAction={setUserConfirmedDeleting}
     />
   );
-  const modalAddRole = (
-    <AddUserRoleModal
+  const modalManageRole = (
+    <ManageUserRoleModal
       role={addedRole}
       scipers={addedRole === UserRole.Owner ? owners : voters}
       showModal={showModalAddRole}
@@ -111,8 +111,8 @@ const useChangeAction = (
       setUserConfirmedAction={setUserConfirmedAddRole}
     />
   );
-  const modalAddRoleSuccess = (
-    <AddUserRoleModalSuccess
+  const modalManageRoleSuccess = (
+    <ManageUserRoleModalSuccess
       role={addedRole}
       showModal={showModalAddRoleSuccess}
       setShowModal={setShowModalAddRoleSuccess}
@@ -527,12 +527,12 @@ const useChangeAction = (
     setShowModalDelete(true);
   };
 
-  const handleAddVoters = () => {
+  const handleManageVoters = () => {
     setAddedRole(UserRole.Voter);
     setShowModalAddRole(true);
   };
 
-  const handleAddOwners = () => {
+  const handleManageOwners = () => {
     setAddedRole(UserRole.Owner);
     setShowModalAddRole(true);
   };
@@ -572,8 +572,8 @@ const useChangeAction = (
               formID={formID}
             />
             <DeleteButton handleDelete={handleDelete} formID={formID} />
-            <AddOwnersButton
-              handleAddOwners={handleAddOwners}
+            <ManageOwnersButton
+              handleManageOwners={handleManageOwners}
               ongoingAction={ongoingAction}
               formID={formID}
             />
@@ -589,8 +589,8 @@ const useChangeAction = (
               formID={formID}
             />
             <DeleteButton handleDelete={handleDelete} formID={formID} />
-            <AddOwnersButton
-              handleAddOwners={handleAddOwners}
+            <ManageOwnersButton
+              handleManageOwners={handleManageOwners}
               ongoingAction={ongoingAction}
               formID={formID}
             />
@@ -606,13 +606,13 @@ const useChangeAction = (
               formID={formID}
             />
             <DeleteButton handleDelete={handleDelete} formID={formID} />
-            <AddOwnersButton
-              handleAddOwners={handleAddOwners}
+            <ManageOwnersButton
+              handleManageOwners={handleManageOwners}
               ongoingAction={ongoingAction}
               formID={formID}
             />
-            <AddVotersButton
-              handleAddVoters={handleAddVoters}
+            <ManageVotersButton
+              handleManageVoters={handleManageVoters}
               formID={formID}
               ongoingAction={ongoingAction}
             />
@@ -635,13 +635,13 @@ const useChangeAction = (
             />
             <VoteButton status={status} formID={formID} />
             <DeleteButton handleDelete={handleDelete} formID={formID} />
-            <AddOwnersButton
-              handleAddOwners={handleAddOwners}
+            <ManageOwnersButton
+              handleManageOwners={handleManageOwners}
               ongoingAction={ongoingAction}
               formID={formID}
             />
-            <AddVotersButton
-              handleAddVoters={handleAddVoters}
+            <ManageVotersButton
+              handleManageVoters={handleManageVoters}
               formID={formID}
               ongoingAction={ongoingAction}
             />
@@ -656,8 +656,8 @@ const useChangeAction = (
               ongoingAction={ongoingAction}
               formID={formID}
             />
-            <AddOwnersButton
-              handleAddOwners={handleAddOwners}
+            <ManageOwnersButton
+              handleManageOwners={handleManageOwners}
               ongoingAction={ongoingAction}
               formID={formID}
             />
@@ -673,8 +673,8 @@ const useChangeAction = (
               ongoingAction={ongoingAction}
               formID={formID}
             />
-            <AddOwnersButton
-              handleAddOwners={handleAddOwners}
+            <ManageOwnersButton
+              handleManageOwners={handleManageOwners}
               ongoingAction={ongoingAction}
               formID={formID}
             />
@@ -690,8 +690,8 @@ const useChangeAction = (
               ongoingAction={ongoingAction}
               formID={formID}
             />
-            <AddOwnersButton
-              handleAddOwners={handleAddOwners}
+            <ManageOwnersButton
+              handleManageOwners={handleManageOwners}
               ongoingAction={ongoingAction}
               formID={formID}
             />
@@ -718,8 +718,8 @@ const useChangeAction = (
     modalCancel,
     modalDelete,
     modalSetup,
-    modalAddRole,
-    modalAddRoleSuccess,
+    modalManageRole,
+    modalManageRoleSuccess,
   };
 };
 export default useChangeAction;
