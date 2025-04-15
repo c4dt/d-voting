@@ -18,6 +18,8 @@ type ActionProps = {
   setOngoingAction: (action: OngoingAction) => void;
   nodeToSetup: [string, string];
   setNodeToSetup: ([node, proxy]: [string, string]) => void;
+  voters: string[];
+  owners: string[];
 };
 
 const Action: FC<ActionProps> = ({
@@ -33,6 +35,8 @@ const Action: FC<ActionProps> = ({
   setOngoingAction,
   nodeToSetup,
   setNodeToSetup,
+  voters,
+  owners,
 }) => {
   const {
     getAction,
@@ -54,7 +58,9 @@ const Action: FC<ActionProps> = ({
     ongoingAction,
     setOngoingAction,
     nodeToSetup,
-    setNodeToSetup
+    setNodeToSetup,
+    voters,
+    owners
   );
 
   return (

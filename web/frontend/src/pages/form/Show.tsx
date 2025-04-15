@@ -275,6 +275,8 @@ const FormShow: FC = () => {
                   setOngoingAction={setOngoingAction}
                   nodeToSetup={nodeToSetup}
                   setNodeToSetup={setNodeToSetup}
+                  voters={voters}
+                  owners={owners}
                 />
               )}
             </div>

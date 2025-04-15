@@ -42,7 +42,9 @@ const useChangeAction = (
   ongoingAction: OngoingAction,
   setOngoingAction: (action: OngoingAction) => void,
   nodeToSetup: [string, string],
-  setNodeToSetup: ([node, proxy]: [string, string]) => void
+  setNodeToSetup: ([node, proxy]: [string, string]) => void,
+  voters: string[],
+  owners: string[]
 ) => {
   const { t } = useTranslation();
   const [, setIsPosting] = useState(false);
@@ -103,6 +105,7 @@ const useChangeAction = (
   const modalAddRole = (
     <AddUserRoleModal
       role={addedRole}
+      scipers={addedRole === UserRole.Owner ? owners : voters}
       showModal={showModalAddRole}
       setShowModal={setShowModalAddRole}
       setUserConfirmedAction={setUserConfirmedAddRole}
@@ -113,7 +116,7 @@ const useChangeAction = (
       role={addedRole}
       showModal={showModalAddRoleSuccess}
       setShowModal={setShowModalAddRoleSuccess}
-      newVoters={newUsers}
+      newUsers={newUsers}
     />
   );
 
@@ -719,5 +722,4 @@ const useChangeAction = (
     modalAddRoleSuccess,
   };
 };
-
 export default useChangeAction;

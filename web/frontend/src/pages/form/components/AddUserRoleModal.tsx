@@ -1,6 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { CogIcon } from '@heroicons/react/outline';
-import { FC, Fragment, useRef, useState } from 'react';
+import { FC, Fragment, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UserRole } from '../../../types/userRole';
 
@@ -8,14 +8,14 @@ type AddUserRoleModalSuccessProps = {
   role: UserRole;
   showModal: boolean;
   setShowModal: (show: boolean) => void;
-  newVoters: string;
+  newUsers: string;
 };
 
 export const AddUserRoleModalSuccess: FC<AddUserRoleModalSuccessProps> = ({
   role,
   showModal,
   setShowModal,
-  newVoters,
+  newUsers,
 }) => {
   const { t } = useTranslation();
 
@@ -67,7 +67,7 @@ export const AddUserRoleModalSuccess: FC<AddUserRoleModalSuccessProps> = ({
                         {role === UserRole.Owner ? t('ownersAdded') : t('votersAdded')}
                       </p>
                     </div>
-                    <pre>{newVoters}</pre>
+                    <pre>{newUsers}</pre>
                   </div>
                 </div>
               </div>
@@ -88,6 +88,7 @@ export const AddUserRoleModalSuccess: FC<AddUserRoleModalSuccessProps> = ({
 };
 type AddUserRoleModalProps = {
   role: UserRole;
+  scipers: string[];
   showModal: boolean;
   setShowModal: (show: boolean) => void;
   setUserConfirmedAction: (voters: string) => void;
@@ -95,6 +96,7 @@ type AddUserRoleModalProps = {
 
 export const AddUserRoleModal: FC<AddUserRoleModalProps> = ({
   role,
+  scipers,
   showModal,
   setShowModal,
   setUserConfirmedAction,
@@ -102,7 +104,13 @@ export const AddUserRoleModal: FC<AddUserRoleModalProps> = ({
   const { t } = useTranslation();
   const cancelButtonRef = useRef(null);
   const [users, setUsers] = useState('');
+  const [scipersText, setScipersText] = useState('');
 
+  useEffect(() => {
+    const tmpSciper = [...scipers];
+    tmpSciper.sort();
+    setScipersText(tmpSciper.join('\n'));
+  }, []);
   const cancelModal = () => {
     setUserConfirmedAction('');
     setShowModal(false);
@@ -118,6 +126,7 @@ export const AddUserRoleModal: FC<AddUserRoleModalProps> = ({
       <div>
         <textarea
           autoFocus={true}
+          defaultValue={scipersText}
           onChange={(e) => setUsers(e.target.value)}
           name="Users"
           placeholder="SCIPERs"
