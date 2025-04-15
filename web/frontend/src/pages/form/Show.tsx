@@ -32,6 +32,7 @@ const FormShow: FC = () => {
     configObj,
     setIsResultSet,
     voters,
+    owners,
     error,
   } = useForm(formId);
 
@@ -280,9 +281,17 @@ const FormShow: FC = () => {
           </div>
           {voters !== null && voters !== undefined && voters.length > 0 && (
             <div className="py-4 pl-2 pb-8">
-              <div className="font-bold uppercase text-lg text-gray-700 pb-2">{t('userID')}</div>
+              <div className="font-bold uppercase text-lg text-gray-700 pb-2">{t('votersID')}</div>
               <div className="px-2">
                 <UserIDTable userIDs={voters} />
+              </div>
+            </div>
+          )}
+          {owners !== null && owners !== undefined && owners.length > 0 && (
+            <div className="py-4 pl-2 pb-8">
+              <div className="font-bold uppercase text-lg text-gray-700 pb-2">{t('ownersID')}</div>
+              <div className="px-2">
+                <UserIDTable userIDs={owners} />
               </div>
             </div>
           )}
