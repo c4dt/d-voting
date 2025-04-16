@@ -88,7 +88,8 @@ export const ManageUserRoleModalSuccess: FC<ManageUserRoleModalSuccessProps> = (
 };
 type ManageUserRoleModalProps = {
   role: UserRole;
-  scipers: string[];
+  voters: string[];
+  owners: string[];
   showModal: boolean;
   setShowModal: (show: boolean) => void;
   setUserConfirmedAction: (voters: string) => void;
@@ -96,7 +97,8 @@ type ManageUserRoleModalProps = {
 
 export const ManageUserRoleModal: FC<ManageUserRoleModalProps> = ({
   role,
-  scipers,
+  voters,
+  owners,
   showModal,
   setShowModal,
   setUserConfirmedAction,
@@ -107,10 +109,10 @@ export const ManageUserRoleModal: FC<ManageUserRoleModalProps> = ({
   const [scipersText, setScipersText] = useState('');
 
   useEffect(() => {
-    const tmpSciper = [...scipers];
+    const tmpSciper = [...(role === UserRole.Owner ? owners : voters)];
     tmpSciper.sort();
     setScipersText(tmpSciper.join('\n'));
-  }, []);
+  }, [role, voters, owners]);
   const cancelModal = () => {
     setUserConfirmedAction('');
     setShowModal(false);

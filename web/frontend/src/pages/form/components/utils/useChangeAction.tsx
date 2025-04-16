@@ -105,7 +105,8 @@ const useChangeAction = (
   const modalManageRole = (
     <ManageUserRoleModal
       role={addedRole}
-      scipers={addedRole === UserRole.Owner ? owners : voters}
+      voters={voters}
+      owners={owners}
       showModal={showModalAddRole}
       setShowModal={setShowModalAddRole}
       setUserConfirmedAction={setUserConfirmedAddRole}
