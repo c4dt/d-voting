@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { ID, Title } from 'types/configuration';
 import { FormInfo, LightFormInfo, Results, Status } from 'types/form';
 import { AuthContext } from '../../index';
-import { UserRole } from '../../types/userRole';
+import { setFormAuth } from '../../utils/auth';
 
 const useFillFormInfo = (formData: FormInfo) => {
   const authContext = useContext(AuthContext);
@@ -33,14 +33,7 @@ const useFillFormInfo = (formData: FormInfo) => {
     setVoters(formData.Voters);
     setOwners(formData.Owners);
 
-    const roles = [];
-    if (formData.Voters.includes(authContext.sciper.toString())) {
-      roles.push(UserRole.Voter);
-    }
-    if (formData.Owners.includes(authContext.sciper.toString())) {
-      roles.push(UserRole.Owner);
-    }
-    authContext.formsAuthorizations.set(formData.FormID, roles);
+    setFormAuth(formData, authContext);
 
     if (formData.Result.length > 0) {
       setIsResultSet(true);

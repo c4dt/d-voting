@@ -1,6 +1,7 @@
 import { ID } from '../types/configuration';
 import { AuthState } from '../index';
 import { UserRole } from '../types/userRole';
+import { FormInfo, LightFormInfo } from '../types/form';
 
 export function isManager(formID: ID, authState: AuthState) {
   return (
@@ -17,4 +18,17 @@ export function isVoter(formID: ID, authorization: Map<String, String[]>, isLogg
     authorization.has(formID) &&
     authorization.get(formID).includes('vote') // must be able to vote in the election
   );
+}
+
+export function setFormAuth(form: LightFormInfo | FormInfo, authCtx: AuthState) {
+  if (!form.Owners || !form.Voters) return;
+
+  const roles = [];
+  if (form.Voters.includes(authCtx.sciper.toString())) {
+    roles.push(UserRole.Voter);
+  }
+  if (form.Owners.includes(authCtx.sciper.toString())) {
+    roles.push(UserRole.Owner);
+  }
+  authCtx.formsAuthorizations.set(form.FormID, roles);
 }
