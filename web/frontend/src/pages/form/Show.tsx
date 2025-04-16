@@ -240,8 +240,7 @@ const FormShow: FC = () => {
           {status >= Status.Open &&
             status <= Status.Canceled &&
             ballotSize !== null &&
-            ballotSize !== undefined &&
-            (
+            ballotSize !== undefined && (
               <div className="break-all">{t('numVotes', { num: ballotSize })}</div>
             )}
           <div className="py-6 pl-2">

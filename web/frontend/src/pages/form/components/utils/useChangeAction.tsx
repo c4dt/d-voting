@@ -62,7 +62,7 @@ const useChangeAction = (
   const [userConfirmedClosing, setUserConfirmedClosing] = useState(false);
   const [userConfirmedCanceling, setUserConfirmedCanceling] = useState(false);
   const [userConfirmedDeleting, setUserConfirmedDeleting] = useState(false);
-  const [userConfirmedAddRole, setUserConfirmedAddRole] = useState('');
+  const [userConfirmedManageRole, setUserConfirmedManageRole] = useState('');
 
   const [getError, setGetError] = useState(null);
   const [postError, setPostError] = useState(null);
@@ -109,7 +109,7 @@ const useChangeAction = (
       owners={owners}
       showModal={showModalAddRole}
       setShowModal={setShowModalAddRole}
-      setUserConfirmedAction={setUserConfirmedAddRole}
+      setUserConfirmedAction={setUserConfirmedManageRole}
     />
   );
   const modalManageRoleSuccess = (
@@ -144,23 +144,6 @@ const useChangeAction = (
       },
     };
     return sendFetchRequest(endpoint, req, setIsPosting);
-  };
-
-  // The function does not need to be updated
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const getAddRolePromise = (sciper) => {
-    return () =>
-      sendFetchRequest(
-        endpoints.addRoleToForm(formID, addedRole),
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            TargetUserID: sciper,
-          }),
-        },
-        setIsPosting
-      );
   };
 
   const onFullFilled = (nextStatus: Status) => {
@@ -345,11 +328,41 @@ const useChangeAction = (
   }, [userConfirmedDeleting]);
 
   useEffect(() => {
-    if (userConfirmedAddRole.length > 0) {
+    const getAddRolePromise = (sciper) => {
+      return () =>
+        sendFetchRequest(
+          endpoints.addRoleToForm(formID, addedRole),
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              TargetUserID: sciper,
+            }),
+          },
+          setIsPosting
+        ).catch((err) => Promise.reject([sciper, err]));
+    };
+
+    const getRemoveRolePromise = (sciper) => {
+      return () =>
+        sendFetchRequest(
+          endpoints.removeRoleToForm(formID, addedRole),
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              TargetUserID: sciper,
+            }),
+          },
+          setIsPosting
+        ).catch((err) => Promise.reject([sciper, err]));
+    };
+
+    if (userConfirmedManageRole.length > 0) {
       let sciperErrs = '';
 
-      const providedScipers = userConfirmedAddRole.split('\n');
-      setUserConfirmedAddRole('');
+      const providedScipers = userConfirmedManageRole.split('\n');
+      setUserConfirmedManageRole('');
 
       for (const sciperStr of providedScipers) {
         const sciper = parseInt(sciperStr, 10);
@@ -365,34 +378,38 @@ const useChangeAction = (
         setShowModalError(true);
         return;
       }
-      // requests to ENDPOINT_ADD_ROLE cannot be done in parallel because on the
-      // backend, auths are reloaded from the DB each time there is an update.
-      // While auths are reloaded, they cannot be checked in a predictable way.
-      // See isAuthorized, addPolicy, and addListPolicy in backend/src/authManager.ts
       (async () => {
         try {
           setOngoingAction(
             addedRole === UserRole.Owner ? OngoingAction.ManageOwners : OngoingAction.ManageVoters
           );
+          const oldUsers = addedRole === UserRole.Owner ? owners : voters;
 
-          const addPromises = providedScipers.map(getAddRolePromise);
+          const addPromises = providedScipers
+            .filter((sciper) => !oldUsers.includes(sciper))
+            .map(getAddRolePromise);
+          const removePromises = oldUsers
+            .filter((sciper) => !providedScipers.includes(sciper))
+            .map(getRemoveRolePromise);
+          const manageRolePromises = [...addPromises, ...removePromises];
+
           // Create a promise to limit the parallelism. See reference
           // http://medium.com/@blendedidea/promises-with-limited-parallelism-in-javascript-171291f94c59
-          const addingAll = new Promise((resolve) => {
+          const manageAll = new Promise((resolve) => {
             const errors = [];
             let currIndex = 0;
             let active = 0;
 
             function runNext() {
-              if (currIndex >= addPromises.length && active === 0) {
+              if (currIndex >= manageRolePromises.length && active === 0) {
                 resolve(errors);
                 return;
               }
-              if (currIndex >= addPromises.length) {
+              if (currIndex >= manageRolePromises.length) {
                 return;
               }
               active++;
-              addPromises[currIndex++]()
+              manageRolePromises[currIndex++]()
                 .catch((err) => {
                   errors.push(err);
                 })
@@ -407,7 +424,7 @@ const useChangeAction = (
             }
           });
 
-          const errors = await addingAll;
+          const errors = await manageAll;
           console.log(`Ẁhile adding ${addedRole}: ${errors}`);
         } catch (e) {
           console.error(`While adding ${addedRole}: ${e}`);
@@ -420,13 +437,14 @@ const useChangeAction = (
   }, [
     formID,
     sendFetchRequest,
-    userConfirmedAddRole,
+    userConfirmedManageRole,
     t,
     setTextModalError,
     setShowModalError,
     setOngoingAction,
     addedRole,
-    getAddRolePromise,
+    owners,
+    voters,
   ]);
 
   useEffect(() => {
