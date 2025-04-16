@@ -38,7 +38,7 @@ const useFillFormInfo = (formData: FormInfo) => {
     if (formData.Result.length > 0) {
       setIsResultSet(true);
     }
-  }, [authContext.formsAuthorizations, authContext.sciper, formData]);
+  }, [authContext, formData]);
 
   return {
     id,

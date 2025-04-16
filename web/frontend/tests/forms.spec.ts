@@ -1,18 +1,18 @@
-import { expect, Locator, Page, test } from '@playwright/test';
+import { Locator, Page, expect, test } from '@playwright/test';
 import { default as i18n } from 'i18next';
 import { assertHasFooter, assertHasNavBar, initI18n, logIn, setUp } from './shared';
 import {
-  mockAddRole,
+  SCIPER_ADMIN,
+  SCIPER_OTHER_ADMIN,
+  SCIPER_OTHER_USER,
+  SCIPER_USER,
   mockDKGActors as mockAPIDKGActors,
+  mockAddRole,
   mockDKGActorsFormID,
   mockForms,
   mockPersonalInfo,
   mockProxies,
   mockServicesShuffle,
-  SCIPER_ADMIN,
-  SCIPER_OTHER_ADMIN,
-  SCIPER_OTHER_USER,
-  SCIPER_USER,
 } from './mocks/api';
 import { mockAdminList, mockDKGActors, mockFormsFormID } from './mocks/evoting';
 import { FORMID } from './mocks/shared';
