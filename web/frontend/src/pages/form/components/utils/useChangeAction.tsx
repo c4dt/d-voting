@@ -361,7 +361,7 @@ const useChangeAction = (
     if (userConfirmedManageRole.length > 0) {
       let sciperErrs = '';
 
-      const providedScipers = userConfirmedManageRole.split('\n');
+      const providedScipers = userConfirmedManageRole.trim().split('\n');
       setUserConfirmedManageRole('');
 
       for (const sciperStr of providedScipers) {

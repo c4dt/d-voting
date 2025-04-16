@@ -217,12 +217,12 @@ func (e evotingCommand) openForm(snap store.Snapshot, step execution.Step) error
 		return xerrors.Errorf(errGetForm, err)
 	}
 
-	isOwner, err := e.isRole(form, tx.UserID, Owners)
+	canEditForm, err := e.canEditForm(snap, form, tx.UserID)
 	if err != nil {
 		return xerrors.Errorf(errIsRole, err)
 	}
 
-	if !isOwner {
+	if !canEditForm {
 		return xerrors.Errorf(errNoOwnerPerms, tx.UserID)
 	}
 
@@ -346,12 +346,12 @@ func (e evotingCommand) shuffleBallots(snap store.Snapshot, step execution.Step)
 			form.Status, types.Closed)
 	}
 
-	isOwner, err := e.isRole(form, tx.UserID, Owners)
+	canEditForm, err := e.canEditForm(snap, form, tx.UserID)
 	if err != nil {
 		return xerrors.Errorf(errIsRole, err)
 	}
 
-	if !isOwner {
+	if !canEditForm {
 		return xerrors.Errorf(errNoOwnerPerms, tx.UserID)
 	}
 
@@ -553,12 +553,12 @@ func (e evotingCommand) closeForm(snap store.Snapshot, step execution.Step) erro
 		return xerrors.Errorf("the form is not open, current status: %d", form.Status)
 	}
 
-	isOwner, err := e.isRole(form, tx.UserID, Owners)
+	canEditForm, err := e.canEditForm(snap, form, tx.UserID)
 	if err != nil {
 		return xerrors.Errorf(errIsRole, err)
 	}
 
-	if !isOwner {
+	if !canEditForm {
 		return xerrors.Errorf(errNoOwnerPerms, tx.UserID)
 	}
 
@@ -717,12 +717,12 @@ func (e evotingCommand) combineShares(snap store.Snapshot, step execution.Step) 
 			" current status: %d", form.Status)
 	}
 
-	isOwner, err := e.isRole(form, tx.UserID, Owners)
+	canEditForm, err := e.canEditForm(snap, form, tx.UserID)
 	if err != nil {
 		return xerrors.Errorf(errIsRole, err)
 	}
 
-	if !isOwner {
+	if !canEditForm {
 		return xerrors.Errorf(errNoOwnerPerms, tx.UserID)
 	}
 
@@ -794,12 +794,12 @@ func (e evotingCommand) cancelForm(snap store.Snapshot, step execution.Step) err
 		return xerrors.Errorf(errGetForm, err)
 	}
 
-	isOwner, err := e.isRole(form, tx.UserID, Owners)
+	canEditForm, err := e.canEditForm(snap, form, tx.UserID)
 	if err != nil {
 		return xerrors.Errorf(errIsRole, err)
 	}
 
-	if !isOwner {
+	if !canEditForm {
 		return xerrors.Errorf(errNoOwnerPerms, tx.UserID)
 	}
 
@@ -837,12 +837,12 @@ func (e evotingCommand) deleteForm(snap store.Snapshot, step execution.Step) err
 		return xerrors.Errorf(errGetForm, err)
 	}
 
-	isOwner, err := e.isRole(form, tx.UserID, Owners)
+	canEditForm, err := e.canEditForm(snap, form, tx.UserID)
 	if err != nil {
 		return xerrors.Errorf(errIsRole, err)
 	}
 
-	if !isOwner {
+	if !canEditForm {
 		return xerrors.Errorf(errNoOwnerPerms, tx.UserID)
 	}
 
@@ -937,6 +937,20 @@ func (e evotingCommand) manageAdminList(snap store.Snapshot, step execution.Step
 	}
 
 	return nil
+}
+
+func (e evotingCommand) canEditForm(snap store.Snapshot, form types.Form, txPerformingUser string) (bool, error) {
+	isOwner, err := e.isRole(form, txPerformingUser, Owners)
+	if err != nil {
+		return false, xerrors.Errorf("Failed to get permissions")
+	}
+
+	isAdmin, _, err := e.fetchAdmin(snap, txPerformingUser)
+	if err != nil {
+		return false, xerrors.Errorf("Failed to get permissions")
+	}
+
+	return isOwner || isAdmin, nil
 }
 
 // isRole check whether the txPerformingUser has the role in the provided form
@@ -1034,12 +1048,12 @@ func (e evotingCommand) manageOwnersVotersForm(snap store.Snapshot, step executi
 			return xerrors.Errorf(errGetForm, err)
 		}
 
-		isOwner, err := e.isRole(form, txAddVoter.PerformingUserID, Owners)
+		canEditForm, err := e.canEditForm(snap, form, txAddVoter.PerformingUserID)
 		if err != nil {
 			return xerrors.Errorf(errIsRole, err)
 		}
 
-		if !isOwner {
+		if !canEditForm {
 			return xerrors.Errorf(errNoOwnerPerms, txAddVoter.PerformingUserID)
 		}
 
@@ -1053,12 +1067,12 @@ func (e evotingCommand) manageOwnersVotersForm(snap store.Snapshot, step executi
 			return xerrors.Errorf(errGetForm, err)
 		}
 
-		isOwner, err := e.isRole(form, txRemoveVoter.PerformingUserID, Owners)
+		canEditForm, err := e.canEditForm(snap, form, txRemoveVoter.PerformingUserID)
 		if err != nil {
 			return xerrors.Errorf(errIsRole, err)
 		}
 
-		if !isOwner {
+		if !canEditForm {
 			return xerrors.Errorf(errNoOwnerPerms, txRemoveVoter.PerformingUserID)
 		}
 
@@ -1072,12 +1086,12 @@ func (e evotingCommand) manageOwnersVotersForm(snap store.Snapshot, step executi
 			return xerrors.Errorf(errGetForm, err)
 		}
 
-		isOwner, err := e.isRole(form, txAddOwner.PerformingUserID, Owners)
+		canEditForm, err := e.canEditForm(snap, form, txAddOwner.PerformingUserID)
 		if err != nil {
 			return xerrors.Errorf(errIsRole, err)
 		}
 
-		if !isOwner {
+		if !canEditForm {
 			return xerrors.Errorf(errNoOwnerPerms, txAddOwner.PerformingUserID)
 		}
 
@@ -1091,12 +1105,12 @@ func (e evotingCommand) manageOwnersVotersForm(snap store.Snapshot, step executi
 			return xerrors.Errorf(errGetForm, err)
 		}
 
-		isOwner, err := e.isRole(form, txRemoveOwner.PerformingUserID, Owners)
+		canEditForm, err := e.canEditForm(snap, form, txRemoveOwner.PerformingUserID)
 		if err != nil {
 			return xerrors.Errorf(errIsRole, err)
 		}
 
-		if !isOwner {
+		if !canEditForm {
 			return xerrors.Errorf(errNoOwnerPerms, txRemoveOwner.PerformingUserID)
 		}
 
