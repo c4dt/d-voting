@@ -29,6 +29,7 @@ const FormShow: FC = () => {
     setStatus,
     roster,
     setResult,
+    ballotSize,
     configObj,
     setIsResultSet,
     voters,
@@ -238,9 +239,10 @@ const FormShow: FC = () => {
           <div className="pt-2 break-all">Form ID : {formId}</div>
           {status >= Status.Open &&
             status <= Status.Canceled &&
-            voters !== null &&
-            voters !== undefined && (
-              <div className="break-all">{t('numVotes', { num: voters.length })}</div>
+            ballotSize !== null &&
+            ballotSize !== undefined &&
+            (
+              <div className="break-all">{t('numVotes', { num: ballotSize })}</div>
             )}
           <div className="py-6 pl-2">
             <div className="font-bold uppercase text-lg text-gray-700">{t('status')}</div>
