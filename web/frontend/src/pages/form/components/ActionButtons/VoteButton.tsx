@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { ROUTE_BALLOT_SHOW } from 'Routes';
 import { Status } from 'types/form';
+import { isVoter } from '../../../../utils/auth';
 
 const VoteButton = ({ status, formID }) => {
   const authCtx = useContext(AuthContext);
@@ -12,7 +13,7 @@ const VoteButton = ({ status, formID }) => {
   const { t } = useTranslation();
 
   return (
-    authCtx.isAllowed(formID, 'vote') &&
+    isVoter(formID, authCtx) &&
     status === Status.Open &&
     isLogged && (
       <Link to={ROUTE_BALLOT_SHOW + '/' + formID}>
