@@ -149,7 +149,7 @@ test('Assert "Manage voters" button allows to add voters', async ({ page, baseUR
   await setUpMocks(page, 0, 6);
   await mockAddRole(page);
   await logIn(page, SCIPER_OTHER_ADMIN);
-  for (const sciper of [SCIPER_OTHER_ADMIN, SCIPER_ADMIN, SCIPER_USER]) {
+  for (const sciper of [SCIPER_ADMIN, SCIPER_USER]) {
     page.waitForRequest(async (request) => {
       const body = await request.postDataJSON();
       return (
@@ -164,8 +164,10 @@ test('Assert "Manage voters" button allows to add voters', async ({ page, baseUR
   // menu should be visible
   const textbox = await page.getByRole('textbox', { name: 'SCIPERs' });
   await expect(textbox).toBeVisible();
-  // add 3 voters (owner admin, non-owner admin, user)
-  await textbox.fill(`${SCIPER_OTHER_ADMIN}\n${SCIPER_ADMIN}\n${SCIPER_USER}`);
+  // add 2 voter (admin and user) since other admin and other user were already voters
+  await textbox.fill(
+    `${SCIPER_OTHER_ADMIN}\n${SCIPER_ADMIN}\n${SCIPER_USER}\n${SCIPER_OTHER_USER}`
+  );
   // click on confirmation
   await page.getByTestId('manageUserRoleConfirm').click();
 });
@@ -179,7 +181,7 @@ test('Assert "Manage voters" button allows to remove voters', async ({ page, bas
     return (
       request.url() === `${baseURL}/api/evoting/auth/forms/${FORMID}/removevoter` &&
       request.method() === 'POST' &&
-      body.TargetUserID === SCIPER_USER
+      body.TargetUserID === SCIPER_OTHER_USER
     );
   });
 
@@ -187,8 +189,8 @@ test('Assert "Manage voters" button allows to remove voters', async ({ page, bas
   // menu should be visible
   const textbox = await page.getByRole('textbox', { name: 'SCIPERs' });
   await expect(textbox).toBeVisible();
-  // add 3 voters (owner admin, non-owner admin, user)
-  await textbox.fill(`${SCIPER_ADMIN}`);
+  // remove 1 voter (other user), since both him and other admin were voters before
+  await textbox.fill(`${SCIPER_OTHER_ADMIN}`);
   // click on confirmation
   await page.getByTestId('manageUserRoleConfirm').click();
 });
@@ -408,12 +410,16 @@ test('Assert "Vote" button is visible to admin/non-admin voter user', async ({ p
     // eslint-disable-next-line @typescript-eslint/no-shadow
     async function (page: Page, locator: Locator) {
       await test.step('Assert is hidden to non-voter admin', async () => {
-        await logIn(page, SCIPER_OTHER_ADMIN);
+        await logIn(page, SCIPER_ADMIN);
         await expect(locator).toBeHidden();
       });
       await test.step('Assert is visible to voter admin', async () => {
-        await logIn(page, SCIPER_ADMIN);
+        await logIn(page, SCIPER_OTHER_USER);
         await expect(locator).toBeVisible();
+      });
+      await test.step('Assert is not visible to non-voter non-admin owner', async () => {
+        await logIn(page, SCIPER_USER);
+        await expect(locator).toBeHidden();
       });
     }
   );
@@ -426,7 +432,7 @@ test('Assert "Vote" button gets voting form', async ({ page }) => {
   await page.getByRole('button', { name: i18n.t('vote'), exact: true }).click();
 });
 
-test('Assert "Add Owners" button is only visible to owner (Part 1)', async ({ page }) => {
+test('Assert "Manage Owners" button is only visible to owner', async ({ page }) => {
   test.slow();
   await assertIsOnlyVisibleInStates(
     page,
@@ -452,7 +458,7 @@ test('Assert "Manage Owners" button allows to add Owners', async ({ page, baseUR
   // menu should be visible
   const textbox = await page.getByRole('textbox', { name: 'SCIPERs' });
   await expect(textbox).toBeVisible();
-  // add 3 voters (owner admin, non-owner admin, user)
+  // add 1 owner (other admin) since both others are already owners
   await textbox.fill(`${SCIPER_OTHER_ADMIN}\n${SCIPER_ADMIN}\n${SCIPER_USER}`);
   // click on confirmation
   await page.getByTestId('manageUserRoleConfirm').click();
@@ -474,7 +480,7 @@ test('Assert "Manage Owners" button allows to remove Owners', async ({ page, bas
   // menu should be visible
   const textbox = await page.getByRole('textbox', { name: 'SCIPERs' });
   await expect(textbox).toBeVisible();
-  // add 3 voters (owner admin, non-owner admin, user)
+  // remove 1 owner (other admin), since user and other admin were owners before
   await textbox.fill(`${SCIPER_USER}`);
   // click on confirmation
   await page.getByTestId('manageUserRoleConfirm').click();
