@@ -160,7 +160,7 @@ func TestCommand_CreateForm(t *testing.T) {
 
 	snap := fake.NewSnapshot()
 	step := makeStep(t, FormArg, string(dataAddAdmin))
-	err = cmd.manageAdminList(snap, step)
+	err = cmd.manageAdminOperatorList(snap, step)
 	require.NoError(t, err)
 
 	step = makeStep(t, FormArg, string(data))
@@ -1177,17 +1177,17 @@ func TestCommand_AdminList(t *testing.T) {
 
 	// Checking that if no AdminList is on the blockchain,
 	// It won't be able to find the transaction.
-	err = cmd.manageAdminList(fake.NewSnapshot(), makeStep(t))
+	err = cmd.manageAdminOperatorList(fake.NewSnapshot(), makeStep(t))
 	require.EqualError(t, err, getTransactionErr)
 
 	// Checking that providing a dummy data as argument, the form will not
 	// recognize it and won't be able to unmarshal it.
-	err = cmd.manageAdminList(fake.NewSnapshot(), makeStep(t, FormArg, "dummy"))
+	err = cmd.manageAdminOperatorList(fake.NewSnapshot(), makeStep(t, FormArg, "dummy"))
 	require.EqualError(t, err, unmarshalTransactionErr)
 
 	// Checking that given a Blockchain that always returns an error,
 	// it will not be able to create the AdminList on the store.
-	err = cmd.manageAdminList(fake.NewBadSnapshot(), makeStep(t, FormArg, string(data)))
+	err = cmd.manageAdminOperatorList(fake.NewBadSnapshot(), makeStep(t, FormArg, string(data)))
 	require.ErrorContains(t, err, "failed to get AdminList")
 
 	snap := fake.NewSnapshot()
@@ -1209,7 +1209,7 @@ func TestCommand_AdminList(t *testing.T) {
 	require.NoError(t, err)
 
 	// We perform below the command on the ledger
-	err = cmd.manageAdminList(snap, makeStep(t, FormArg, string(data)))
+	err = cmd.manageAdminOperatorList(snap, makeStep(t, FormArg, string(data)))
 	require.NoError(t, err)
 
 	// Now we want to remove its admin privilege.
@@ -1223,8 +1223,8 @@ func TestCommand_AdminList(t *testing.T) {
 	require.NoError(t, err)
 
 	// Publish the command on the ledger.
-	err = cmd.manageAdminList(snap, makeStep(t, FormArg, string(data)))
-	require.ErrorContains(t, err, "couldn't remove admin")
+	err = cmd.manageAdminOperatorList(snap, makeStep(t, FormArg, string(data)))
+	require.ErrorContains(t, err, "cannot remove this Admin because it is the only one remaining")
 
 	// We try to add a second admin but the performing user
 	// does not have the permission
@@ -1232,7 +1232,7 @@ func TestCommand_AdminList(t *testing.T) {
 	data2, err := addAdmin2.Serialize(ctx)
 	require.NoError(t, err)
 
-	err = cmd.manageAdminList(snap, makeStep(t, FormArg, string(data2)))
+	err = cmd.manageAdminOperatorList(snap, makeStep(t, FormArg, string(data2)))
 	require.ErrorContains(t, err, "The performing user is not an admin")
 
 	// Now we add another admin but with a performing user that is already admin
@@ -1240,7 +1240,7 @@ func TestCommand_AdminList(t *testing.T) {
 	data2, err = addAdmin2.Serialize(ctx)
 	require.NoError(t, err)
 
-	err = cmd.manageAdminList(snap, makeStep(t, FormArg, string(data2)))
+	err = cmd.manageAdminOperatorList(snap, makeStep(t, FormArg, string(data2)))
 	require.NoError(t, err)
 
 	// We retrieve the form on the ledger
@@ -1265,7 +1265,7 @@ func TestCommand_AdminList(t *testing.T) {
 	require.NoError(t, err)
 
 	// Publish the command on the ledger.
-	err = cmd.manageAdminList(snap, makeStep(t, FormArg, string(data)))
+	err = cmd.manageAdminOperatorList(snap, makeStep(t, FormArg, string(data)))
 	require.NoError(t, err)
 
 	// We retrieve the Admin Form from the ledger.
@@ -1600,7 +1600,7 @@ func initAdminList(t *testing.T, snap store.Snapshot, cmd evotingCommand) store.
 	require.NoError(t, err)
 
 	step := makeStep(t, FormArg, string(dataAddAdmin))
-	err = cmd.manageAdminList(snap, step)
+	err = cmd.manageAdminOperatorList(snap, step)
 	require.NoError(t, err)
 	return snap
 }
@@ -1808,7 +1808,7 @@ type fakeCmd struct {
 	err error
 }
 
-func (c fakeCmd) manageAdminList(snap store.Snapshot, step execution.Step) error {
+func (c fakeCmd) manageAdminOperatorList(snap store.Snapshot, step execution.Step) error {
 	return c.err
 }
 

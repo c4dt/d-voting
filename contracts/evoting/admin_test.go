@@ -57,14 +57,14 @@ func TestAdmin_AddAdminAndRemoveAdmin(t *testing.T) {
 	require.Equal(t, -1, res)
 	require.NoError(t, err)
 
+	err = adminList.RemoveAdmin(myTestID)
+	require.ErrorContains(t, err, "Error while retrieving the index of the element.")
+
 	err = adminList.AddAdmin(myTestID)
 	require.NoError(t, err)
 	res, err = adminList.GetAdminIndex(myTestID)
 	require.Equal(t, 0, res)
 	require.NoError(t, err)
-
-	err = adminList.RemoveAdmin(myTestID)
-	require.ErrorContains(t, err, "cannot remove this Admin because it is the only one remaining")
 
 	err = adminList.AddAdmin("654321")
 	require.NoError(t, err)
