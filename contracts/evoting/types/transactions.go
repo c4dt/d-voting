@@ -392,7 +392,47 @@ func (removeAdmin RemoveAdmin) Serialize(ctx serde.Context) ([]byte, error) {
 
 	data, err := format.Encode(ctx, removeAdmin)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to encode remove admin: %v", err)
+		return nil, xerrors.Errorf("failed to encode Remove Admin: %v", err)
+	}
+
+	return data, nil
+}
+
+// AddOperator defines the transaction to Add an Operator
+//
+// - implements serde.Message
+type AddOperator struct {
+	TargetUserID     string
+	PerformingUserID string
+}
+
+// Serialize implements serde.Message
+func (addOperator AddOperator) Serialize(ctx serde.Context) ([]byte, error) {
+	format := transactionFormats.Get(ctx.GetFormat())
+
+	data, err := format.Encode(ctx, addOperator)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to encode Add Operator: %v", err)
+	}
+
+	return data, nil
+}
+
+// RemoveOperator defines the transaction to Remove an Operator
+//
+// - implements serde.Message
+type RemoveOperator struct {
+	TargetUserID     string
+	PerformingUserID string
+}
+
+// Serialize implements serde.Message
+func (removeOperator RemoveOperator) Serialize(ctx serde.Context) ([]byte, error) {
+	format := transactionFormats.Get(ctx.GetFormat())
+
+	data, err := format.Encode(ctx, removeOperator)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to encode Remove Operator: %v", err)
 	}
 
 	return data, nil

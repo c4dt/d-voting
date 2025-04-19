@@ -85,7 +85,8 @@ const (
 	// perform all commands.
 	credentialAllCommand = "all"
 
-	AdminListId = ContractUID + "AdminList"
+	AdminListId    = ContractUID + "AdminList"
+	OperatorListId = ContractUID + "OperatorList"
 )
 
 // commands defines the commands of the evoting contract. Using an interface
@@ -100,7 +101,7 @@ type commands interface {
 	combineShares(snap store.Snapshot, step execution.Step) error
 	cancelForm(snap store.Snapshot, step execution.Step) error
 	deleteForm(snap store.Snapshot, step execution.Step) error
-	manageAdminList(snap store.Snapshot, step execution.Step) error
+	manageAdminOperatorList(snap store.Snapshot, step execution.Step) error
 	manageOwnersVotersForm(snap store.Snapshot, step execution.Step) error
 }
 
@@ -134,6 +135,11 @@ const (
 	CmdAddAdmin Command = "ADD_ADMIN"
 	// CmdRemoveAdmin is the command to remove an admin to the system
 	CmdRemoveAdmin Command = "REMOVE_ADMIN"
+
+	// CmdAddOperator is the command to add an operator to the system
+	CmdAddOperator Command = "ADD_OPERATOR"
+	// CmdRemoveOperator is the command to remove an operator of the system
+	CmdRemoveOperator Command = "REMOVE_OPERATOR"
 
 	// CmdAddOwnerForm is the command to add an Owner to a form
 	CmdAddOwnerForm Command = "ADD_OWNER"
@@ -267,14 +273,24 @@ func (c Contract) Execute(snap store.Snapshot, step execution.Step) error {
 			return xerrors.Errorf("failed to delete form: %v", err)
 		}
 	case CmdAddAdmin:
-		err := c.cmd.manageAdminList(snap, step)
+		err := c.cmd.manageAdminOperatorList(snap, step)
 		if err != nil {
 			return xerrors.Errorf("failed to add admin: %v", err)
 		}
 	case CmdRemoveAdmin:
-		err := c.cmd.manageAdminList(snap, step)
+		err := c.cmd.manageAdminOperatorList(snap, step)
 		if err != nil {
 			return xerrors.Errorf("failed to remove admin: %v", err)
+		}
+	case CmdAddOperator:
+		err := c.cmd.manageAdminOperatorList(snap, step)
+		if err != nil {
+			return xerrors.Errorf("failed to add operator: %v", err)
+		}
+	case CmdRemoveOperator:
+		err := c.cmd.manageAdminOperatorList(snap, step)
+		if err != nil {
+			return xerrors.Errorf("failed to remove operator: %v", err)
 		}
 	case CmdAddOwnerForm:
 		err := c.cmd.manageOwnersVotersForm(snap, step)

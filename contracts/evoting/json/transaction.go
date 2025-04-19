@@ -135,6 +135,20 @@ func (transactionFormat) Encode(ctx serde.Context, msg serde.Message) ([]byte, e
 		}
 
 		m = TransactionJSON{RemoveAdmin: &ra}
+	case types.AddOperator:
+		ao := AddOperatorJSON{
+			PerformingUserID: t.PerformingUserID,
+			TargetUserID:     t.TargetUserID,
+		}
+
+		m = TransactionJSON{AddOperator: &ao}
+	case types.RemoveOperator:
+		ro := RemoveOperatorJSON{
+			PerformingUserID: t.PerformingUserID,
+			TargetUserID:     t.TargetUserID,
+		}
+
+		m = TransactionJSON{RemoveOperator: &ro}
 	case types.AddOwner:
 		addOwner := AddOwnerJSON{
 			FormID:           t.FormID,
@@ -250,6 +264,16 @@ func (transactionFormat) Decode(ctx serde.Context, data []byte) (serde.Message, 
 			TargetUserID:     m.RemoveAdmin.TargetUserID,
 			PerformingUserID: m.RemoveAdmin.PerformingUserID,
 		}, nil
+	case m.AddOperator != nil:
+		return types.AddOperator{
+			TargetUserID:     m.AddOperator.TargetUserID,
+			PerformingUserID: m.AddOperator.PerformingUserID,
+		}, nil
+	case m.RemoveOperator != nil:
+		return types.RemoveOperator{
+			TargetUserID:     m.RemoveOperator.TargetUserID,
+			PerformingUserID: m.RemoveOperator.PerformingUserID,
+		}, nil
 	case m.AddOwner != nil:
 		return types.AddOwner{
 			FormID:           m.AddOwner.FormID,
@@ -293,6 +317,8 @@ type TransactionJSON struct {
 	DeleteForm        *DeleteFormJSON        `json:",omitempty"`
 	AddAdmin          *AddAdminJSON          `json:",omitempty"`
 	RemoveAdmin       *RemoveAdminJSON       `json:",omitempty"`
+	AddOperator       *AddOperatorJSON       `json:",omitempty"`
+	RemoveOperator    *RemoveOperatorJSON    `json:",omitempty"`
 	AddOwner          *AddOwnerJSON          `json:",omitempty"`
 	RemoveOwner       *RemoveOwnerJSON       `json:",omitempty"`
 	AddVoter          *AddVoterJSON          `json:",omitempty"`
@@ -372,6 +398,20 @@ type AddAdminJSON struct {
 
 // RemoveAdminJSON is the JSON representation of a RemoveAdmin transaction
 type RemoveAdminJSON struct {
+	TargetUserID     string
+	PerformingUserID string
+}
+
+// OperatorList
+
+// AddOperatorJSON is the JSON representation of a AddOperator transaction
+type AddOperatorJSON struct {
+	TargetUserID     string
+	PerformingUserID string
+}
+
+// RemoveOperatorJSON is the JSON representation of a RemoveOperator transaction
+type RemoveOperatorJSON struct {
 	TargetUserID     string
 	PerformingUserID string
 }

@@ -15,6 +15,7 @@ func RegisterAdminListFormat(format serde.Format, engine serde.FormatEngine) {
 	adminListFormat.Register(format, engine)
 }
 
+// Used for both admins and operators rights management
 type AdminList struct {
 	// List of SCIPER with admin rights
 	AdminList []int
@@ -79,7 +80,7 @@ func (adminList *AdminList) GetAdminIndex(userID string) (int, error) {
 	return -1, nil
 }
 
-// RemoveAdmin add a new admin to the system.
+// RemoveAdmin add a new admin to the admin list.
 func (adminList *AdminList) RemoveAdmin(userID string) error {
 	index, err := adminList.GetAdminIndex(userID)
 	if err != nil {
@@ -88,12 +89,6 @@ func (adminList *AdminList) RemoveAdmin(userID string) error {
 
 	if index < 0 {
 		return xerrors.Errorf("Error while retrieving the index of the element.")
-	}
-
-	// We don't want to have a form without any Admin.
-	if len(adminList.AdminList) <= 1 {
-		return xerrors.Errorf("Error, cannot remove this Admin because it is the " +
-			"only one remaining.")
 	}
 
 	adminList.AdminList = append(adminList.AdminList[:index], adminList.AdminList[index+1:]...)
