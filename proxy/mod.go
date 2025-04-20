@@ -38,6 +38,12 @@ type Form interface {
 	RemoveAdmin(http.ResponseWriter, *http.Request)
 	// GET /adminlist
 	AdminList(http.ResponseWriter, *http.Request)
+	// POST /addoperator
+	AddOperator(http.ResponseWriter, *http.Request)
+	// POST /removeoperator
+	RemoveOperator(http.ResponseWriter, *http.Request)
+	// GET /operatorlist
+	OperatorList(http.ResponseWriter, *http.Request)
 	// POST /forms/{formID}/addowner
 	AddOwnerToForm(http.ResponseWriter, *http.Request)
 	// POST /forms/{formID}/removeowner

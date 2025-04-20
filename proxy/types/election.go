@@ -88,3 +88,7 @@ type HTTPError struct {
 type GetAdminsResponse struct {
 	Admins []string
 }
+
+type GetOperatorsResponse struct {
+	Operators []string
+}
