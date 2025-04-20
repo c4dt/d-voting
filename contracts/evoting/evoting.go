@@ -941,7 +941,20 @@ func (e evotingCommand) manageAdminOperatorList(snap store.Snapshot, step execut
 		isOperator, listRetrieved, err := e.fetchOperator(snap, txAddOperator.PerformingUserID)
 		list = listRetrieved
 		if err != nil {
-			return xerrors.Errorf("couldn't get the operator permissions: %v", err)
+			if err.Error() != "couldn't retrieve the operator list: failed to get the AdminList: No list found" {
+				return xerrors.Errorf("couldn't get the operator permissions: %v", err)
+			}
+
+			sciperInt, err := types.SciperToInt(txAddOperator.TargetUserID)
+			if err != nil {
+				return xerrors.Errorf("Invalid Sciper: %v", err)
+			}
+
+			err = initializeAdminList(snap, sciperInt, OperatorListId, e.context)
+			if err != nil {
+				return xerrors.Errorf("failed to initialize the operator list: %v", err)
+			}
+
 		}
 		if !isOperator {
 			return xerrors.Errorf("The performing user is not an operator.")
@@ -1051,7 +1064,7 @@ func (e evotingCommand) fetchOperator(snap store.Snapshot, txPerformingUser stri
 	// Now fetches the operator list
 	form, err := e.getAdminList(snap, OperatorListId)
 	if err != nil {
-		return isAdmin, types.AdminList{}, err
+		return isAdmin, types.AdminList{}, xerrors.Errorf("couldn't retrieve the operator list: %v", err)
 	}
 
 	performingUserPerm, err := form.GetAdminIndex(txPerformingUser)

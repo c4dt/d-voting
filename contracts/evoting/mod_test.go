@@ -107,6 +107,12 @@ func TestExecute(t *testing.T) {
 	err = contract.Execute(fakeStore{}, makeStep(t, CmdArg, string(CmdRemoveAdmin)))
 	require.EqualError(t, err, fake.Err("failed to remove admin"))
 
+	err = contract.Execute(fakeStore{}, makeStep(t, CmdArg, string(CmdAddOperator)))
+	require.EqualError(t, err, fake.Err("failed to add operator"))
+
+	err = contract.Execute(fakeStore{}, makeStep(t, CmdArg, string(CmdRemoveOperator)))
+	require.EqualError(t, err, fake.Err("failed to remove operator"))
+
 	err = contract.Execute(fakeStore{}, makeStep(t, CmdArg, "fake"))
 	require.EqualError(t, err, "unknown command: fake")
 
@@ -1282,6 +1288,131 @@ func TestCommand_AdminList(t *testing.T) {
 	dummyUserIDIndex, _ = adminList.GetAdminIndex(dummyUID)
 
 	require.True(t, dummyUserIDIndex == -1)
+}
+
+// ==================
+// Operator form test
+
+/*
+	  Testing scenario
+		- Initialize contract and form
+		- Checks some parts of the error handling
+		- Add two different operators, one from an admin, the other from an operator
+		- Check that an non-operator canno't add himself
+		- Remove an operator with the other operator
+		- Check that the new non-operator cannot remove an operator
+		- Remove the last operator with an admin
+		- Check that the list is empty and no error is thrown
+*/
+func TestCommand_OperatorList(t *testing.T) {
+	initMetrics()
+
+	dummyForm, contract := initFormAndContract(123456)
+	dummyForm.FormID = fakeFormID
+
+	// Initialize the command handler to post on the ledger
+	cmd := evotingCommand{
+		Contract: &contract,
+	}
+
+	// We define a dummy userID which we are going to add admin permission.
+	dummyUID := "123456"
+	dummyUID2 := "777777"
+
+	// We initialize the commands to add permission.
+	addSelfOperator := types.AddOperator{TargetUserID: dummyUID2, PerformingUserID: dummyUID2}
+	addOtherOperator := types.AddOperator{TargetUserID: dummyUID2, PerformingUserID: dummyUID}
+	addOpWithAdmin := types.AddOperator{TargetUserID: dummyUID, PerformingUserID: otherDummyUserAdminID}
+
+	data, err := addSelfOperator.Serialize(ctx)
+	require.NoError(t, err)
+
+	// The following test are there to check error handling
+
+	// Checking that given a Blockchain that always returns an error,
+	// it will not be able to create the Operator list on the store.
+	err = cmd.manageAdminOperatorList(fake.NewBadSnapshot(), makeStep(t, FormArg, string(data)))
+	require.ErrorContains(t, err, "failed to get the AdminList")
+
+	// If no Admin List is provided nobody should be able to add an Operator
+	err = cmd.manageAdminOperatorList(fake.NewSnapshot(), makeStep(t, FormArg, string(data)))
+	require.ErrorContains(t, err, "couldn't get the operator permissions")
+
+	snap := fake.NewSnapshot()
+	initAdminList(t, snap, cmd)
+
+	// Checks the addition
+
+	// Adds an operator to the list
+	data, err = addOpWithAdmin.Serialize(ctx)
+	require.NoError(t, err)
+	err = cmd.manageAdminOperatorList(snap, makeStep(t, FormArg, string(data)))
+	require.NoError(t, err)
+
+	// A non operator non admin tries to adds himselfs resulting in an error
+	data, err = addSelfOperator.Serialize(ctx)
+	require.NoError(t, err)
+	err = cmd.manageAdminOperatorList(snap, makeStep(t, FormArg, string(data)))
+	require.ErrorContains(t, err, "The performing user is not an operator")
+
+	// Checks that an operator can add a new one
+	data, err = addOtherOperator.Serialize(ctx)
+	require.NoError(t, err)
+	err = cmd.cmd.manageAdminOperatorList(snap, makeStep(t, FormArg, string(data)))
+	require.NoError(t, err)
+
+	// General ID for OperatorList
+	h := sha256.New()
+	h.Write([]byte(OperatorListId))
+	formIDBuf := h.Sum(nil)
+
+	// We retrieve the Operator Form from the ledger.
+	res, err := snap.Get(formIDBuf)
+	require.NoError(t, err)
+
+	message, err := adminListFac.Deserialize(ctx, res)
+	require.NoError(t, err)
+
+	// And check that both operators have been added
+	adminList, ok := message.(types.AdminList)
+	require.True(t, ok)
+	require.True(t, len(adminList.AdminList) == 2)
+
+	// Checks for removal
+
+	remFromNonOp := types.RemoveOperator{TargetUserID: dummyUID2, PerformingUserID: dummyUID2}
+	remOtherOperator := types.RemoveOperator{TargetUserID: dummyUID2, PerformingUserID: dummyUID}
+	remFromAdmin := types.RemoveOperator{TargetUserID: dummyUID, PerformingUserID: otherDummyUserAdminID}
+
+	// Remove the second operator
+	data, err = remOtherOperator.Serialize(ctx)
+	require.NoError(t, err)
+	err = cmd.manageAdminOperatorList(snap, makeStep(t, FormArg, string(data)))
+	require.NoError(t, err)
+
+	//  Non operator can't remove
+	data, err = remFromNonOp.Serialize(ctx)
+	require.NoError(t, err)
+	err = cmd.manageAdminOperatorList(snap, makeStep(t, FormArg, string(data)))
+	require.ErrorContains(t, err, "The performing user is not an Operato")
+
+	// Admin can remove and create an empty list
+	data, err = remFromAdmin.Serialize(ctx)
+	require.NoError(t, err)
+	err = cmd.manageAdminOperatorList(snap, makeStep(t, FormArg, string(data)))
+	require.NoError(t, err)
+
+	// We retrieve the Operator Form from the ledger.
+	res, err = snap.Get(formIDBuf)
+	require.NoError(t, err)
+
+	message, err = adminListFac.Deserialize(ctx, res)
+	require.NoError(t, err)
+
+	// And check that one operator have been removed
+	adminList, ok = message.(types.AdminList)
+	require.True(t, ok)
+	require.True(t, len(adminList.AdminList) == 0)
 }
 
 /*
