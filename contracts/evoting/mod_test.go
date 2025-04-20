@@ -164,6 +164,8 @@ func TestCommand_CreateForm(t *testing.T) {
 	err = cmd.createForm(fake.NewBadSnapshot(), makeStep(t, FormArg, string(data)))
 	require.EqualError(t, err, "failed to get roster")
 
+	// Create form with an admin
+	initMetrics()
 	snap := fake.NewSnapshot()
 	step := makeStep(t, FormArg, string(dataAddAdmin))
 	err = cmd.manageAdminOperatorList(snap, step)
@@ -189,6 +191,43 @@ func TestCommand_CreateForm(t *testing.T) {
 
 	require.Equal(t, types.Initial, form.Status)
 	require.Equal(t, float64(types.Initial), testutil.ToFloat64(PromFormStatus))
+
+	// Create form with an Operator
+	addOperator := types.AddOperator{TargetUserID: otherDummyUserAdminID, PerformingUserID: dummyUserAdminID}
+	dataAddOperator, err := addOperator.Serialize(ctx)
+	require.NoError(t, err)
+
+	createForm = types.CreateForm{UserID: otherDummyUserAdminID}
+	data, err = createForm.Serialize(ctx)
+	require.NoError(t, err)
+
+	snap = fake.NewSnapshot()
+	step = makeStep(t, FormArg, string(dataAddAdmin))
+	err = cmd.manageAdminOperatorList(snap, step)
+	require.NoError(t, err)
+
+	step = makeStep(t, FormArg, string(dataAddOperator))
+	err = cmd.manageAdminOperatorList(snap, step)
+	require.NoError(t, err)
+
+	step = makeStep(t, FormArg, string(data))
+	err = cmd.createForm(snap, step)
+	require.NoError(t, err)
+
+	h = sha256.New()
+	h.Write(step.Current.GetID())
+	formIDBuff = h.Sum(nil)
+
+	res, err = snap.Get(formIDBuff)
+	require.NoError(t, err)
+
+	message, err = formFac.Deserialize(ctx, res)
+	require.NoError(t, err)
+
+	form, ok = message.(types.Form)
+	require.True(t, ok)
+
+	require.Equal(t, types.Initial, form.Status)
 }
 
 func TestCommand_OpenForm(t *testing.T) {
