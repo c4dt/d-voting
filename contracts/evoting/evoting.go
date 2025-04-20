@@ -83,12 +83,15 @@ func (e evotingCommand) createForm(snap store.Snapshot, step execution.Step) err
 	}
 
 	// Check if has Admin Right to create a form
-	isAdmin, _, err := e.fetchAdmin(snap, tx.UserID)
+	isOperator, _, err := e.fetchOperator(snap, tx.UserID)
 	if err != nil {
-		return err
+		// We can ignore this error, since an admin can do it without any operator
+		if err.Error() != "couldn't retrieve the operator list: failed to get the AdminList: No list found" {
+			return err
+		}
 	}
-	if !isAdmin {
-		return xerrors.Errorf("The performing user is not an admin.")
+	if !isOperator {
+		return xerrors.Errorf("The performing user is neither an operator or an admin")
 	}
 
 	roster, err := e.rosterFac.AuthorityOf(e.context, rosterBuf)
