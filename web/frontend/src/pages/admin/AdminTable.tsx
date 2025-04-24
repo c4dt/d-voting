@@ -1,7 +1,7 @@
 import { FC, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { User } from 'types/userRole';
+import { User, UserRole } from 'types/userRole';
 import AddAdminUserModal from './components/AddAdminUserModal';
 import RemoveAdminUserModal from './components/RemoveAdminUserModal';
 import { AuthContext } from '../../index';
@@ -22,7 +22,7 @@ const AdminTable: FC<AdminTableProps> = ({ users, setUsers }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [newUserOpen, setNewUserOpen] = useState(false);
   const [scipersToDisplay, setScipersToDisplay] = useState([]);
-  const [sciperToDelete, setSciperToDelete] = useState('');
+  const [userToDelete, setUserToDelete] = useState({ sciper: '', role: UserRole.None });
   const [pageIndex, setPageIndex] = useState(0);
 
   const openModal = () => setNewUserOpen(true);
@@ -38,8 +38,8 @@ const AdminTable: FC<AdminTableProps> = ({ users, setUsers }) => {
     }
   }, [users, pageIndex]);
 
-  const handleDelete = (sciper: string): void => {
-    setSciperToDelete(sciper);
+  const handleDelete = (user): void => {
+    setUserToDelete(user);
     setShowDeleteModal(true);
   };
 
@@ -71,10 +71,11 @@ const AdminTable: FC<AdminTableProps> = ({ users, setUsers }) => {
   };
 
   const handleRemoveRoleUser = (): void => {
+    // TODO: This needs to be corrected in case the user has both admin and operator rights
     // Pulling the new admin list from the server would be a better way, but it leads to a race condition.
-    const newUsers = users.filter((user) => user.sciper !== sciperToDelete);
+    const newUsers = users.filter((user) => user.sciper !== userToDelete.sciper);
     // If the user removes his own admin rights, we remove his rights client side and redirect it to the homepage
-    if (sciperToDelete === authctx.sciper.toString() && users.length > 1) {
+    if (userToDelete.sciper === authctx.sciper.toString() && users.length > 1) {
       authctx.isAdmin = false;
       authctx.isOperator = false;
       navigate('/');
@@ -96,7 +97,8 @@ const AdminTable: FC<AdminTableProps> = ({ users, setUsers }) => {
       <RemoveAdminUserModal
         setOpen={setShowDeleteModal}
         open={showDeleteModal}
-        sciper={sciperToDelete}
+        sciper={userToDelete.sciper}
+        role={userToDelete.role}
         handleRemoveRoleUser={handleRemoveRoleUser}
       />
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 py-6 pl-2">
@@ -147,7 +149,7 @@ const AdminTable: FC<AdminTableProps> = ({ users, setUsers }) => {
                     {users.length > 1 && (
                       <div
                         className="cursor-pointer text-[#ff0000] hover:text-indigo-900"
-                        onClick={() => handleDelete(user.sciper)}>
+                        onClick={() => handleDelete(user)}>
                         {t('delete')}
                       </div>
                     )}

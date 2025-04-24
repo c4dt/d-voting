@@ -1,5 +1,5 @@
 import React, { FC, useContext, useEffect, useState } from 'react';
-import { ENDPOINT_REMOVE_ADMIN } from 'components/utils/Endpoints';
+import { endpointRemoveRole } from 'components/utils/Endpoints';
 import PropTypes from 'prop-types';
 import { Dialog } from '@headlessui/react';
 import { UserRemoveIcon } from '@heroicons/react/outline';
@@ -8,11 +8,13 @@ import { useTranslation } from 'react-i18next';
 import { FlashContext, FlashLevel } from 'index';
 import AdminModal from './AdminModal';
 import usePostCall from 'components/utils/usePostCall';
+import { UserRole } from '../../../types/userRole';
 
 type RemoveAdminUserModalProps = {
   open: boolean;
   setOpen(opened: boolean): void;
   sciper: string;
+  role: UserRole;
   handleRemoveRoleUser(): void;
 };
 
@@ -20,6 +22,7 @@ const RemoveAdminUserModal: FC<RemoveAdminUserModalProps> = ({
   open,
   setOpen,
   sciper,
+  role,
   handleRemoveRoleUser,
 }) => {
   const { t } = useTranslation();
@@ -46,7 +49,7 @@ const RemoveAdminUserModal: FC<RemoveAdminUserModalProps> = ({
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userToBeRemoved),
     };
-    return sendFetchRequest(ENDPOINT_REMOVE_ADMIN, request, setIsPosting);
+    return sendFetchRequest(endpointRemoveRole(role), request, setIsPosting);
   };
   const handleDelete = async () => {
     setLoading(true);
