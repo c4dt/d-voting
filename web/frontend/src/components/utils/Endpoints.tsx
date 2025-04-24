@@ -8,8 +8,8 @@ export const ENDPOINT_LOGOUT = '/api/logout';
 export const ENDPOINT_USER_RIGHTS = '/api/user_rights';
 export const ENDPOINT_ADD_ROLE = '/api/add_role';
 export const ENDPOINT_REMOVE_ROLE = '/api/remove_role';
-export const ENDPOINT_ADD_ADMIN = '/api/evoting/auth/addadmin';
-export const ENDPOINT_REMOVE_ADMIN = '/api/evoting/auth/removeadmin';
+export const endpointAddRole = (role: UserRole) => `/api/evoting/auth/add${role}`;
+export const endpointRemoveRole = (role: UserRole) => `/api/evoting/auth/remove${role}`;
 export const checkTransaction = (token: string) => `/api/evoting/transactions/${token}`;
 
 export const newForm = '/api/evoting/forms';
@@ -40,6 +40,7 @@ export const form = (proxy: string, FormID: string) =>
   new URL(`/evoting/forms/${FormID}`, proxy).href;
 export const forms = (proxy: string) => new URL('/evoting/forms', proxy).href;
 export const adminlist = (proxy: string) => new URL('/evoting/adminlist', proxy).href;
+export const operatorlist = (proxy: string) => new URL('/evoting/operatorlist', proxy).href;
 
 // get the default proxy address
 export const getProxyConfig = '/api/config/proxy';
