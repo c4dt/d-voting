@@ -1269,7 +1269,7 @@ func TestCommand_AdminList(t *testing.T) {
 
 	// Publish the command on the ledger.
 	err = cmd.manageAdminOperatorList(snap, makeStep(t, FormArg, string(data)))
-	require.ErrorContains(t, err, "cannot remove this Admin because it is the only one remaining")
+	require.ErrorContains(t, err, "cannot remove last remaining Admin")
 
 	// We try to add a second admin but the performing user
 	// does not have the permission

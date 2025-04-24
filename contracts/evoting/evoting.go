@@ -862,7 +862,7 @@ func (e evotingCommand) deleteForm(snap store.Snapshot, step execution.Step) err
 	return nil
 }
 
-// manageAdminOperatorList implements commands. It performs the ADD or REMOVE ADMIN or OPERATORcommand
+// manageAdminOperatorList implements commands. It performs the ADD or REMOVE ADMIN or OPERATOR command
 func (e evotingCommand) manageAdminOperatorList(snap store.Snapshot, step execution.Step) error {
 	msg, err := e.getTransaction(step.Current)
 	if err != nil {
@@ -932,8 +932,7 @@ func (e evotingCommand) manageAdminOperatorList(snap store.Snapshot, step execut
 
 		// We don't want to have a form without any Admin.
 		if len(list.AdminList) <= 1 {
-			return xerrors.Errorf("Error, cannot remove this Admin because it is the " +
-				"only one remaining.")
+			return xerrors.Errorf("Error, cannot remove last remaining Admin.")
 		}
 
 		err = list.RemoveAdmin(txRemoveAdmin.TargetUserID)
