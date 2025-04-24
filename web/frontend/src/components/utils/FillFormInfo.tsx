@@ -13,6 +13,7 @@ const useFillFormInfo = (formData: FormInfo) => {
   const [result, setResult] = useState<Results[]>(null);
   const [chunksPerBallot, setChunksPerBallot] = useState<number>(0);
   const [ballotSize, setBallotSize] = useState<number>(0);
+  const [ballotVoters, setBallotVoters] = useState<string[]>(null);
   const [configObj, setConfigObj] = useState(null);
   const [voters, setVoters] = useState<string[]>(null);
   const [owners, setOwners] = useState<string[]>(null);
@@ -29,6 +30,7 @@ const useFillFormInfo = (formData: FormInfo) => {
     setResult(formData.Result);
     setChunksPerBallot(formData.ChunksPerBallot);
     setBallotSize(formData.BallotSize);
+    setBallotVoters(formData.BallotVoters);
     setConfigObj(formData.Configuration);
     setVoters(formData.Voters);
     setOwners(formData.Owners);
@@ -50,6 +52,7 @@ const useFillFormInfo = (formData: FormInfo) => {
     setResult,
     chunksPerBallot,
     ballotSize,
+    ballotVoters,
     configObj,
     isResultSet,
     setIsResultSet,

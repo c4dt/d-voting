@@ -54,6 +54,7 @@ interface FormInfo {
   Roster: string[];
   ChunksPerBallot: number;
   BallotSize: number;
+  BallotVoters: string[];
   Configuration: any;
   Voters: string[];
   Owners: string[];

@@ -476,8 +476,8 @@ func (form *form) Form(w http.ResponseWriter, r *http.Request) {
 		Result:          formFromStore.DecryptedBallots,
 		Roster:          roster,
 		ChunksPerBallot: formFromStore.ChunksPerBallot(),
-		BallotCount:     len(suff.VoterIDs),
 		BallotSize:      formFromStore.BallotSize,
+		BallotVoters:    suff.VoterIDs,
 		Voters:          votersAsStr,
 		Owners:          ownersAsStr,
 	}
