@@ -136,7 +136,7 @@ async function assertRouteIsCalled(
   }
 }
 
-test('Assert "Add voters" button is only visible to owner', async ({ page }) => {
+test('Assert "Manage voters" button is only visible to owner', async ({ page }) => {
   await assertIsOnlyVisibleInStates(
     page,
     page.getByTestId('manageVotersButton'),
@@ -164,7 +164,7 @@ test('Assert "Manage voters" button allows to add voters', async ({ page, baseUR
   // menu should be visible
   const textbox = await page.getByRole('textbox', { name: 'SCIPERs' });
   await expect(textbox).toBeVisible();
-  // add 2 voter (admin and user) since other admin and other user were already voters
+  // Add 2 voters (admin and user) since other admin and other user were already voters (as defined in the mock form)
   await textbox.fill(
     `${SCIPER_OTHER_ADMIN}\n${SCIPER_ADMIN}\n${SCIPER_USER}\n${SCIPER_OTHER_USER}`
   );
@@ -189,7 +189,7 @@ test('Assert "Manage voters" button allows to remove voters', async ({ page, bas
   // menu should be visible
   const textbox = await page.getByRole('textbox', { name: 'SCIPERs' });
   await expect(textbox).toBeVisible();
-  // remove 1 voter (other user), since both him and other admin were voters before
+  // remove 1 voter (other user), since both him and other admin were voters before (as defined in the mock form)
   await textbox.fill(`${SCIPER_OTHER_ADMIN}`);
   // click on confirmation
   await page.getByTestId('manageUserRoleConfirm').click();
@@ -458,7 +458,7 @@ test('Assert "Manage Owners" button allows to add Owners', async ({ page, baseUR
   // menu should be visible
   const textbox = await page.getByRole('textbox', { name: 'SCIPERs' });
   await expect(textbox).toBeVisible();
-  // add 1 owner (other admin) since both others are already owners
+  // Add 1 owner (other admin) since both others are already owners (as defined in the mock form)
   await textbox.fill(`${SCIPER_OTHER_ADMIN}\n${SCIPER_ADMIN}\n${SCIPER_USER}`);
   // click on confirmation
   await page.getByTestId('manageUserRoleConfirm').click();
@@ -480,7 +480,7 @@ test('Assert "Manage Owners" button allows to remove Owners', async ({ page, bas
   // menu should be visible
   const textbox = await page.getByRole('textbox', { name: 'SCIPERs' });
   await expect(textbox).toBeVisible();
-  // remove 1 owner (other admin), since user and other admin were owners before
+  // Remove 1 owner (other admin), since user and other admin were owners before (as defined in the mock form)
   await textbox.fill(`${SCIPER_USER}`);
   // click on confirmation
   await page.getByTestId('manageUserRoleConfirm').click();
