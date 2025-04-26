@@ -139,34 +139,58 @@ async function assertRouteIsCalled(
 test('Assert "Add voters" button is only visible to owner', async ({ page }) => {
   await assertIsOnlyVisibleInStates(
     page,
-    page.getByTestId('addVotersButton'),
+    page.getByTestId('manageVotersButton'),
     [0, 1],
     assertIsOnlyVisibleToOwner
   );
 });
 
-test('Assert "Add voters" button allows to add voters', async ({ page, baseURL }) => {
+test('Assert "Manage voters" button allows to add voters', async ({ page, baseURL }) => {
   await setUpMocks(page, 0, 6);
   await mockAddRole(page);
   await logIn(page, SCIPER_OTHER_ADMIN);
-  page.waitForRequest(async (request) => {
-    const body = await request.postDataJSON();
-    return (
-      request.url() === `${baseURL}/api/add_role` &&
-      request.method() === 'POST' &&
-      body.permission === 'vote' &&
-      body.subject === FORMID &&
-      body.userIds.toString() === [SCIPER_OTHER_ADMIN, SCIPER_ADMIN, SCIPER_USER].join(',')
-    );
-  });
-  await page.getByTestId('addVotersButton').click();
+  for (const sciper of [SCIPER_OTHER_ADMIN, SCIPER_ADMIN, SCIPER_USER]) {
+    page.waitForRequest(async (request) => {
+      const body = await request.postDataJSON();
+      return (
+        request.url() === `${baseURL}/api/evoting/auth/forms/${FORMID}/addvoter` &&
+        request.method() === 'POST' &&
+        body.TargetUserID === sciper
+      );
+    });
+  }
+
+  await page.getByTestId('manageVotersButton').click();
   // menu should be visible
   const textbox = await page.getByRole('textbox', { name: 'SCIPERs' });
   await expect(textbox).toBeVisible();
   // add 3 voters (owner admin, non-owner admin, user)
   await textbox.fill(`${SCIPER_OTHER_ADMIN}\n${SCIPER_ADMIN}\n${SCIPER_USER}`);
   // click on confirmation
-  await page.getByTestId('addVotersConfirm').click();
+  await page.getByTestId('manageUserRoleConfirm').click();
+});
+
+test('Assert "Manage voters" button allows to remove voters', async ({ page, baseURL }) => {
+  await setUpMocks(page, 1, 6);
+  await mockAddRole(page);
+  await logIn(page, SCIPER_OTHER_ADMIN);
+  page.waitForRequest(async (request) => {
+    const body = await request.postDataJSON();
+    return (
+      request.url() === `${baseURL}/api/evoting/auth/forms/${FORMID}/removevoter` &&
+      request.method() === 'POST' &&
+      body.TargetUserID === SCIPER_USER
+    );
+  });
+
+  await page.getByTestId('manageVotersButton').click();
+  // menu should be visible
+  const textbox = await page.getByRole('textbox', { name: 'SCIPERs' });
+  await expect(textbox).toBeVisible();
+  // add 3 voters (owner admin, non-owner admin, user)
+  await textbox.fill(`${SCIPER_ADMIN}`);
+  // click on confirmation
+  await page.getByTestId('manageUserRoleConfirm').click();
 });
 
 test('Assert "Initialize" button is only visible to owner', async ({ page }) => {
@@ -400,4 +424,58 @@ test('Assert "Vote" button gets voting form', async ({ page }) => {
   await logIn(page, SCIPER_ADMIN);
   page.waitForRequest(`${process.env.DELA_PROXY_URL}/evoting/forms/${FORMID}`);
   await page.getByRole('button', { name: i18n.t('vote'), exact: true }).click();
+});
+
+test('Assert "Add Owners" button is only visible to owner (Part 1)', async ({ page }) => {
+  test.slow();
+  await assertIsOnlyVisibleInStates(
+    page,
+    page.getByRole('button', { name: i18n.t('manageOwners') }),
+    [0, 1, 2, 3, 4, 6],
+    assertIsOnlyVisibleToOwner
+  );
+});
+
+test('Assert "Manage Owners" button allows to add Owners', async ({ page, baseURL }) => {
+  await setUpMocks(page, 0, 6);
+  await logIn(page, SCIPER_OTHER_ADMIN);
+  page.waitForRequest(async (request) => {
+    const body = await request.postDataJSON();
+    return (
+      request.url() === `${baseURL}/api/evoting/auth/forms/${FORMID}/addowner` &&
+      request.method() === 'POST' &&
+      body.TargetUserID === SCIPER_OTHER_ADMIN
+    );
+  });
+
+  await page.getByTestId('manageOwnersButton').click();
+  // menu should be visible
+  const textbox = await page.getByRole('textbox', { name: 'SCIPERs' });
+  await expect(textbox).toBeVisible();
+  // add 3 voters (owner admin, non-owner admin, user)
+  await textbox.fill(`${SCIPER_OTHER_ADMIN}\n${SCIPER_ADMIN}\n${SCIPER_USER}`);
+  // click on confirmation
+  await page.getByTestId('manageUserRoleConfirm').click();
+});
+
+test('Assert "Manage Owners" button allows to remove Owners', async ({ page, baseURL }) => {
+  await setUpMocks(page, 1, 6);
+  await logIn(page, SCIPER_OTHER_ADMIN);
+  page.waitForRequest(async (request) => {
+    const body = await request.postDataJSON();
+    return (
+      request.url() === `${baseURL}/api/evoting/auth/forms/${FORMID}/removeowner` &&
+      request.method() === 'POST' &&
+      body.TargetUserID === SCIPER_ADMIN
+    );
+  });
+
+  await page.getByTestId('manageOwnersButton').click();
+  // menu should be visible
+  const textbox = await page.getByRole('textbox', { name: 'SCIPERs' });
+  await expect(textbox).toBeVisible();
+  // add 3 voters (owner admin, non-owner admin, user)
+  await textbox.fill(`${SCIPER_USER}`);
+  // click on confirmation
+  await page.getByTestId('manageUserRoleConfirm').click();
 });

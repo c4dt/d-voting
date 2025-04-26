@@ -54,6 +54,7 @@ const setupMockForm = () => {
     Configuration: unmarshalConfig(mockForm1),
     BallotSize: 174,
     ChunksPerBallot: 6,
+    BallotVoters: [],
     Voters: [],
     Owners: [],
   });
@@ -71,6 +72,7 @@ const setupMockForm = () => {
     Configuration: unmarshalConfig(mockForm2),
     BallotSize: 174,
     ChunksPerBallot: 6,
+    BallotVoters: [],
     Voters: ['aefae', 'ozeivn', 'ovaeop'],
     Owners: [],
   });
@@ -87,6 +89,7 @@ const setupMockForm = () => {
     Configuration: unmarshalConfig(mockForm3),
     BallotSize: 291,
     ChunksPerBallot: 11,
+    BallotVoters: [],
     Voters: [],
     Owners: [],
   });
@@ -105,6 +108,8 @@ const toLightFormInfo = (mockForms: Map<ID, FormInfo>, formID: ID): LightFormInf
     Title: form.Configuration.Title,
     Status: form.Status,
     Pubkey: form.Pubkey,
+    Voters: form.Voters,
+    Owners: form.Owners,
   };
 };
 

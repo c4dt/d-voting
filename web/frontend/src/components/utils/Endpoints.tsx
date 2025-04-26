@@ -1,4 +1,6 @@
 // information accessed through the middleware
+import { UserRole } from '../../types/userRole';
+
 export const ENDPOINT_GET_TEQ_KEY = '/api/get_teq_key';
 export const ENDPOINT_DEV_LOGIN = '/api/get_dev_login';
 export const ENDPOINT_PERSONAL_INFO = '/api/personal_info';
@@ -12,6 +14,10 @@ export const checkTransaction = (token: string) => `/api/evoting/transactions/${
 
 export const newForm = '/api/evoting/forms';
 export const editForm = (FormID: string) => `/api/evoting/forms/${FormID}`;
+export const addRoleToForm = (formID: string, role: UserRole) =>
+  `/api/evoting/auth/forms/${formID}/add${role}`;
+export const removeRoleToForm = (formID: string, role: UserRole) =>
+  `/api/evoting/auth/forms/${formID}/remove${role}`;
 export const newFormVote = (FormID: string) => `/api/evoting/forms/${FormID}/vote`;
 export const editShuffle = (FormID: string) => `/api/evoting/services/shuffle/${FormID}`;
 export const addFormAuthorization = `/api/evoting/authorizations`;

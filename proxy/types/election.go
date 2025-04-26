@@ -56,7 +56,7 @@ type GetFormResponse struct {
 	Roster          []string
 	ChunksPerBallot int
 	BallotSize      int
-	BallotCount     int
+	BallotVoters    []string
 	Voters          []string
 	Owners          []string
 }
@@ -67,6 +67,8 @@ type LightForm struct {
 	Title  etypes.Title
 	Status uint16
 	Pubkey string
+	Voters []string
+	Owners []string
 }
 
 // GetFormsResponse defines the HTTP response when getting all forms

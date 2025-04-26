@@ -476,8 +476,8 @@ func (form *form) Form(w http.ResponseWriter, r *http.Request) {
 		Result:          formFromStore.DecryptedBallots,
 		Roster:          roster,
 		ChunksPerBallot: formFromStore.ChunksPerBallot(),
-		BallotCount:     len(suff.VoterIDs),
 		BallotSize:      formFromStore.BallotSize,
+		BallotVoters:    suff.VoterIDs,
 		Voters:          votersAsStr,
 		Owners:          ownersAsStr,
 	}
@@ -519,11 +519,23 @@ func (form *form) Forms(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
+			votersAsStr := make([]string, len(form.Voters))
+			for i := range form.Voters {
+				votersAsStr[i] = strconv.Itoa(form.Voters[i])
+			}
+
+			ownersAsStr := make([]string, len(form.Owners))
+			for i := range form.Owners {
+				ownersAsStr[i] = strconv.Itoa(form.Owners[i])
+			}
+
 			info := ptypes.LightForm{
 				FormID: string(form.FormID),
 				Title:  form.Configuration.Title,
 				Status: uint16(form.Status),
 				Pubkey: hex.EncodeToString(pubkeyBuf),
+				Voters: votersAsStr,
+				Owners: ownersAsStr,
 			}
 
 			allFormsInfo[i] = info
