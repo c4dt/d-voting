@@ -12,11 +12,11 @@ export function isManager(formID: ID, authState: AuthState) {
   );
 }
 
-export function isVoter(formID: ID, authorization: Map<String, String[]>, isLogged: boolean) {
+export function isVoter(formID: ID, authState: AuthState) {
   return (
-    isLogged && // must be logged in
-    authorization.has(formID) &&
-    authorization.get(formID).includes('vote') // must be able to vote in the election
+    authState.isLogged && // must be logged in
+    authState.formsAuthorizations.has(formID) &&
+    authState.formsAuthorizations.get(formID).includes(UserRole.Voter) // must be able to vote in the election
   );
 }
 

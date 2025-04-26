@@ -41,7 +41,7 @@ const Ballot: FC = () => {
   const [castVoteLoading, setCastVoteLoading] = useState(false);
 
   const navigate = useNavigate();
-  const { authorization, isLogged } = useContext(AuthContext);
+  const authCtx = useContext(AuthContext);
 
   const hexToBytes = (hex: string) => {
     const bytes: number[] = [];
@@ -116,7 +116,7 @@ const Ballot: FC = () => {
     event.currentTarget.disabled = true;
   };
 
-  const userIsVoter = isVoter(formID, authorization, isLogged);
+  const userIsVoter = isVoter(formID, authCtx);
 
   return (
     <>
