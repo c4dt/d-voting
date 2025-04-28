@@ -1,7 +1,7 @@
 import React, { FC, ReactElement, createContext, useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import * as endpoints from 'components/utils/Endpoints';
-import { ENDPOINT_PERSONAL_INFO, adminlist } from 'components/utils/Endpoints';
+import { ENDPOINT_PERSONAL_INFO, adminlist, operatorlist } from 'components/utils/Endpoints';
 
 import 'index.css';
 import App from 'layout/App';
@@ -255,22 +255,42 @@ const AppContainer = () => {
       }
       // wait for the default proxy to be set
       await setDefaultProxy();
-      const admins = await fetch(adminlist(defaultProxyState.getProxy()), req);
+
       let adminResult;
-      if (admins.status === 200) {
-        adminResult = await admins.json();
-      } else {
-        adminResult = { Admins: [] };
-      }
+      let operatorResult;
+
+      const adminPromise = fetch(adminlist(defaultProxyState.getProxy()), req).then(async (res) => {
+        if (res.status === 200) {
+          adminResult = await res.json();
+        } else {
+          adminResult = { Admins: [] };
+        }
+      });
+
+      const operatorPromise = fetch(operatorlist(defaultProxyState.getProxy()), req).then(
+        async (res) => {
+          if (res.status === 200) {
+            operatorResult = await res.json();
+          } else {
+            operatorResult = { Operators: [] };
+          }
+        }
+      );
+
+      await adminPromise;
+      await operatorPromise;
+
       const isAdmin =
         adminResult.Admins.includes(result.sciper.toString()) || adminResult.Admins.length === 0;
+      const isOperator = operatorResult.Operator.includes(result.sciper.toString());
+
       setAuth({
         isLogged: result.isLoggedIn,
         firstName: result.firstName,
         lastName: result.lastName,
         sciper: result.sciper,
         isAdmin: isAdmin,
-        isOperator: isAdmin,
+        isOperator: isOperator,
         formsAuthorizations: arr,
         authorization: result.isLoggedIn ? new Map(Object.entries(result.authorization)) : arr,
         isAllowed: function (subject: string, action: string) {
@@ -297,7 +317,6 @@ const AppContainer = () => {
     </FlashContext.Provider>
   );
 };
-
 // Main entry point
 ReactDOM.render(
   <React.StrictMode>
