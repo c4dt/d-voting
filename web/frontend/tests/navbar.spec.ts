@@ -12,14 +12,15 @@ import {
   SCIPER_OTHER_ADMIN,
   SCIPER_USER,
   mockLogout,
-  mockPersonalInfo,
+  mockPersonalInfo, SCIPER_OPERATOR, SCIPER_OTHER_OPERATOR,
 } from './mocks/api';
-import { mockAdminList } from './mocks/evoting';
+import { mockAdminList, mockOperatorList } from './mocks/evoting';
 
 initI18n();
 
 test.beforeEach(async ({ page }) => {
   await mockAdminList(page, [SCIPER_ADMIN, SCIPER_OTHER_ADMIN]);
+  await mockOperatorList(page, [SCIPER_OPERATOR, SCIPER_OTHER_OPERATOR]);
   await mockPersonalInfo(page);
   await setUp(page, '/about');
 });

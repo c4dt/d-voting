@@ -4,6 +4,8 @@ export const SCIPER_ADMIN = '123456';
 export const SCIPER_OTHER_ADMIN = '987654';
 export const SCIPER_USER = '789012';
 export const SCIPER_OTHER_USER = '654321';
+export const SCIPER_OPERATOR = '111111';
+export const SCIPER_OTHER_OPERATOR = '222222';
 
 // /api/evoting
 

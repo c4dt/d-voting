@@ -6,9 +6,9 @@ import {
   SCIPER_OTHER_ADMIN,
   SCIPER_OTHER_USER,
   SCIPER_USER,
-  mockPersonalInfo,
+  mockPersonalInfo, SCIPER_OPERATOR, SCIPER_OTHER_OPERATOR,
 } from './mocks/api';
-import { mockAdminList, mockForms } from './mocks/evoting';
+import { mockAdminList, mockForms, mockOperatorList } from './mocks/evoting';
 import Forms from './json/formIndex.json';
 
 initI18n();
@@ -25,6 +25,7 @@ async function disableFilter(page: Page) {
 test.beforeEach(async ({ page }) => {
   // mock empty list per default
   await mockAdminList(page, [SCIPER_ADMIN, SCIPER_OTHER_ADMIN]);
+  await mockOperatorList(page, [SCIPER_OPERATOR, SCIPER_OTHER_OPERATOR]);
   await mockForms(page, 'empty');
   await mockPersonalInfo(page);
   await setUp(page, '/form/index');

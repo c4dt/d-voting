@@ -1,13 +1,20 @@
 import { expect, test } from '@playwright/test';
 import { default as i18n } from 'i18next';
 import { initI18n, setUp } from './shared';
-import { SCIPER_ADMIN, SCIPER_OTHER_ADMIN, mockPersonalInfo } from './mocks/api';
-import { mockAdminList } from './mocks/evoting';
+import {
+  SCIPER_ADMIN,
+  SCIPER_OTHER_ADMIN,
+  mockPersonalInfo,
+  SCIPER_OPERATOR,
+  SCIPER_OTHER_OPERATOR
+} from './mocks/api';
+import { mockAdminList, mockOperatorList } from './mocks/evoting';
 
 initI18n();
 
 test.beforeEach(async ({ page }) => {
   await mockAdminList(page, [SCIPER_ADMIN, SCIPER_OTHER_ADMIN]);
+  await mockOperatorList(page, [SCIPER_OPERATOR, SCIPER_OTHER_OPERATOR]);
   await mockPersonalInfo(page);
   await setUp(page, '/about');
 });
