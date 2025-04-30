@@ -85,6 +85,7 @@ class FlashMessage {
     return this.level;
   }
 }
+
 const flashM = new FlashMessage('', 1);
 const defaultFlashState = {
   getMessages: function (): FlashMessage[] {
@@ -153,7 +154,9 @@ const Failed: FC = ({ children }) => (
     <div className="px-5 py-3 bg-white rounded-md shadow-xl">
       <div className="flex flex-col items-center">
         <div className="p-4">
-          <h1 className="text-2xl font-medium text-slate-600 pb-2">Failed to get personal info.</h1>
+          <h1 className="text-2xl font-medium text-slate-600 pb-2">
+            Failed to fetch users informations.
+          </h1>
           <p className="text-sm tracking-tight font-light text-slate-400 leading-6">
             Is the backend running ?
           </p>
@@ -282,7 +285,8 @@ const AppContainer = () => {
 
       const isAdmin =
         adminResult.Admins.includes(result.sciper.toString()) || adminResult.Admins.length === 0;
-      const isOperator = operatorResult.Operator.includes(result.sciper.toString());
+      // In order to simplify checks in the code, since an admin also has operator rights, an admin is also an operator
+      const isOperator = isAdmin || operatorResult.Operators.includes(result.sciper.toString());
 
       setAuth({
         isLogged: result.isLoggedIn,
