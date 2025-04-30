@@ -38,23 +38,29 @@ func NewForm(srv ordering.Service, p pool.Pool,
 
 	logger := dela.Logger.With().Timestamp().Str("role", "evoting-proxy").Logger()
 
-	// Compute the ID of the admin list id
-	// We need it to filter the send list of form
+	// Compute the IDs of the admin and operator lists
+	// We need them to filter the send list of form
 	h := sha256.New()
 	h.Write([]byte(evoting.AdminListId))
 	adminListIDBuf := h.Sum(nil)
 	adminListID := hex.EncodeToString(adminListIDBuf)
 
+	h = sha256.New()
+	h.Write([]byte(evoting.OperatorListId))
+	operatorListIDBuf := h.Sum(nil)
+	operatorListID := hex.EncodeToString(operatorListIDBuf)
+
 	return &form{
-		logger:      logger,
-		orderingSvc: srv,
-		context:     ctx,
-		formFac:     fac,
-		adminFac:    types.AdminListFactory{},
-		mngr:        txnManaxer,
-		pool:        p,
-		pk:          pk,
-		adminListID: adminListID,
+		logger:         logger,
+		orderingSvc:    srv,
+		context:        ctx,
+		formFac:        fac,
+		adminFac:       types.AdminListFactory{},
+		mngr:           txnManaxer,
+		pool:           p,
+		pk:             pk,
+		adminListID:    adminListID,
+		operatorListID: operatorListID,
 	}
 }
 
@@ -64,15 +70,16 @@ func NewForm(srv ordering.Service, p pool.Pool,
 type form struct {
 	sync.Mutex
 
-	orderingSvc ordering.Service
-	logger      zerolog.Logger
-	context     serde.Context
-	formFac     serde.Factory
-	adminFac    serde.Factory
-	mngr        txnmanager.Manager
-	pool        pool.Pool
-	pk          kyber.Point
-	adminListID string
+	orderingSvc    ordering.Service
+	logger         zerolog.Logger
+	context        serde.Context
+	formFac        serde.Factory
+	adminFac       serde.Factory
+	mngr           txnmanager.Manager
+	pool           pool.Pool
+	pk             kyber.Point
+	adminListID    string
+	operatorListID string
 }
 
 // NewForm implements proxy.Proxy
@@ -500,9 +507,11 @@ func (form *form) Forms(w http.ResponseWriter, r *http.Request) {
 
 	allFormsInfo := make([]ptypes.LightForm, len(elecMD.FormsIDs))
 
+	adminFormsSeen := 0
+
 	// get the forms
 	for i, id := range elecMD.FormsIDs {
-		if id != form.adminListID {
+		if id != form.adminListID && id != form.operatorListID {
 			form, err := types.FormFromStore(form.context, form.formFac, id, form.orderingSvc.GetStore())
 			if err != nil {
 				InternalError(w, r, xerrors.Errorf("failed to get form: %v", err), nil)
@@ -538,11 +547,13 @@ func (form *form) Forms(w http.ResponseWriter, r *http.Request) {
 				Owners: ownersAsStr,
 			}
 
-			allFormsInfo[i] = info
+			allFormsInfo[i-adminFormsSeen] = info
+		} else {
+			adminFormsSeen++
 		}
 	}
 
-	response := ptypes.GetFormsResponse{Forms: allFormsInfo}
+	response := ptypes.GetFormsResponse{Forms: allFormsInfo[0 : len(elecMD.FormsIDs)-adminFormsSeen]}
 
 	txnmanager.SendResponse(w, response)
 
