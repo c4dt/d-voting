@@ -1,6 +1,6 @@
 import { assertHasFooter, assertHasNavBar, initI18n, logIn, setUp } from './shared';
 import { expect, test } from '@playwright/test';
-import { SCIPER_ADMIN, mockProxyList } from './mocks/api';
+import { mockProxyList, SCIPER_ADMIN, SCIPER_OPERATOR } from './mocks/api';
 import { default as i18n } from 'i18next';
 import Worker0 from './json/api/proxies/dela-worker-0.json';
 import { UserRole } from '../src/types/userRole';
@@ -67,18 +67,18 @@ test('Assert "Add admin" button is working', async ({ page, baseURL }) => {
   await page.getByRole('button', { name: i18n.t('addUser') }).click();
   // menu should be visible
   const textbox = page.getByRole('textbox', { name: 'Sciper' });
-  const select = page.getByRole('button', { name: UserRole.Operator });
+  const select = page.getByLabel(i18n.t('enterSciper')).getByText(UserRole.Operator);
   await expect(textbox).toBeVisible();
   // add 1 admin
   await textbox.fill(adminToAdd);
   await expect(select).toBeVisible();
   await select.click();
   // select the admin role in the list box
-  const adminSelect = page.getByLabel(UserRole.Operator).getByText(UserRole.Admin);
+  const adminSelect = page.getByLabel(i18n.t('enterSciper')).getByText(UserRole.Admin);
   await expect(adminSelect).toBeVisible();
   await adminSelect.click();
   // click on confirmation
-  const addButton = await page
+  const addButton = page
     .getByLabel(i18n.t('enterSciper'))
     .getByRole('button', { name: i18n.t('addUser') });
   await addButton.click();
@@ -86,7 +86,7 @@ test('Assert "Add admin" button is working', async ({ page, baseURL }) => {
 });
 
 test('Assert "Remove admin" button is working', async ({ page, baseURL }) => {
-  const adminToRemove = '123456';
+  const adminToRemove = SCIPER_ADMIN;
   page.waitForRequest(async (request) => {
     const body = await request.postDataJSON();
     return (
@@ -98,6 +98,53 @@ test('Assert "Remove admin" button is working', async ({ page, baseURL }) => {
   await page
     .getByRole('row')
     .filter({ has: page.getByText(adminToRemove) })
+    .getByText(i18n.t('delete'))
+    .click();
+  const delButton = page
+    .getByLabel(i18n.t('confirmDeleteUserSciper'))
+    .getByRole('button', { name: i18n.t('delete') });
+  await expect(delButton).toBeVisible();
+  await delButton.click();
+  await expect(delButton).not.toBeVisible();
+});
+
+test('Assert "Add operator" button is working', async ({ page, baseURL }) => {
+  const operatorToAdd = '999999';
+  page.waitForRequest(async (request) => {
+    const body = await request.postDataJSON();
+    return (
+      request.url() === `${baseURL}/api/evoting/auth/addoperator` &&
+      request.method() === 'POST' &&
+      body.TargetUserID === operatorToAdd
+    );
+  });
+  await page.getByRole('button', { name: i18n.t('addUser') }).click();
+  // menu should be visible
+  const textbox = page.getByRole('textbox', { name: 'Sciper' });
+  await expect(textbox).toBeVisible();
+  // add 1 operator
+  await textbox.fill(operatorToAdd);
+  // click on confirmation
+  const addButton = page
+    .getByLabel(i18n.t('enterSciper'))
+    .getByRole('button', { name: i18n.t('addUser') });
+  await addButton.click();
+  await expect(addButton).not.toBeVisible();
+});
+
+test('Assert "Remove operator" button is working', async ({ page, baseURL }) => {
+  const operatorToRemove = SCIPER_OPERATOR;
+  page.waitForRequest(async (request) => {
+    const body = await request.postDataJSON();
+    return (
+      request.url() === `${baseURL}/api/evoting/auth/removeoperator` &&
+      request.method() === 'POST' &&
+      body.TargetUserID === operatorToRemove
+    );
+  });
+  await page
+    .getByRole('row')
+    .filter({ has: page.getByText(operatorToRemove) })
     .getByText(i18n.t('delete'))
     .click();
   const delButton = page
