@@ -3,10 +3,10 @@ import { default as i18n } from 'i18next';
 import { initI18n, setUp } from './shared';
 import {
   SCIPER_ADMIN,
-  SCIPER_OTHER_ADMIN,
-  mockPersonalInfo,
   SCIPER_OPERATOR,
-  SCIPER_OTHER_OPERATOR
+  SCIPER_OTHER_ADMIN,
+  SCIPER_OTHER_OPERATOR,
+  mockPersonalInfo,
 } from './mocks/api';
 import { mockAdminList, mockOperatorList } from './mocks/evoting';
 

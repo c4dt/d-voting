@@ -3,7 +3,9 @@ import { default as i18n } from 'i18next';
 import { assertHasFooter, assertHasNavBar, initI18n, logIn, setUp } from './shared';
 import {
   SCIPER_ADMIN,
+  SCIPER_OPERATOR,
   SCIPER_OTHER_ADMIN,
+  SCIPER_OTHER_OPERATOR,
   SCIPER_OTHER_USER,
   SCIPER_USER,
   mockDKGActors as mockAPIDKGActors,
@@ -12,7 +14,7 @@ import {
   mockForms,
   mockPersonalInfo,
   mockProxies,
-  mockServicesShuffle, SCIPER_OPERATOR, SCIPER_OTHER_OPERATOR,
+  mockServicesShuffle,
 } from './mocks/api';
 import { mockAdminList, mockDKGActors, mockFormsFormID, mockOperatorList } from './mocks/evoting';
 import { FORMID } from './mocks/shared';

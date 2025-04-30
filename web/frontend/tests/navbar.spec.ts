@@ -9,10 +9,12 @@ import {
 } from './shared';
 import {
   SCIPER_ADMIN,
+  SCIPER_OPERATOR,
   SCIPER_OTHER_ADMIN,
+  SCIPER_OTHER_OPERATOR,
   SCIPER_USER,
   mockLogout,
-  mockPersonalInfo, SCIPER_OPERATOR, SCIPER_OTHER_OPERATOR,
+  mockPersonalInfo,
 } from './mocks/api';
 import { mockAdminList, mockOperatorList } from './mocks/evoting';
 

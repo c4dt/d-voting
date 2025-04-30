@@ -1,6 +1,6 @@
 import { assertHasFooter, assertHasNavBar, initI18n, logIn, setUp } from './shared';
 import { expect, test } from '@playwright/test';
-import { mockProxyList, SCIPER_ADMIN, SCIPER_OPERATOR } from './mocks/api';
+import { SCIPER_ADMIN, SCIPER_OPERATOR, mockProxyList } from './mocks/api';
 import { default as i18n } from 'i18next';
 import Worker0 from './json/api/proxies/dela-worker-0.json';
 import { UserRole } from '../src/types/userRole';

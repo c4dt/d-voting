@@ -5,12 +5,14 @@ import fr from './../src/language/fr.json';
 import de from './../src/language/de.json';
 import {
   SCIPER_ADMIN,
+  SCIPER_OPERATOR,
   SCIPER_OTHER_ADMIN,
+  SCIPER_OTHER_OPERATOR,
   SCIPER_USER,
   mockGetDevLogin,
   mockLogout,
   mockPersonalInfo,
-  mockProxy, SCIPER_OPERATOR, SCIPER_OTHER_OPERATOR,
+  mockProxy,
 } from './mocks/api';
 import { mockAdminList, mockOperatorList } from './mocks/evoting';
 
