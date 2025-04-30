@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test';
 import { SCIPER_ADMIN, mockProxyList } from './mocks/api';
 import { default as i18n } from 'i18next';
 import Worker0 from './json/api/proxies/dela-worker-0.json';
+import { UserRole } from '../src/types/userRole';
 
 initI18n();
 
@@ -43,7 +44,7 @@ test('Assert tables are present and have the right amount of rows', async ({ pag
       .getByRole('table')
       .filter({ has: page.getByText(i18n.t('role')) })
       .getByRole('row')
-  ).toHaveCount(3);
+  ).toHaveCount(5);
 
   await expect(
     page
@@ -65,10 +66,17 @@ test('Assert "Add admin" button is working', async ({ page, baseURL }) => {
   });
   await page.getByRole('button', { name: i18n.t('addUser') }).click();
   // menu should be visible
-  const textbox = await page.getByRole('textbox', { name: 'Sciper' });
+  const textbox = page.getByRole('textbox', { name: 'Sciper' });
+  const select = page.getByRole('button', { name: UserRole.Operator });
   await expect(textbox).toBeVisible();
   // add 1 admin
   await textbox.fill(adminToAdd);
+  await expect(select).toBeVisible();
+  await select.click();
+  // select the admin role in the list box
+  const adminSelect = page.getByLabel(UserRole.Operator).getByText(UserRole.Admin);
+  await expect(adminSelect).toBeVisible();
+  await adminSelect.click();
   // click on confirmation
   const addButton = await page
     .getByLabel(i18n.t('enterSciper'))
