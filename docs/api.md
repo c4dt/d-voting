@@ -625,8 +625,6 @@ Return:
 
 # A3: Get the AdminList 
 
-
-
 |        |                      |
 | ------ |----------------------|
 | URL    | `/evoting/adminlist` |
@@ -643,4 +641,72 @@ Return:
 }
 ```
 
+# A4: Add an operator to the OperatorList 🔐
+
+|        |                        |
+| ------ |------------------------|
+| URL    | `/evoting/addoperator` |
+| Method | `POST`                 |
+| Input  | `application/json`     |
+```json
+{
+  "TargetUserID": "<SCIPER>",
+  "PerformingUserID": "<SCIPER>"
+}
+```
+
+Return:
+
+`200 OK`
+
+```json
+{
+  "Status": 0,
+  "Token": "<URL encoded>"
+}
+```
+
+# A5: Remove an operator from the OperatorList 🔐
+
+|        |                           |
+| ------ |---------------------------|
+| URL    | `/evoting/removeoperator` |
+| Method | `POST`                    |
+| Input  | `application/json`        |
+
+```json
+{
+  "TargetUserID": "<SCIPER>",
+  "PerformingUserID": "<SCIPER>"
+}
+```
+
+Return:
+
+`200 OK`
+
+```json
+{
+  "Status": 0,
+  "Token": "<URL encoded>"
+}
+```
+
+# A3: Get the OperatorList 
+
+|        |                         |
+| ------ |-------------------------|
+| URL    | `/evoting/operatorlist` |
+| Method | `GET`                   |
+| Input  |                         |
+
+Return:
+
+`200 OK`
+
+```json
+{
+   "Operators":["<SCIPER>", "<SCIPER>", "..."]
+}
+```
 

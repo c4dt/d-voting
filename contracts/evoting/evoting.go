@@ -83,12 +83,15 @@ func (e evotingCommand) createForm(snap store.Snapshot, step execution.Step) err
 	}
 
 	// Check if has Admin Right to create a form
-	isAdmin, _, err := e.fetchAdmin(snap, tx.UserID)
+	isOperator, _, err := e.fetchOperator(snap, tx.UserID)
 	if err != nil {
-		return err
+		// We can ignore this error, since an admin can do it without any operator
+		if err.Error() != "couldn't retrieve the operator list: failed to get the AdminList: No list found" {
+			return err
+		}
 	}
-	if !isAdmin {
-		return xerrors.Errorf("The performing user is not an admin.")
+	if !isOperator {
+		return xerrors.Errorf("The performing user is neither an operator or an admin")
 	}
 
 	roster, err := e.rosterFac.AuthorityOf(e.context, rosterBuf)
@@ -859,8 +862,8 @@ func (e evotingCommand) deleteForm(snap store.Snapshot, step execution.Step) err
 	return nil
 }
 
-// manageAdminList implements commands. It performs the ADD or REMOVE ADMIN command
-func (e evotingCommand) manageAdminList(snap store.Snapshot, step execution.Step) error {
+// manageAdminOperatorList implements commands. It performs the ADD or REMOVE ADMIN or OPERATOR command
+func (e evotingCommand) manageAdminOperatorList(snap store.Snapshot, step execution.Step) error {
 	msg, err := e.getTransaction(step.Current)
 	if err != nil {
 		return xerrors.Errorf(errGetTransaction, err)
@@ -868,12 +871,21 @@ func (e evotingCommand) manageAdminList(snap store.Snapshot, step execution.Step
 
 	var list types.AdminList
 
-	h := sha256.New()
-	h.Write([]byte(AdminListId))
-	formIDBuf := h.Sum(nil)
-
 	txAddAdmin, okAddAdmin := msg.(types.AddAdmin)
 	txRemoveAdmin, okRemoveAdmin := msg.(types.RemoveAdmin)
+	txAddOperator, okAddOperator := msg.(types.AddOperator)
+	txRemoveOperator, okRemoveOperator := msg.(types.RemoveOperator)
+
+	listId := ""
+	if okAddAdmin || okRemoveAdmin {
+		listId = AdminListId
+	} else {
+		listId = OperatorListId
+	}
+
+	h := sha256.New()
+	h.Write([]byte(listId))
+	formIDBuf := h.Sum(nil)
 
 	if okAddAdmin {
 		isAdmin, listRetrieved, err := e.fetchAdmin(snap, txAddAdmin.PerformingUserID)
@@ -891,7 +903,7 @@ func (e evotingCommand) manageAdminList(snap store.Snapshot, step execution.Step
 				return xerrors.Errorf("Invalid Sciper: %v", err)
 			}
 
-			err = initializeAdminList(snap, intSciper, e.context)
+			err = initializeAdminList(snap, intSciper, AdminListId, e.context)
 			if err != nil {
 				return xerrors.Errorf("Failed to initialize admin list: %v", err)
 			}
@@ -918,9 +930,55 @@ func (e evotingCommand) manageAdminList(snap store.Snapshot, step execution.Step
 			return xerrors.Errorf("The performing user is not an admin.")
 		}
 
+		// We don't want to have a form without any Admin.
+		if len(list.AdminList) <= 1 {
+			return xerrors.Errorf("Error, cannot remove last remaining Admin.")
+		}
+
 		err = list.RemoveAdmin(txRemoveAdmin.TargetUserID)
 		if err != nil {
 			return xerrors.Errorf("couldn't remove admin: %v", err)
+		}
+	} else if okAddOperator {
+		isOperator, listRetrieved, err := e.fetchOperator(snap, txAddOperator.PerformingUserID)
+		list = listRetrieved
+		if err != nil {
+			if err.Error() != "couldn't retrieve the operator list: failed to get the AdminList: No list found" {
+				return xerrors.Errorf("couldn't get the operator permissions: %v", err)
+			}
+
+			sciperInt, err := types.SciperToInt(txAddOperator.TargetUserID)
+			if err != nil {
+				return xerrors.Errorf("Invalid Sciper: %v", err)
+			}
+
+			err = initializeAdminList(snap, sciperInt, OperatorListId, e.context)
+			if err != nil {
+				return xerrors.Errorf("failed to initialize the operator list: %v", err)
+			}
+
+		}
+		if !isOperator {
+			return xerrors.Errorf("The performing user is not an operator.")
+		}
+
+		err = list.AddAdmin(txAddOperator.TargetUserID)
+		if err != nil {
+			return xerrors.Errorf("couldn't add operator: %v", err)
+		}
+	} else if okRemoveOperator {
+		isOperator, listRetrieved, err := e.fetchOperator(snap, txRemoveOperator.PerformingUserID)
+		list = listRetrieved
+		if err != nil {
+			return xerrors.Errorf("couldn't get the operator permissions: %v", err)
+		}
+		if !isOperator {
+			return xerrors.Errorf("The performing user is not an Operator.")
+		}
+
+		err = list.RemoveAdmin(txRemoveOperator.TargetUserID)
+		if err != nil {
+			return xerrors.Errorf("couldn't remove Operator: %v", err)
 		}
 	} else {
 		return xerrors.Errorf(errWrongTx, msg)
@@ -942,12 +1000,12 @@ func (e evotingCommand) manageAdminList(snap store.Snapshot, step execution.Step
 func (e evotingCommand) canEditForm(snap store.Snapshot, form types.Form, txPerformingUser string) (bool, error) {
 	isOwner, err := e.isRole(form, txPerformingUser, Owners)
 	if err != nil {
-		return false, xerrors.Errorf("Failed to get permissions")
+		return false, xerrors.Errorf("Failed to get permissions: %v", err)
 	}
 
 	isAdmin, _, err := e.fetchAdmin(snap, txPerformingUser)
 	if err != nil {
-		return false, xerrors.Errorf("Failed to get permissions")
+		return false, xerrors.Errorf("Failed to get permissions: %v", err)
 	}
 
 	return isOwner || isAdmin, nil
@@ -981,7 +1039,7 @@ func (e evotingCommand) isRole(form types.Form, txPerformingUser string, role Ro
 func (e evotingCommand) fetchAdmin(snap store.Snapshot, txPerformingUser string) (bool, types.AdminList, error) {
 	// If it found the AdminList
 	// Check that the performing user is Admin
-	form, err := e.getAdminList(snap)
+	form, err := e.getAdminList(snap, AdminListId)
 	if err != nil {
 		return false, types.AdminList{}, err
 	}
@@ -997,11 +1055,36 @@ func (e evotingCommand) fetchAdmin(snap store.Snapshot, txPerformingUser string)
 	return true, form, nil
 }
 
+// fetchOperator Check whether a user has the Operator right and returns the Operator List
+func (e evotingCommand) fetchOperator(snap store.Snapshot, txPerformingUser string) (bool, types.AdminList, error) {
+	// If it found the AdminList
+	// Check that the performing user is Admin
+	isAdmin, _, err := e.fetchAdmin(snap, txPerformingUser)
+	if err != nil {
+		return false, types.AdminList{}, xerrors.Errorf("couldn't check if the user is an admin: %v", err)
+	}
+	// Now fetches the operator list
+	form, err := e.getAdminList(snap, OperatorListId)
+	if err != nil {
+		return isAdmin, types.AdminList{}, xerrors.Errorf("couldn't retrieve the operator list: %v", err)
+	}
+
+	performingUserPerm, err := form.GetAdminIndex(txPerformingUser)
+	if err != nil {
+		return isAdmin, form, xerrors.Errorf("couldn't retrieve operator permission of the performing user: %v", err)
+	}
+
+	if performingUserPerm < 0 {
+		return isAdmin, form, nil
+	}
+	return true, form, nil
+}
+
 // initializeAdminList initialize an AdminList on the blockchain. It is called the first time that
 // we attempt to add an admin.
-func initializeAdminList(snap store.Snapshot, initialAdmin int, ctx serde.Context) error {
+func initializeAdminList(snap store.Snapshot, initialAdmin int, formId string, ctx serde.Context) error {
 	h := sha256.New()
-	h.Write([]byte(AdminListId))
+	h.Write([]byte(formId))
 	formIDBuf := h.Sum(nil)
 
 	adminList := types.AdminList{
@@ -1222,11 +1305,11 @@ func (e evotingCommand) getForm(formIDHex string,
 
 // getAdminList gets the AdminList from the snap. Returns the form ID NOT hex
 // encoded.
-func (e evotingCommand) getAdminList(snap store.Snapshot) (types.AdminList, error) {
+func (e evotingCommand) getAdminList(snap store.Snapshot, id string) (types.AdminList, error) {
 
 	var form types.AdminList
 
-	form, err := types.AdminListFromStore(e.context, e.adminListFac, snap, AdminListId)
+	form, err := types.AdminListFromStore(e.context, e.adminListFac, snap, id)
 	if err != nil {
 		return form, xerrors.Errorf("failed to get the AdminList: %v", err)
 	}

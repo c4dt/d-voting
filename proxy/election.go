@@ -679,12 +679,86 @@ func (form *form) AdminList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	adminsAsStr := make([]string, len(adminList.AdminList))
-	// Used to check whether it is the last SCIPER printed
 	for i := range adminList.AdminList {
-		// If last element, does not add ', ' otherwise add ', '
 		adminsAsStr[i] = strconv.Itoa(adminList.AdminList[i])
 	}
 	response := ptypes.GetAdminsResponse{Admins: adminsAsStr}
+	txnmanager.SendResponse(w, response)
+}
+
+// POST /addoperator
+func (form *form) AddOperator(w http.ResponseWriter, r *http.Request) {
+	req, err := form.getPermissionOpRequest(w, r)
+	if err != nil {
+		return
+	}
+
+	addOperator := types.AddOperator{
+		TargetUserID:     req.TargetUserID,
+		PerformingUserID: req.PerformingUserID,
+	}
+
+	data, err := addOperator.Serialize(form.context)
+	if err != nil {
+		InternalError(w, r, xerrors.Errorf("failed to marshal AddOperator: %v", err), nil)
+		return
+	}
+
+	// create the transaction and add it to the pool
+	txnID, lastBlock, err := form.mngr.SubmitTxn(r.Context(), evoting.CmdAddOperator, evoting.FormArg, data)
+	if err != nil {
+		http.Error(w, "failed to submit txn: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	form.mngr.SendTransactionInfo(w, txnID, lastBlock, txnmanager.UnknownTransactionStatus)
+}
+
+// POST /removeoperator
+func (form *form) RemoveOperator(w http.ResponseWriter, r *http.Request) {
+	req, err := form.getPermissionOpRequest(w, r)
+	if err != nil {
+		return
+	}
+
+	removeOperator := types.RemoveOperator{
+		TargetUserID:     req.TargetUserID,
+		PerformingUserID: req.PerformingUserID,
+	}
+
+	data, err := removeOperator.Serialize(form.context)
+	if err != nil {
+		InternalError(w, r, xerrors.Errorf("failed to marshal RemoveOperator: %v", err), nil)
+		return
+	}
+
+	// create the transaction and add it to the pool
+	txnID, lastBlock, err := form.mngr.SubmitTxn(r.Context(), evoting.CmdRemoveOperator, evoting.FormArg, data)
+	if err != nil {
+		http.Error(w, "failed to submit txn: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	form.mngr.SendTransactionInfo(w, txnID, lastBlock, txnmanager.UnknownTransactionStatus)
+}
+
+// GET /operatorlist
+func (form *form) OperatorList(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+
+	operatorList, err := types.AdminListFromStore(form.context, form.adminFac, form.orderingSvc.GetStore(), evoting.OperatorListId)
+	if err != nil && err.Error() != "No list found" {
+		InternalError(w, r, xerrors.Errorf("failed to get form: %v", err), nil)
+		return
+	}
+
+	operatorsAsStr := make([]string, len(operatorList.AdminList))
+	for i := range operatorList.AdminList {
+		operatorsAsStr[i] = strconv.Itoa(operatorList.AdminList[i])
+	}
+
+	response := ptypes.GetOperatorsResponse{Operators: operatorsAsStr}
 	txnmanager.SendResponse(w, response)
 }
 
