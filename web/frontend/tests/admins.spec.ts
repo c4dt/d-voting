@@ -1,6 +1,6 @@
 import { assertHasFooter, assertHasNavBar, initI18n, logIn, setUp } from './shared';
 import { expect, test } from '@playwright/test';
-import { SCIPER_ADMIN, SCIPER_OPERATOR, mockProxyList } from './mocks/api';
+import { SCIPER_ADMIN, SCIPER_NO_ROLE, SCIPER_OPERATOR, mockProxyList } from './mocks/api';
 import { default as i18n } from 'i18next';
 import Worker0 from './json/api/proxies/dela-worker-0.json';
 import { UserRole } from '../src/types/userRole';
@@ -55,7 +55,7 @@ test('Assert tables are present and have the right amount of rows', async ({ pag
 });
 
 test('Assert "Add admin" button is working', async ({ page, baseURL }) => {
-  const adminToAdd = '111111';
+  const adminToAdd = SCIPER_NO_ROLE;
   page.waitForRequest(async (request) => {
     const body = await request.postDataJSON();
     return (
@@ -109,7 +109,7 @@ test('Assert "Remove admin" button is working', async ({ page, baseURL }) => {
 });
 
 test('Assert "Add operator" button is working', async ({ page, baseURL }) => {
-  const operatorToAdd = '999999';
+  const operatorToAdd = SCIPER_NO_ROLE;
   page.waitForRequest(async (request) => {
     const body = await request.postDataJSON();
     return (
