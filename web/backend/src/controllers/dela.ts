@@ -126,17 +126,6 @@ delaRouter.put('/authorizations', (req, res) => {
   assignUserPermissionToOwnElection(String(req.session.userId), FormID);
 });
 
-// https://stackoverflow.com/a/1349426
-function makeid(length: number) {
-  let result = '';
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const charactersLength = characters.length;
-  for (let i = 0; i < length; i += 1) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
-
 delaRouter.delete('/forms/:formID', (req, res) => {
   if (!req.session.userId) {
     res.status(401).send('Unauthenticated');
@@ -216,28 +205,12 @@ delaRouter.use('/*', (req, res) => {
   // special case for voting
   const match = req.baseUrl.match('/api/evoting/forms/(.*)/vote');
   if (match) {
-    if (!isAuthorized(req.session.userId, match[1], PERMISSIONS.ACTIONS.VOTE)) {
-      res.status(400).send('Unauthorized');
-      return;
-    }
-
-    if (process.env.REACT_APP_RANDOMIZE_VOTE_ID === 'true') {
-      // DEBUG: this is only for debugging and needs to be replaced before production
-      console.warn('DEV CODE - randomizing the SCIPER ID to allow for unlimited votes');
-      bodyData.VoterID = makeid(10);
-    } else {
-      // We must set the UserID to know who this ballot is associated to. This is
-      // only needed to allow users to cast multiple ballots, where only the last
-      // ballot is taken into account. To preserve anonymity, the web-backend could
-      // translate UserIDs to another random ID.
-
-      bodyData.VoterID = req.session.userId.toString();
-    }
+    // VoterID is required for permissions
+    bodyData.VoterID = req.session.userId.toString();
+  } else {
+    // UserID for permission
+    bodyData.UserID = req.session.userId.toString();
   }
-
-  // UserID for permission
-  bodyData.UserID = req.session.userId.toString();
-
   const dataStr = JSON.stringify(bodyData);
 
   sendToDela(dataStr, req, res);

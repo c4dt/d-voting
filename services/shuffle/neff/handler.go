@@ -244,9 +244,7 @@ func (h *Handler) makeTx(form *etypes.Form, userID string) (txn.Transaction, err
 
 	tx, err := h.txmngr.Make(args...)
 	if err != nil {
-		if err != nil {
-			return nil, xerrors.Errorf("failed to use manager: %v", err.Error())
-		}
+		return nil, xerrors.Errorf("failed to use manager: %v", err.Error())
 	}
 
 	return tx, nil

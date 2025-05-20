@@ -274,7 +274,7 @@
     "aboutPlatform": "About the Platform",
     "whatMakesUsDifferent": "What makes us different",
     "numVotes": "Number of ballot cast: {{num}}",
-    "votersID": "User ID of voters",
+    "votersID": "User ID of voters who already voted",
     "ownersID": "User ID of owners",
     "nodeUnreachable": "Timeout: the node ({{node}}) could not be reached. ",
     "proxyUnreachable": "Timeout: the address of the proxy for the node ({{node}}) could not be resolved. ",
