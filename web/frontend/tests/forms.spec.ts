@@ -3,7 +3,9 @@ import { default as i18n } from 'i18next';
 import { assertHasFooter, assertHasNavBar, initI18n, logIn, setUp } from './shared';
 import {
   SCIPER_ADMIN,
+  SCIPER_OPERATOR,
   SCIPER_OTHER_ADMIN,
+  SCIPER_OTHER_OPERATOR,
   SCIPER_OTHER_USER,
   SCIPER_USER,
   mockDKGActors as mockAPIDKGActors,
@@ -14,7 +16,7 @@ import {
   mockProxies,
   mockServicesShuffle,
 } from './mocks/api';
-import { mockAdminList, mockDKGActors, mockFormsFormID } from './mocks/evoting';
+import { mockAdminList, mockDKGActors, mockFormsFormID, mockOperatorList } from './mocks/evoting';
 import { FORMID } from './mocks/shared';
 import Worker0 from './json/api/proxies/dela-worker-0.json';
 import Worker1 from './json/api/proxies/dela-worker-1.json';
@@ -50,6 +52,7 @@ async function setUpMocks(
   await mockDKGActors(page, dkgActorsStatus, initialized);
   await mockAPIDKGActors(page);
   await mockAdminList(page, [SCIPER_ADMIN, SCIPER_OTHER_ADMIN]);
+  await mockOperatorList(page, [SCIPER_OPERATOR, SCIPER_OTHER_OPERATOR]);
   await mockPersonalInfo(page, SCIPER_ADMIN); // initially log in as admin to be able to access page
   await mockDKGActorsFormID(page);
   await mockServicesShuffle(page);

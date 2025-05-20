@@ -92,7 +92,7 @@ const App = () => {
               <Route
                 path={ROUTE_ADMIN}
                 element={
-                  <RequireAuth requireAdmin>
+                  <RequireAuth requireOperator>
                     <Admin />
                   </RequireAuth>
                 }

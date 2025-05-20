@@ -5,14 +5,16 @@ import fr from './../src/language/fr.json';
 import de from './../src/language/de.json';
 import {
   SCIPER_ADMIN,
+  SCIPER_OPERATOR,
   SCIPER_OTHER_ADMIN,
+  SCIPER_OTHER_OPERATOR,
   SCIPER_USER,
   mockGetDevLogin,
   mockLogout,
   mockPersonalInfo,
   mockProxy,
 } from './mocks/api';
-import { mockAdminList } from './mocks/evoting';
+import { mockAdminList, mockOperatorList } from './mocks/evoting';
 
 export const FORMID = 'b63bcb854121051f2d8cff04bf0ac9b524b534b704509a16a423448bde3321b4';
 
@@ -34,6 +36,7 @@ export async function setUp(page: Page, url: string) {
 
 export async function logIn(page: Page, sciper: string) {
   await mockAdminList(page, [SCIPER_ADMIN, SCIPER_OTHER_ADMIN]);
+  await mockOperatorList(page, [SCIPER_OPERATOR, SCIPER_OTHER_OPERATOR]);
   await mockPersonalInfo(page, sciper);
   await page.reload({ waitUntil: 'networkidle' });
 }

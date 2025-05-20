@@ -67,28 +67,37 @@ const Admin: FC = () => {
   }, [abortController, t, nodeProxyObject, nodeProxyError]);
 
   useEffect(() => {
-    fetch(endpoints.adminlist(proxyCtx.getProxy()))
-      .then((resp) => {
+    const fetchAdminsAndOps = async () => {
+      const adminReq = fetch(endpoints.adminlist(proxyCtx.getProxy()));
+      const operatorReq = fetch(endpoints.operatorlist(proxyCtx.getProxy()));
+      try {
+        const adminResp = await adminReq;
+        const operatorResp = await operatorReq;
         setLoading(false);
-        if (resp.status === 200) {
-          const jsonData = resp.json();
-          jsonData.then((result) => {
-            const admins = result.Admins.map((x) => ({
-              sciper: x.toString(),
-              role: UserRole.Admin,
-            }));
-            setUsers(admins);
-          });
-        } else {
-          setUsers([]);
-          fctx.addMessage(t('errorFetchingUsers'), FlashLevel.Error);
+        let roleList = [];
+        if (adminResp.status === 200) {
+          const result = await adminResp.json();
+          roleList = result.Admins.map((x) => ({
+            sciper: x,
+            role: UserRole.Admin,
+          }));
         }
-      })
-      .catch((error) => {
-        setLoading(false);
+        if (operatorResp.status === 200) {
+          const result = await operatorResp.json();
+          const operators = result.Operators.map((x) => ({
+            sciper: x,
+            role: UserRole.Operator,
+          }));
+          roleList = [...roleList, ...operators];
+        }
+        roleList.sort((x, y) => parseInt(x.sciper) - parseInt(y.sciper));
+        setUsers(roleList);
+      } catch (error) {
         setUsers([]);
-        fctx.addMessage(`${t('errorFetchingUsers')}: ${error.message}`, FlashLevel.Error);
-      });
+        fctx.addMessage(t(`errorFetchingUsers: ${error.message}`), FlashLevel.Error);
+      }
+    };
+    fetchAdminsAndOps();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -116,5 +125,4 @@ const Admin: FC = () => {
     <Loading />
   );
 };
-
 export default Admin;

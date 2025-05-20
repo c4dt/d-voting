@@ -8,7 +8,7 @@ import SpinnerIcon from 'components/utils/SpinnerIcon';
 import { UserAddIcon } from '@heroicons/react/outline';
 import { AuthContext, FlashContext, FlashLevel } from 'index';
 import { User, UserRole } from 'types/userRole';
-import { ENDPOINT_ADD_ADMIN } from 'components/utils/Endpoints';
+import { endpointAddRole } from 'components/utils/Endpoints';
 import AdminModal from './AdminModal';
 import usePostCall from 'components/utils/usePostCall';
 
@@ -60,7 +60,7 @@ const AddAdminUserModal: FC<AddAdminUserModalProps> = ({ open, setOpen, handleAd
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userToAdd),
     };
-    return sendFetchRequest(ENDPOINT_ADD_ADMIN, request, setIsPosting);
+    return sendFetchRequest(endpointAddRole(selectedRole), request, setIsPosting);
   };
   const handleAddUser = async () => {
     setLoading(true);

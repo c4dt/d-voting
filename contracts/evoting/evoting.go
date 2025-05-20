@@ -957,6 +957,7 @@ func (e evotingCommand) manageAdminOperatorList(snap store.Snapshot, step execut
 				return xerrors.Errorf("failed to initialize the operator list: %v", err)
 			}
 
+			return nil
 		}
 		if !isOperator {
 			return xerrors.Errorf("The performing user is not an operator.")

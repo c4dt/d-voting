@@ -28,6 +28,29 @@ export async function mockAdminList(page: Page, adminList: string[]) {
   });
 }
 
+export async function mockOperatorList(page: Page, operatorList: string[]) {
+  // Clears the mocked route of any already setup mocked response
+  await page.unroute(`${process.env.DELA_PROXY_URL}/evoting/operatorlist`);
+  // Sets up a mocked response to a call to this URL
+  await page.route(`${process.env.DELA_PROXY_URL}/evoting/operatorlist`, async (route) => {
+    if (route.request().method() === 'OPTIONS') {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          'Access-Control-Allow-Headers': '*',
+          'Access-Control-Allow-Origin': '*',
+        },
+      });
+    } else {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: `{"Operators": ${JSON.stringify(operatorList)}}`,
+      });
+    }
+  });
+}
+
 export async function mockForms(page: Page, formList: string) {
   // clear current mock
   await page.unroute(`${process.env.DELA_PROXY_URL}/evoting/forms`);
