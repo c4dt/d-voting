@@ -2,6 +2,8 @@ module github.com/dedis/d-voting
 
 go 1.21
 
+redirect go.dedis.ch/dela => ./dela
+
 require (
 	github.com/gorilla/mux v1.8.0
 	github.com/opentracing/opentracing-go v1.2.0

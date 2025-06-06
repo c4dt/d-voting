@@ -20,11 +20,19 @@ asdf_shell() {
   fi
   asdf local "$1" "$2"
 }
-asdf_shell nodejs 16.20.2
-asdf_shell golang 1.21.0
+
+if [ "$DEVBOX_SHELL_ENABLED" != "1" ]; then
+  asdf_shell nodejs 16.20.2
+  asdf_shell golang 1.21.0
+fi
+
 mkdir -p nodes
 export GOBIN=$(pwd)/bin
 PATH="$PATH":"$GOBIN"
+
+function clean_dela() {
+  rm -rf bin/
+}
 
 function build_dela() {
   echo "Building dela-node"
@@ -63,8 +71,6 @@ function kill_nodes() {
     NODEPORT=$((2000 + n * 2 - 2))
     while lsof -ln | grep -q :$NODEPORT; do sleep .1; done
   done
-
-  rm -rf nodes/node*
 }
 
 function init_nodes() {
@@ -122,13 +128,19 @@ function init_dela() {
       --args go.dedis.ch/dela.Evoting --args access:grant_command --args all --args access:identity --args $IDENTITY \
       --args access:command --args GRANT
   done
+}
 
+function clean_dela(){
   rm -f cookies.txt
 }
 
 function kill_db() {
   docker rm -f postgres_dvoting || true
-  rm -rf nodes/llmdb*
+}
+
+function clean_db(){
+  rm -rf nodes/lmdb*
+  rm -rf nodes/postgresql
 }
 
 function init_db() {
@@ -137,6 +149,7 @@ function init_db() {
   echo "Starting postgres database"
   docker run -d -v "$(pwd)/web/backend/src/migration.sql:/docker-entrypoint-initdb.d/init.sql" \
     -e POSTGRES_PASSWORD=$DATABASE_PASSWORD -e POSTGRES_USER=$DATABASE_USERNAME \
+    -v "$(pwd)/nodes/postgresql:/var/lib/postgresql/data" \
     --name postgres_dvoting -p 5432:5432 postgres:15 >/dev/null
 
   echo "Adding $REACT_APP_SCIPER_ADMIN to admin"
@@ -176,7 +189,9 @@ clean)
   kill_nodes
   kill_backend
   kill_db
-  rm -rf bin nodes
+  clean_db
+  clean_dela
+  clean_build
   exit
   ;;
 
@@ -202,6 +217,33 @@ backend)
 
 frontend)
   start_frontend
+  ;;
+
+kill)
+  kill_frontend
+  kill_nodes
+  kill_backend
+  kill_db
+  ;;
+
+simulate)
+  if [[ ! -d epfl-nodes ]]; then
+      echo "The simulated nodes need to be stored under the epfl-nodes directory."
+      exit 1
+  fi
+  if ! grep -q "redirect go.dedis.ch/dela" go.mod; then
+    echo "go.mod should redirect to a local version of dela with the run_epfl_dvoting_locally branch"
+    exit 1
+  fi
+  rm -rf nodes
+  cp -a epfl-nodes nodes
+  build_dela
+  init_nodes
+  init_db
+  start_backend
+  start_frontend
+  sleep 10
+  ./scripts/local_proxies.sh
   ;;
 
 *)

@@ -1,5 +1,5 @@
 export DATABASE_USERNAME=dvoting
-export DATABASE_PASSWORD=postgres
+export DATABASE_PASSWORD=dvoting
 export FRONTEND_URL="http://localhost:3000"
 export DELA_PROXY_URL="http://localhost:2001"
 export BACKEND_HOST="localhost"
@@ -7,7 +7,7 @@ export BACKEND_PORT="6000"
 export SESSION_SECRET="session secret"
 export REACT_APP_NOMOCK=on
 # shellcheck disable=SC2155
-export DB_PATH="$(pwd)/nodes/llmdb"
+export DB_PATH="$(pwd)/nodes/lmdb"
 # The following two variables can be set to see log output from dela.
 # For the generic GRPC module:
 #export GRPC_GO_LOG_VERBOSITY_LEVEL=99

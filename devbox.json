@@ -1,0 +1,21 @@
+{
+  "packages": [
+    "git@latest",
+    "vim@latest",
+    "nodejs@20",
+    "lsof@latest",
+    "procps@latest",
+    "moreutils@latest",
+    "go_1_21@latest"
+  ],
+  "shell": {
+    "init_hook": [
+      "alias ls='ls --color'"
+    ],
+    "scripts": {
+      "test": [
+        "echo \"Error: no test specified\" && exit 1"
+      ]
+    }
+  }
+}

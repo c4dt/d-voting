@@ -36,6 +36,18 @@ program
   });
 
 program
+  .command('addOwner')
+  .description('Add the SCIPER as the owner to the form')
+  .requiredOption('-s, --sciper <char>', 'user SCIPER')
+  .requiredOption('-f, --formid <char>', 'formid to own')
+  .action(async ({ sciper, formid }) => {
+    const enforcer = await initEnforcer();
+    const permissions = [[sciper, formid, 'own']];
+    await enforcer.addPolicies(permissions);
+    console.log('Successfully imported permissions for user!');
+  });
+
+program
   .command('listUserPermissions')
   .description('Lists the permissions -if any- of the owner of a given SCIPER')
   .requiredOption('-s, --sciper <char>', 'user SCIPER')
