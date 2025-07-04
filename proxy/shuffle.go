@@ -57,7 +57,7 @@ func (s shuffle) EditShuffle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	formID := vars["formID"]
-	userID := vars["userID"]
+	userID := req.UserID
 
 	formIDBuf, err := hex.DecodeString(formID)
 	if err != nil {

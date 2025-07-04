@@ -32,10 +32,12 @@ const useForm = (formID: ID) => {
     setResult,
     chunksPerBallot,
     ballotSize,
+    ballotVoters,
     configObj,
     isResultSet,
     setIsResultSet,
     voters,
+    owners,
   } = useFillFormInfo(data);
 
   return {
@@ -49,10 +51,12 @@ const useForm = (formID: ID) => {
     setResult,
     chunksPerBallot,
     ballotSize,
+    ballotVoters,
     configObj,
     isResultSet,
     setIsResultSet,
     voters,
+    owners,
     error,
   };
 };

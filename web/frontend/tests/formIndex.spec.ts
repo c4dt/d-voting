@@ -1,11 +1,17 @@
 import { Locator, Page, expect, test } from '@playwright/test';
 import { default as i18n } from 'i18next';
 import { assertHasFooter, assertHasNavBar, initI18n, logIn, setUp, translate } from './shared';
-import { SCIPER_ADMIN, SCIPER_USER, mockPersonalInfo } from './mocks/api';
-import { mockForms } from './mocks/evoting';
+import {
+  SCIPER_ADMIN,
+  SCIPER_OPERATOR,
+  SCIPER_OTHER_ADMIN,
+  SCIPER_OTHER_OPERATOR,
+  SCIPER_OTHER_USER,
+  SCIPER_USER,
+  mockPersonalInfo,
+} from './mocks/api';
+import { mockAdminList, mockForms, mockOperatorList } from './mocks/evoting';
 import Forms from './json/formIndex.json';
-import User from './json/api/personal_info/789012.json';
-import Admin from './json/api/personal_info/123456.json';
 
 initI18n();
 
@@ -20,6 +26,8 @@ async function disableFilter(page: Page) {
 
 test.beforeEach(async ({ page }) => {
   // mock empty list per default
+  await mockAdminList(page, [SCIPER_ADMIN, SCIPER_OTHER_ADMIN]);
+  await mockOperatorList(page, [SCIPER_OPERATOR, SCIPER_OTHER_OPERATOR]);
   await mockForms(page, 'empty');
   await mockPersonalInfo(page);
   await setUp(page, '/form/index');
@@ -103,17 +111,11 @@ test('Assert no forms are displayed for empty list', async ({ page }) => {
 });
 
 async function assertQuickAction(row: Locator, form: any, sciper?: string) {
-  const user = sciper === SCIPER_USER ? User : (sciper === SCIPER_ADMIN ? Admin : undefined); // eslint-disable-line
   const quickAction = row.getByTestId('quickAction');
   switch (form.Status) {
     case 1:
       // only authenticated user w/ right to vote sees 'vote' button
-      if (
-        user !== undefined &&
-        form.FormID in user.authorization &&
-        // @ts-ignore
-        user.authorization[form.FormID].includes('vote')
-      ) {
+      if (sciper !== undefined && form.Voters.includes(sciper)) {
         await expect(quickAction).toHaveText(i18n.t('vote'));
         await expect(await quickAction.getByRole('link')).toHaveAttribute(
           'href',
@@ -157,7 +159,7 @@ test('Assert all forms are displayed correctly for unauthenticated user', async 
 test('Assert quick actions are displayed correctly for authenticated users on all forms', async ({
   page,
 }) => {
-  for (let sciper of [SCIPER_USER, SCIPER_ADMIN]) {
+  for (let sciper of [SCIPER_USER, SCIPER_ADMIN, SCIPER_OTHER_ADMIN, SCIPER_OTHER_USER]) {
     await logIn(page, sciper);
     await mockForms(page, 'all');
     await page.reload();

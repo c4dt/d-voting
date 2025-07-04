@@ -20,6 +20,7 @@ import (
 	"go.dedis.ch/dela/core/txn/pool"
 	"go.dedis.ch/dela/serde"
 	"go.dedis.ch/kyber/v3"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 )
 
@@ -37,23 +38,29 @@ func NewForm(srv ordering.Service, p pool.Pool,
 
 	logger := dela.Logger.With().Timestamp().Str("role", "evoting-proxy").Logger()
 
-	// Compute the ID of the admin list id
-	// We need it to filter the send list of form
+	// Compute the IDs of the admin and operator lists
+	// We need them to filter the send list of form
 	h := sha256.New()
 	h.Write([]byte(evoting.AdminListId))
 	adminListIDBuf := h.Sum(nil)
 	adminListID := hex.EncodeToString(adminListIDBuf)
 
+	h = sha256.New()
+	h.Write([]byte(evoting.OperatorListId))
+	operatorListIDBuf := h.Sum(nil)
+	operatorListID := hex.EncodeToString(operatorListIDBuf)
+
 	return &form{
-		logger:      logger,
-		orderingSvc: srv,
-		context:     ctx,
-		formFac:     fac,
-		adminFac:    types.AdminListFactory{},
-		mngr:        txnManaxer,
-		pool:        p,
-		pk:          pk,
-		adminListID: adminListID,
+		logger:         logger,
+		orderingSvc:    srv,
+		context:        ctx,
+		formFac:        fac,
+		adminFac:       types.AdminListFactory{},
+		mngr:           txnManaxer,
+		pool:           p,
+		pk:             pk,
+		adminListID:    adminListID,
+		operatorListID: operatorListID,
 	}
 }
 
@@ -63,15 +70,16 @@ func NewForm(srv ordering.Service, p pool.Pool,
 type form struct {
 	sync.Mutex
 
-	orderingSvc ordering.Service
-	logger      zerolog.Logger
-	context     serde.Context
-	formFac     serde.Factory
-	adminFac    serde.Factory
-	mngr        txnmanager.Manager
-	pool        pool.Pool
-	pk          kyber.Point
-	adminListID string
+	orderingSvc    ordering.Service
+	logger         zerolog.Logger
+	context        serde.Context
+	formFac        serde.Factory
+	adminFac       serde.Factory
+	mngr           txnmanager.Manager
+	pool           pool.Pool
+	pk             kyber.Point
+	adminListID    string
+	operatorListID string
 }
 
 // NewForm implements proxy.Proxy
@@ -457,6 +465,16 @@ func (form *form) Form(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	votersAsStr := make([]string, len(formFromStore.Voters))
+	for i := range formFromStore.Voters {
+		votersAsStr[i] = strconv.Itoa(formFromStore.Voters[i])
+	}
+
+	ownersAsStr := make([]string, len(formFromStore.Owners))
+	for i := range formFromStore.Owners {
+		ownersAsStr[i] = strconv.Itoa(formFromStore.Owners[i])
+	}
+
 	response := ptypes.GetFormResponse{
 		FormID:          string(formFromStore.FormID),
 		Configuration:   formFromStore.Configuration,
@@ -466,7 +484,9 @@ func (form *form) Form(w http.ResponseWriter, r *http.Request) {
 		Roster:          roster,
 		ChunksPerBallot: formFromStore.ChunksPerBallot(),
 		BallotSize:      formFromStore.BallotSize,
-		Voters:          suff.VoterIDs,
+		BallotVoters:    suff.VoterIDs,
+		Voters:          votersAsStr,
+		Owners:          ownersAsStr,
 	}
 
 	txnmanager.SendResponse(w, response)
@@ -487,9 +507,11 @@ func (form *form) Forms(w http.ResponseWriter, r *http.Request) {
 
 	allFormsInfo := make([]ptypes.LightForm, len(elecMD.FormsIDs))
 
+	adminFormsSeen := 0
+
 	// get the forms
 	for i, id := range elecMD.FormsIDs {
-		if id != form.adminListID {
+		if id != form.adminListID && id != form.operatorListID {
 			form, err := types.FormFromStore(form.context, form.formFac, id, form.orderingSvc.GetStore())
 			if err != nil {
 				InternalError(w, r, xerrors.Errorf("failed to get form: %v", err), nil)
@@ -506,18 +528,32 @@ func (form *form) Forms(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
+			votersAsStr := make([]string, len(form.Voters))
+			for i := range form.Voters {
+				votersAsStr[i] = strconv.Itoa(form.Voters[i])
+			}
+
+			ownersAsStr := make([]string, len(form.Owners))
+			for i := range form.Owners {
+				ownersAsStr[i] = strconv.Itoa(form.Owners[i])
+			}
+
 			info := ptypes.LightForm{
 				FormID: string(form.FormID),
 				Title:  form.Configuration.Title,
 				Status: uint16(form.Status),
 				Pubkey: hex.EncodeToString(pubkeyBuf),
+				Voters: votersAsStr,
+				Owners: ownersAsStr,
 			}
 
-			allFormsInfo[i] = info
+			allFormsInfo[i-adminFormsSeen] = info
+		} else {
+			adminFormsSeen++
 		}
 	}
 
-	response := ptypes.GetFormsResponse{Forms: allFormsInfo}
+	response := ptypes.GetFormsResponse{Forms: allFormsInfo[0 : len(elecMD.FormsIDs)-adminFormsSeen]}
 
 	txnmanager.SendResponse(w, response)
 
@@ -525,8 +561,6 @@ func (form *form) Forms(w http.ResponseWriter, r *http.Request) {
 
 // DeleteForm implements proxy.Proxy
 func (form *form) DeleteForm(w http.ResponseWriter, r *http.Request) {
-	var req ptypes.UpdateFormRequest
-
 	vars := mux.Vars(r)
 
 	// check if the formID is valid
@@ -548,23 +582,27 @@ func (form *form) DeleteForm(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "the form does not exist", http.StatusNotFound)
 		return
 	}
-	
-	// get the signed request
-	signed, err := ptypes.NewSignedRequest(r.Body)
+
+	// auth should contain the hex-encoded signature on the hex-encoded form
+	// ID
+	auth := r.Header.Get("Authorization")
+
+	signature, err := hex.DecodeString(auth)
 	if err != nil {
-		InternalError(w, r, newSignedErr(err), nil)
+		BadRequestError(w, r, xerrors.Errorf("failed to decode auth: %v", err), nil)
 		return
 	}
 
-	err = signed.GetAndVerify(form.pk, &req)
+	// check if the signature is valid
+	err = schnorr.Verify(suite, form.pk, []byte(formID), signature)
 	if err != nil {
-		InternalError(w, r, getSignedErr(err), nil)
+		ForbiddenError(w, r, xerrors.Errorf("signature verification failed: %v", err), nil)
 		return
 	}
 
 	deleteForm := types.DeleteForm{
 		FormID: formID,
-		UserID: req.UserID,
+		UserID: r.Header.Get("UserId"),
 	}
 
 	data, err := deleteForm.Serialize(form.context)
@@ -643,31 +681,96 @@ func (form *form) RemoveAdmin(w http.ResponseWriter, r *http.Request) {
 
 // GET /adminlist
 func (form *form) AdminList(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+
 	adminList, err := types.AdminListFromStore(form.context, form.adminFac, form.orderingSvc.GetStore(), evoting.AdminListId)
+	if err != nil && err.Error() != "No list found" {
+		InternalError(w, r, xerrors.Errorf("failed to get form: %v", err), nil)
+		return
+	}
+	adminsAsStr := make([]string, len(adminList.AdminList))
+	for i := range adminList.AdminList {
+		adminsAsStr[i] = strconv.Itoa(adminList.AdminList[i])
+	}
+	response := ptypes.GetAdminsResponse{Admins: adminsAsStr}
+	txnmanager.SendResponse(w, response)
+}
+
+// POST /addoperator
+func (form *form) AddOperator(w http.ResponseWriter, r *http.Request) {
+	req, err := form.getPermissionOpRequest(w, r)
 	if err != nil {
+		return
+	}
+
+	addOperator := types.AddOperator{
+		TargetUserID:     req.TargetUserID,
+		PerformingUserID: req.PerformingUserID,
+	}
+
+	data, err := addOperator.Serialize(form.context)
+	if err != nil {
+		InternalError(w, r, xerrors.Errorf("failed to marshal AddOperator: %v", err), nil)
+		return
+	}
+
+	// create the transaction and add it to the pool
+	txnID, lastBlock, err := form.mngr.SubmitTxn(r.Context(), evoting.CmdAddOperator, evoting.FormArg, data)
+	if err != nil {
+		http.Error(w, "failed to submit txn: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	form.mngr.SendTransactionInfo(w, txnID, lastBlock, txnmanager.UnknownTransactionStatus)
+}
+
+// POST /removeoperator
+func (form *form) RemoveOperator(w http.ResponseWriter, r *http.Request) {
+	req, err := form.getPermissionOpRequest(w, r)
+	if err != nil {
+		return
+	}
+
+	removeOperator := types.RemoveOperator{
+		TargetUserID:     req.TargetUserID,
+		PerformingUserID: req.PerformingUserID,
+	}
+
+	data, err := removeOperator.Serialize(form.context)
+	if err != nil {
+		InternalError(w, r, xerrors.Errorf("failed to marshal RemoveOperator: %v", err), nil)
+		return
+	}
+
+	// create the transaction and add it to the pool
+	txnID, lastBlock, err := form.mngr.SubmitTxn(r.Context(), evoting.CmdRemoveOperator, evoting.FormArg, data)
+	if err != nil {
+		http.Error(w, "failed to submit txn: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	form.mngr.SendTransactionInfo(w, txnID, lastBlock, txnmanager.UnknownTransactionStatus)
+}
+
+// GET /operatorlist
+func (form *form) OperatorList(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+
+	operatorList, err := types.AdminListFromStore(form.context, form.adminFac, form.orderingSvc.GetStore(), evoting.OperatorListId)
+	if err != nil && err.Error() != "No list found" {
 		InternalError(w, r, xerrors.Errorf("failed to get form: %v", err), nil)
 		return
 	}
 
-	// Used to check whether it is the last SCIPER printed
-	count := 0
-	lenAdminList := len(adminList.AdminList)
-
-	myAdminList := "{"
-	for id := range adminList.AdminList {
-		count++
-
-		// If last element, does not add ', ' otherwise add ', '
-		if count == lenAdminList {
-			myAdminList += strconv.Itoa(adminList.AdminList[id])
-		} else {
-			myAdminList += strconv.Itoa(adminList.AdminList[id]) + ", "
-		}
-
+	operatorsAsStr := make([]string, len(operatorList.AdminList))
+	for i := range operatorList.AdminList {
+		operatorsAsStr[i] = strconv.Itoa(operatorList.AdminList[i])
 	}
-	myAdminList += "}"
 
-	txnmanager.SendResponse(w, myAdminList)
+	response := ptypes.GetOperatorsResponse{Operators: operatorsAsStr}
+	txnmanager.SendResponse(w, response)
 }
 
 // POST /forms/{formID}/addowner

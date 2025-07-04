@@ -1,16 +1,18 @@
 import React, { FC, useContext, useEffect, useMemo, useState } from 'react';
-import { ENDPOINT_USER_RIGHTS } from 'components/utils/Endpoints';
-import { FlashContext, FlashLevel } from 'index';
+import { AuthContext, FlashContext, FlashLevel, ProxyContext } from 'index';
 import Loading from 'pages/Loading';
 import { useTranslation } from 'react-i18next';
 import { fetchCall } from 'components/utils/fetchCall';
 import AdminTable from './AdminTable';
 import DKGTable from './DKGTable';
 import * as endpoints from 'components/utils/Endpoints';
+import { UserRole } from '../../types/userRole';
 
 const Admin: FC = () => {
   const { t } = useTranslation();
+  const authCtx = useContext(AuthContext);
   const fctx = useContext(FlashContext);
+  const proxyCtx = useContext(ProxyContext);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [nodeProxyLoading, setNodeProxyLoading] = useState(true);
@@ -20,18 +22,20 @@ const Admin: FC = () => {
   const abortController = useMemo(() => new AbortController(), []);
 
   useEffect(() => {
-    fetchCall(
-      endpoints.getProxiesAddresses,
-      {
-        method: 'GET',
-        signal: abortController.signal,
-      },
-      setNodeProxyObject,
-      setNodeProxyLoading
-    ).catch((e) => {
-      setNodeProxyError(e);
-    });
-  }, [abortController.signal]);
+    if (authCtx.isAdmin) {
+      fetchCall(
+        endpoints.getProxiesAddresses,
+        {
+          method: 'GET',
+          signal: abortController.signal,
+        },
+        setNodeProxyObject,
+        setNodeProxyLoading
+      ).catch((e) => {
+        setNodeProxyError(e);
+      });
+    }
+  }, [abortController.signal, authCtx.isAdmin]);
 
   const [nodeProxyAddresses, setNodeProxyAddresses] = useState<Map<string, string>>(null);
 
@@ -63,23 +67,37 @@ const Admin: FC = () => {
   }, [abortController, t, nodeProxyObject, nodeProxyError]);
 
   useEffect(() => {
-    fetch(ENDPOINT_USER_RIGHTS)
-      .then((resp) => {
+    const fetchAdminsAndOps = async () => {
+      const adminReq = fetch(endpoints.adminlist(proxyCtx.getProxy()));
+      const operatorReq = fetch(endpoints.operatorlist(proxyCtx.getProxy()));
+      try {
+        const adminResp = await adminReq;
+        const operatorResp = await operatorReq;
         setLoading(false);
-        if (resp.status === 200) {
-          const jsonData = resp.json();
-          jsonData.then((result) => {
-            setUsers(result);
-          });
-        } else {
-          setUsers([]);
-          fctx.addMessage(t('errorFetchingUsers'), FlashLevel.Error);
+        let roleList = [];
+        if (adminResp.status === 200) {
+          const result = await adminResp.json();
+          roleList = result.Admins.map((x) => ({
+            sciper: x,
+            role: UserRole.Admin,
+          }));
         }
-      })
-      .catch((error) => {
-        setLoading(false);
-        fctx.addMessage(`${t('errorFetchingUsers')}: ${error.message}`, FlashLevel.Error);
-      });
+        if (operatorResp.status === 200) {
+          const result = await operatorResp.json();
+          const operators = result.Operators.map((x) => ({
+            sciper: x,
+            role: UserRole.Operator,
+          }));
+          roleList = [...roleList, ...operators];
+        }
+        roleList.sort((x, y) => parseInt(x.sciper) - parseInt(y.sciper));
+        setUsers(roleList);
+      } catch (error) {
+        setUsers([]);
+        fctx.addMessage(t(`errorFetchingUsers: ${error.message}`), FlashLevel.Error);
+      }
+    };
+    fetchAdminsAndOps();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -94,16 +112,17 @@ const Admin: FC = () => {
       </div>
 
       <AdminTable users={users} setUsers={setUsers} />
-      <div className="mt-4 mb-8">
-        <DKGTable
-          nodeProxyAddresses={nodeProxyAddresses}
-          setNodeProxyAddresses={setNodeProxyAddresses}
-        />
-      </div>
+      {authCtx.isAdmin && (
+        <div className="mt-4 mb-8">
+          <DKGTable
+            nodeProxyAddresses={nodeProxyAddresses}
+            setNodeProxyAddresses={setNodeProxyAddresses}
+          />
+        </div>
+      )}
     </div>
   ) : (
     <Loading />
   );
 };
-
 export default Admin;

@@ -790,7 +790,7 @@ func (s *state) UnmarshalJSON(data []byte) error {
 	}
 
 	if aux.Participants != nil {
-		// TODO: https://github.com/dedis/d-voting/issues/391
+		// TODO: use addressFactory here
 		f := session.AddressFactory{}
 		var participants = make([]mino.Address, len(aux.Participants))
 		for i, partStr := range aux.Participants {

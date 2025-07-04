@@ -7,11 +7,11 @@ import ActionButton from './ActionButton';
 import { isManager } from './../../../../utils/auth';
 
 const DecryptButton = ({ status, handleDecrypt, ongoingAction, formID }) => {
-  const { authorization, isLogged } = useContext(AuthContext);
+  const authCtx = useContext(AuthContext);
   const { t } = useTranslation();
 
   return (
-    isManager(formID, authorization, isLogged) &&
+    isManager(formID, authCtx) &&
     status === Status.ShuffledBallots && (
       <ActionButton
         handleClick={handleDecrypt}

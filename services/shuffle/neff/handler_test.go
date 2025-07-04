@@ -54,6 +54,7 @@ func TestHandler_Stream(t *testing.T) {
 	err = handler.Stream(fake.Sender{}, receiver)
 
 	require.NoError(t, err)
+
 }
 
 func TestHandler_StartShuffle(t *testing.T) {
@@ -109,14 +110,14 @@ func TestHandler_StartShuffle(t *testing.T) {
 	err = handler.handleStartShuffle(dummyID, "123456")
 	require.EqualError(t, err, "the form must be closed: (0)")
 
-	// TODO: think how to re-enable this test
-	t.Skip("Issue 390 - Doesn't work with new form because of snap needed by Form")
+	t.Skip("Doesn't work with new form because of snap needed by Form")
 
 	Ks, Cs, pubKey := fakeKCPoints(k)
 
 	// Wrong formatted ballots:
 	form.Status = etypes.Closed
 
+	// TODO: think how to re-enable this test
 	//deleteUserFromSuffragia := func(suff *etypes.Suffragia, userID string) bool {
 	//	for i, u := range suff.UserIDs {
 	//		if u == userID {

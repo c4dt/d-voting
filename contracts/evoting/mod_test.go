@@ -33,6 +33,7 @@ var dummyFormIDBuff = []byte("dummyID")
 var fakeFormID = hex.EncodeToString(dummyFormIDBuff)
 var fakeCommonSigner = bls.NewSigner()
 var dummyUserAdminID = "123456"
+var otherDummyUserAdminID = "654231"
 
 const getTransactionErr = "failed to get transaction: \"evoting:arg\" not found in tx arg"
 const unmarshalTransactionErr = "failed to get transaction: failed to deserialize " +
@@ -106,6 +107,12 @@ func TestExecute(t *testing.T) {
 	err = contract.Execute(fakeStore{}, makeStep(t, CmdArg, string(CmdRemoveAdmin)))
 	require.EqualError(t, err, fake.Err("failed to remove admin"))
 
+	err = contract.Execute(fakeStore{}, makeStep(t, CmdArg, string(CmdAddOperator)))
+	require.EqualError(t, err, fake.Err("failed to add operator"))
+
+	err = contract.Execute(fakeStore{}, makeStep(t, CmdArg, string(CmdRemoveOperator)))
+	require.EqualError(t, err, fake.Err("failed to remove operator"))
+
 	err = contract.Execute(fakeStore{}, makeStep(t, CmdArg, "fake"))
 	require.EqualError(t, err, "unknown command: fake")
 
@@ -128,7 +135,7 @@ func TestCommand_CreateForm(t *testing.T) {
 		err:   nil,
 	}
 
-	addAdmin := types.AddAdmin{dummyUserAdminID, dummyUserAdminID}
+	addAdmin := types.AddAdmin{TargetUserID: dummyUserAdminID, PerformingUserID: dummyUserAdminID}
 	dataAddAdmin, err := addAdmin.Serialize(ctx)
 	require.NoError(t, err)
 
@@ -157,9 +164,11 @@ func TestCommand_CreateForm(t *testing.T) {
 	err = cmd.createForm(fake.NewBadSnapshot(), makeStep(t, FormArg, string(data)))
 	require.EqualError(t, err, "failed to get roster")
 
+	// Create form with an admin
+	initMetrics()
 	snap := fake.NewSnapshot()
 	step := makeStep(t, FormArg, string(dataAddAdmin))
-	err = cmd.manageAdminList(snap, step)
+	err = cmd.manageAdminOperatorList(snap, step)
 	require.NoError(t, err)
 
 	step = makeStep(t, FormArg, string(data))
@@ -182,6 +191,43 @@ func TestCommand_CreateForm(t *testing.T) {
 
 	require.Equal(t, types.Initial, form.Status)
 	require.Equal(t, float64(types.Initial), testutil.ToFloat64(PromFormStatus))
+
+	// Create form with an Operator
+	addOperator := types.AddOperator{TargetUserID: otherDummyUserAdminID, PerformingUserID: dummyUserAdminID}
+	dataAddOperator, err := addOperator.Serialize(ctx)
+	require.NoError(t, err)
+
+	createForm = types.CreateForm{UserID: otherDummyUserAdminID}
+	data, err = createForm.Serialize(ctx)
+	require.NoError(t, err)
+
+	snap = fake.NewSnapshot()
+	step = makeStep(t, FormArg, string(dataAddAdmin))
+	err = cmd.manageAdminOperatorList(snap, step)
+	require.NoError(t, err)
+
+	step = makeStep(t, FormArg, string(dataAddOperator))
+	err = cmd.manageAdminOperatorList(snap, step)
+	require.NoError(t, err)
+
+	step = makeStep(t, FormArg, string(data))
+	err = cmd.createForm(snap, step)
+	require.NoError(t, err)
+
+	h = sha256.New()
+	h.Write(step.Current.GetID())
+	formIDBuff = h.Sum(nil)
+
+	res, err = snap.Get(formIDBuff)
+	require.NoError(t, err)
+
+	message, err = formFac.Deserialize(ctx, res)
+	require.NoError(t, err)
+
+	form, ok = message.(types.Form)
+	require.True(t, ok)
+
+	require.Equal(t, types.Initial, form.Status)
 }
 
 func TestCommand_OpenForm(t *testing.T) {
@@ -246,6 +292,10 @@ func TestCommand_CastVote(t *testing.T) {
 
 	err = snap.Set(dummyFormIDBuff, formBuf)
 	require.NoError(t, err)
+
+	// We need an adminlist since we are trying to perform an action
+	// that can be peformed by admins (manageOwnersVotersForm)
+	initAdminList(t, snap, cmd)
 
 	err = cmd.castVote(snap, makeStep(t, FormArg, string(data)))
 	require.EqualError(t, err, "The user 123456 doesn't have the Voter permission on the form.")
@@ -392,6 +442,9 @@ func TestCommand_CloseForm(t *testing.T) {
 	err = snap.Set(dummyFormIDBuff, formBuf)
 	require.NoError(t, err)
 
+	// We need an adminlist since admins can also perform this operation
+	initAdminList(t, snap, cmd)
+
 	err = cmd.closeForm(snap, makeStep(t, FormArg, string(data)))
 	require.EqualError(t, err, "at least two ballots are required")
 
@@ -454,6 +507,9 @@ func TestCommand_ShuffleBallotsCannotShuffleTwice(t *testing.T) {
 	err = snap.Set(dummyFormIDBuff, formBuff)
 	require.NoError(t, err)
 
+	// We need an adminlist since admins can also perform this operation
+	initAdminList(t, snap, cmd)
+
 	data, err := shuffleBallots.Serialize(ctx)
 	require.NoError(t, err)
 
@@ -480,6 +536,9 @@ func TestCommand_ShuffleBallotsValidScenarios(t *testing.T) {
 
 	err = snap.Set(dummyFormIDBuff, formBuf)
 	require.NoError(t, err)
+
+	// We need an adminlist since admins can also perform this operation
+	initAdminList(t, snap, cmd)
 
 	data, err := shuffleBallots.Serialize(ctx)
 	require.NoError(t, err)
@@ -586,6 +645,9 @@ func TestCommand_ShuffleBallotsFormatErrors(t *testing.T) {
 
 	err = snap.Set(dummyFormIDBuff, formBuf)
 	require.NoError(t, err)
+
+	// We need an adminlist since admins can also perform this operation
+	initAdminList(t, snap, cmd)
 
 	err = cmd.shuffleBallots(snap, makeStep(t, FormArg, string(data)))
 	require.EqualError(t, err, "wrong shuffle round: expected round '0', "+
@@ -1022,6 +1084,9 @@ func TestCommand_DecryptBallots(t *testing.T) {
 	err = snap.Set(dummyFormIDBuff, formBuf)
 	require.NoError(t, err)
 
+	// We need an adminlist since admins can also perform this operation
+	initAdminList(t, snap, cmd)
+
 	// Nothing to decrypt
 	err = cmd.combineShares(snap, makeStep(t, FormArg, string(data)))
 	require.NoError(t, err)
@@ -1094,6 +1159,9 @@ func TestCommand_CancelForm(t *testing.T) {
 	err = snap.Set(dummyFormIDBuff, formBuf)
 	require.NoError(t, err)
 
+	// We need an adminlist since admins can also perform this operation
+	initAdminList(t, snap, cmd)
+
 	data, err = cancelForm.Serialize(ctx)
 	require.NoError(t, err)
 
@@ -1146,7 +1214,7 @@ func TestCommand_AdminList(t *testing.T) {
 	dummyUID2 := "777777"
 
 	// We initialize the command to add permission.
-	addAdmin := types.AddAdmin{dummyUID, dummyUID}
+	addAdmin := types.AddAdmin{TargetUserID: dummyUID, PerformingUserID: dummyUID}
 	data, err := addAdmin.Serialize(ctx)
 	require.NoError(t, err)
 
@@ -1154,17 +1222,17 @@ func TestCommand_AdminList(t *testing.T) {
 
 	// Checking that if no AdminList is on the blockchain,
 	// It won't be able to find the transaction.
-	err = cmd.manageAdminList(fake.NewSnapshot(), makeStep(t))
+	err = cmd.manageAdminOperatorList(fake.NewSnapshot(), makeStep(t))
 	require.EqualError(t, err, getTransactionErr)
 
 	// Checking that providing a dummy data as argument, the form will not
 	// recognize it and won't be able to unmarshal it.
-	err = cmd.manageAdminList(fake.NewSnapshot(), makeStep(t, FormArg, "dummy"))
+	err = cmd.manageAdminOperatorList(fake.NewSnapshot(), makeStep(t, FormArg, "dummy"))
 	require.EqualError(t, err, unmarshalTransactionErr)
 
 	// Checking that given a Blockchain that always returns an error,
 	// it will not be able to create the AdminList on the store.
-	err = cmd.manageAdminList(fake.NewBadSnapshot(), makeStep(t, FormArg, string(data)))
+	err = cmd.manageAdminOperatorList(fake.NewBadSnapshot(), makeStep(t, FormArg, string(data)))
 	require.ErrorContains(t, err, "failed to get AdminList")
 
 	snap := fake.NewSnapshot()
@@ -1186,7 +1254,7 @@ func TestCommand_AdminList(t *testing.T) {
 	require.NoError(t, err)
 
 	// We perform below the command on the ledger
-	err = cmd.manageAdminList(snap, makeStep(t, FormArg, string(data)))
+	err = cmd.manageAdminOperatorList(snap, makeStep(t, FormArg, string(data)))
 	require.NoError(t, err)
 
 	// Now we want to remove its admin privilege.
@@ -1200,24 +1268,24 @@ func TestCommand_AdminList(t *testing.T) {
 	require.NoError(t, err)
 
 	// Publish the command on the ledger.
-	err = cmd.manageAdminList(snap, makeStep(t, FormArg, string(data)))
-	require.ErrorContains(t, err, "couldn't remove admin")
+	err = cmd.manageAdminOperatorList(snap, makeStep(t, FormArg, string(data)))
+	require.ErrorContains(t, err, "cannot remove last remaining Admin")
 
 	// We try to add a second admin but the performing user
 	// does not have the permission
-	addAdmin2 := types.AddAdmin{dummyUID2, dummyUID2}
+	addAdmin2 := types.AddAdmin{TargetUserID: dummyUID2, PerformingUserID: dummyUID2}
 	data2, err := addAdmin2.Serialize(ctx)
 	require.NoError(t, err)
 
-	err = cmd.manageAdminList(snap, makeStep(t, FormArg, string(data2)))
+	err = cmd.manageAdminOperatorList(snap, makeStep(t, FormArg, string(data2)))
 	require.ErrorContains(t, err, "The performing user is not an admin")
 
 	// Now we add another admin but with a performing user that is already admin
-	addAdmin2 = types.AddAdmin{dummyUID2, dummyUID}
+	addAdmin2 = types.AddAdmin{TargetUserID: dummyUID2, PerformingUserID: dummyUID}
 	data2, err = addAdmin2.Serialize(ctx)
 	require.NoError(t, err)
 
-	err = cmd.manageAdminList(snap, makeStep(t, FormArg, string(data2)))
+	err = cmd.manageAdminOperatorList(snap, makeStep(t, FormArg, string(data2)))
 	require.NoError(t, err)
 
 	// We retrieve the form on the ledger
@@ -1237,12 +1305,12 @@ func TestCommand_AdminList(t *testing.T) {
 
 	// Now we want to remove its admin privilege.
 	// Initialization of the command
-	removeAdmin = types.RemoveAdmin{dummyUID, dummyUID}
+	removeAdmin = types.RemoveAdmin{TargetUserID: dummyUID, PerformingUserID: dummyUID}
 	data, err = removeAdmin.Serialize(ctx)
 	require.NoError(t, err)
 
 	// Publish the command on the ledger.
-	err = cmd.manageAdminList(snap, makeStep(t, FormArg, string(data)))
+	err = cmd.manageAdminOperatorList(snap, makeStep(t, FormArg, string(data)))
 	require.NoError(t, err)
 
 	// We retrieve the Admin Form from the ledger.
@@ -1259,6 +1327,131 @@ func TestCommand_AdminList(t *testing.T) {
 	dummyUserIDIndex, _ = adminList.GetAdminIndex(dummyUID)
 
 	require.True(t, dummyUserIDIndex == -1)
+}
+
+// ==================
+// Operator form test
+
+/*
+	  Testing scenario
+		- Initialize contract and form
+		- Checks some parts of the error handling
+		- Add two different operators, one from an admin, the other from an operator
+		- Check that an non-operator canno't add himself
+		- Remove an operator with the other operator
+		- Check that the new non-operator cannot remove an operator
+		- Remove the last operator with an admin
+		- Check that the list is empty and no error is thrown
+*/
+func TestCommand_OperatorList(t *testing.T) {
+	initMetrics()
+
+	dummyForm, contract := initFormAndContract(123456)
+	dummyForm.FormID = fakeFormID
+
+	// Initialize the command handler to post on the ledger
+	cmd := evotingCommand{
+		Contract: &contract,
+	}
+
+	// We define a dummy userID which we are going to add admin permission.
+	dummyUID := "123456"
+	dummyUID2 := "777777"
+
+	// We initialize the commands to add permission.
+	addSelfOperator := types.AddOperator{TargetUserID: dummyUID2, PerformingUserID: dummyUID2}
+	addOtherOperator := types.AddOperator{TargetUserID: dummyUID2, PerformingUserID: dummyUID}
+	addOpWithAdmin := types.AddOperator{TargetUserID: dummyUID, PerformingUserID: otherDummyUserAdminID}
+
+	data, err := addSelfOperator.Serialize(ctx)
+	require.NoError(t, err)
+
+	// The following test are there to check error handling
+
+	// Checking that given a Blockchain that always returns an error,
+	// it will not be able to create the Operator list on the store.
+	err = cmd.manageAdminOperatorList(fake.NewBadSnapshot(), makeStep(t, FormArg, string(data)))
+	require.ErrorContains(t, err, "failed to get the AdminList")
+
+	// If no Admin List is provided nobody should be able to add an Operator
+	err = cmd.manageAdminOperatorList(fake.NewSnapshot(), makeStep(t, FormArg, string(data)))
+	require.ErrorContains(t, err, "couldn't get the operator permissions")
+
+	snap := fake.NewSnapshot()
+	initAdminList(t, snap, cmd)
+
+	// Checks the addition
+
+	// Adds an operator to the list
+	data, err = addOpWithAdmin.Serialize(ctx)
+	require.NoError(t, err)
+	err = cmd.manageAdminOperatorList(snap, makeStep(t, FormArg, string(data)))
+	require.NoError(t, err)
+
+	// A non operator non admin tries to adds himselfs resulting in an error
+	data, err = addSelfOperator.Serialize(ctx)
+	require.NoError(t, err)
+	err = cmd.manageAdminOperatorList(snap, makeStep(t, FormArg, string(data)))
+	require.ErrorContains(t, err, "The performing user is not an operator")
+
+	// Checks that an operator can add a new one
+	data, err = addOtherOperator.Serialize(ctx)
+	require.NoError(t, err)
+	err = cmd.cmd.manageAdminOperatorList(snap, makeStep(t, FormArg, string(data)))
+	require.NoError(t, err)
+
+	// General ID for OperatorList
+	h := sha256.New()
+	h.Write([]byte(OperatorListId))
+	formIDBuf := h.Sum(nil)
+
+	// We retrieve the Operator Form from the ledger.
+	res, err := snap.Get(formIDBuf)
+	require.NoError(t, err)
+
+	message, err := adminListFac.Deserialize(ctx, res)
+	require.NoError(t, err)
+
+	// And check that both operators have been added
+	adminList, ok := message.(types.AdminList)
+	require.True(t, ok)
+	require.True(t, len(adminList.AdminList) == 2)
+
+	// Checks for removal
+
+	remFromNonOp := types.RemoveOperator{TargetUserID: dummyUID2, PerformingUserID: dummyUID2}
+	remOtherOperator := types.RemoveOperator{TargetUserID: dummyUID2, PerformingUserID: dummyUID}
+	remFromAdmin := types.RemoveOperator{TargetUserID: dummyUID, PerformingUserID: otherDummyUserAdminID}
+
+	// Remove the second operator
+	data, err = remOtherOperator.Serialize(ctx)
+	require.NoError(t, err)
+	err = cmd.manageAdminOperatorList(snap, makeStep(t, FormArg, string(data)))
+	require.NoError(t, err)
+
+	//  Non operator can't remove
+	data, err = remFromNonOp.Serialize(ctx)
+	require.NoError(t, err)
+	err = cmd.manageAdminOperatorList(snap, makeStep(t, FormArg, string(data)))
+	require.ErrorContains(t, err, "The performing user is not an Operato")
+
+	// Admin can remove and create an empty list
+	data, err = remFromAdmin.Serialize(ctx)
+	require.NoError(t, err)
+	err = cmd.manageAdminOperatorList(snap, makeStep(t, FormArg, string(data)))
+	require.NoError(t, err)
+
+	// We retrieve the Operator Form from the ledger.
+	res, err = snap.Get(formIDBuf)
+	require.NoError(t, err)
+
+	message, err = adminListFac.Deserialize(ctx, res)
+	require.NoError(t, err)
+
+	// And check that one operator have been removed
+	adminList, ok = message.(types.AdminList)
+	require.True(t, ok)
+	require.True(t, len(adminList.AdminList) == 0)
 }
 
 /*
@@ -1340,6 +1533,9 @@ func TestCommand_OwnerForm(t *testing.T) {
 	// We check that now our dummy user is an owner (return 0)
 	dummyUserOwnerIndex, _ := form.GetOwnerIndex(dummyUserAdminID)
 	require.True(t, dummyUserOwnerIndex == 0)
+
+	// We need an admin list since admins can also perform this operation
+	initAdminList(t, snap, cmd)
 
 	// Now let's remove it
 
@@ -1492,6 +1688,9 @@ func TestCommand_VoterForm(t *testing.T) {
 	dummyUserVoterIndex, _ := form.GetVoterIndex(dummyUserAdminID)
 	require.True(t, dummyUserVoterIndex == -1)
 
+	// We need an admin list to check for ownership
+	initAdminList(t, snap, cmd)
+
 	// We perform the Add command on the ledger
 	err = cmd.manageOwnersVotersForm(snap, makeStep(t, FormArg, string(dataAdd)))
 	require.NoError(t, err)
@@ -1563,6 +1762,17 @@ func initFormAndContract(initialOwner int) (types.Form, Contract) {
 	contract := NewContract(service, fakeDkg, rosterFac)
 
 	return dummyForm, contract
+}
+
+func initAdminList(t *testing.T, snap store.Snapshot, cmd evotingCommand) store.Snapshot {
+	addAdmin := types.AddAdmin{TargetUserID: otherDummyUserAdminID, PerformingUserID: otherDummyUserAdminID}
+	dataAddAdmin, err := addAdmin.Serialize(ctx)
+	require.NoError(t, err)
+
+	step := makeStep(t, FormArg, string(dataAddAdmin))
+	err = cmd.manageAdminOperatorList(snap, step)
+	require.NoError(t, err)
+	return snap
 }
 
 func initGoodShuffleBallot(t *testing.T, k int) (store.Snapshot, types.Form, types.ShuffleBallots, Contract) {
@@ -1768,7 +1978,7 @@ type fakeCmd struct {
 	err error
 }
 
-func (c fakeCmd) manageAdminList(snap store.Snapshot, step execution.Step) error {
+func (c fakeCmd) manageAdminOperatorList(snap store.Snapshot, step execution.Step) error {
 	return c.err
 }
 

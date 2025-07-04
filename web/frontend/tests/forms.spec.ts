@@ -3,7 +3,10 @@ import { default as i18n } from 'i18next';
 import { assertHasFooter, assertHasNavBar, initI18n, logIn, setUp } from './shared';
 import {
   SCIPER_ADMIN,
+  SCIPER_OPERATOR,
   SCIPER_OTHER_ADMIN,
+  SCIPER_OTHER_OPERATOR,
+  SCIPER_OTHER_USER,
   SCIPER_USER,
   mockDKGActors as mockAPIDKGActors,
   mockAddRole,
@@ -13,7 +16,7 @@ import {
   mockProxies,
   mockServicesShuffle,
 } from './mocks/api';
-import { mockDKGActors, mockFormsFormID } from './mocks/evoting';
+import { mockAdminList, mockDKGActors, mockFormsFormID, mockOperatorList } from './mocks/evoting';
 import { FORMID } from './mocks/shared';
 import Worker0 from './json/api/proxies/dela-worker-0.json';
 import Worker1 from './json/api/proxies/dela-worker-1.json';
@@ -48,6 +51,8 @@ async function setUpMocks(
   }
   await mockDKGActors(page, dkgActorsStatus, initialized);
   await mockAPIDKGActors(page);
+  await mockAdminList(page, [SCIPER_ADMIN, SCIPER_OTHER_ADMIN]);
+  await mockOperatorList(page, [SCIPER_OPERATOR, SCIPER_OTHER_OPERATOR]);
   await mockPersonalInfo(page, SCIPER_ADMIN); // initially log in as admin to be able to access page
   await mockDKGActorsFormID(page);
   await mockServicesShuffle(page);
@@ -69,12 +74,16 @@ test('Assert footer is present', async ({ page }) => {
 });
 
 async function assertIsOnlyVisibleToOwner(page: Page, locator: Locator) {
-  await test.step('Assert is hidden to non-owner admin', async () => {
-    await logIn(page, SCIPER_ADMIN);
+  await test.step('Assert is hidden to non-owner non-admin', async () => {
+    await logIn(page, SCIPER_OTHER_USER);
     await expect(locator).toBeHidden();
   });
-  await test.step('Assert is visible to owner admin', async () => {
-    await logIn(page, SCIPER_OTHER_ADMIN);
+  await test.step('Assert is visible to non-owner admin', async () => {
+    await logIn(page, SCIPER_ADMIN);
+    await expect(locator).toBeVisible();
+  });
+  await test.step('Assert is visible to owner non-admin', async () => {
+    await logIn(page, SCIPER_USER);
     await expect(locator).toBeVisible();
   });
 }
@@ -130,37 +139,63 @@ async function assertRouteIsCalled(
   }
 }
 
-test('Assert "Add voters" button is only visible to owner', async ({ page }) => {
+test('Assert "Manage voters" button is only visible to owner', async ({ page }) => {
   await assertIsOnlyVisibleInStates(
     page,
-    page.getByTestId('addVotersButton'),
+    page.getByTestId('manageVotersButton'),
     [0, 1],
     assertIsOnlyVisibleToOwner
   );
 });
 
-test('Assert "Add voters" button allows to add voters', async ({ page, baseURL }) => {
+test('Assert "Manage voters" button allows to add voters', async ({ page, baseURL }) => {
   await setUpMocks(page, 0, 6);
+  await mockAddRole(page);
+  await logIn(page, SCIPER_OTHER_ADMIN);
+  for (const sciper of [SCIPER_ADMIN, SCIPER_USER]) {
+    page.waitForRequest(async (request) => {
+      const body = await request.postDataJSON();
+      return (
+        request.url() === `${baseURL}/api/evoting/auth/forms/${FORMID}/addvoter` &&
+        request.method() === 'POST' &&
+        body.TargetUserID === sciper
+      );
+    });
+  }
+
+  await page.getByTestId('manageVotersButton').click();
+  // menu should be visible
+  const textbox = await page.getByRole('textbox', { name: 'SCIPERs' });
+  await expect(textbox).toBeVisible();
+  // Add 2 voters (admin and user) since other admin and other user were already voters (as defined in the mock form)
+  await textbox.fill(
+    `${SCIPER_OTHER_ADMIN}\n${SCIPER_ADMIN}\n${SCIPER_USER}\n${SCIPER_OTHER_USER}`
+  );
+  // click on confirmation
+  await page.getByTestId('manageUserRoleConfirm').click();
+});
+
+test('Assert "Manage voters" button allows to remove voters', async ({ page, baseURL }) => {
+  await setUpMocks(page, 1, 6);
   await mockAddRole(page);
   await logIn(page, SCIPER_OTHER_ADMIN);
   page.waitForRequest(async (request) => {
     const body = await request.postDataJSON();
     return (
-      request.url() === `${baseURL}/api/add_role` &&
+      request.url() === `${baseURL}/api/evoting/auth/forms/${FORMID}/removevoter` &&
       request.method() === 'POST' &&
-      body.permission === 'vote' &&
-      body.subject === FORMID &&
-      body.userIds.toString() === [SCIPER_OTHER_ADMIN, SCIPER_ADMIN, SCIPER_USER].join(',')
+      body.TargetUserID === SCIPER_OTHER_USER
     );
   });
-  await page.getByTestId('addVotersButton').click();
+
+  await page.getByTestId('manageVotersButton').click();
   // menu should be visible
   const textbox = await page.getByRole('textbox', { name: 'SCIPERs' });
   await expect(textbox).toBeVisible();
-  // add 3 voters (owner admin, non-owner admin, user)
-  await textbox.fill(`${SCIPER_OTHER_ADMIN}\n${SCIPER_ADMIN}\n${SCIPER_USER}`);
+  // remove 1 voter (other user), since both him and other admin were voters before (as defined in the mock form)
+  await textbox.fill(`${SCIPER_OTHER_ADMIN}`);
   // click on confirmation
-  await page.getByTestId('addVotersConfirm').click();
+  await page.getByTestId('manageUserRoleConfirm').click();
 });
 
 test('Assert "Initialize" button is only visible to owner', async ({ page }) => {
@@ -378,12 +413,16 @@ test('Assert "Vote" button is visible to admin/non-admin voter user', async ({ p
     // eslint-disable-next-line @typescript-eslint/no-shadow
     async function (page: Page, locator: Locator) {
       await test.step('Assert is hidden to non-voter admin', async () => {
-        await logIn(page, SCIPER_OTHER_ADMIN);
+        await logIn(page, SCIPER_ADMIN);
         await expect(locator).toBeHidden();
       });
       await test.step('Assert is visible to voter admin', async () => {
-        await logIn(page, SCIPER_ADMIN);
+        await logIn(page, SCIPER_OTHER_USER);
         await expect(locator).toBeVisible();
+      });
+      await test.step('Assert is not visible to non-voter non-admin owner', async () => {
+        await logIn(page, SCIPER_USER);
+        await expect(locator).toBeHidden();
       });
     }
   );
@@ -391,7 +430,61 @@ test('Assert "Vote" button is visible to admin/non-admin voter user', async ({ p
 
 test('Assert "Vote" button gets voting form', async ({ page }) => {
   await setUpMocks(page, 1, 6);
-  await logIn(page, SCIPER_ADMIN);
+  await logIn(page, SCIPER_OTHER_ADMIN);
   page.waitForRequest(`${process.env.DELA_PROXY_URL}/evoting/forms/${FORMID}`);
-  await page.getByRole('button', { name: i18n.t('vote') }).click();
+  await page.getByRole('button', { name: i18n.t('vote'), exact: true }).click();
+});
+
+test('Assert "Manage Owners" button is only visible to owner', async ({ page }) => {
+  test.slow();
+  await assertIsOnlyVisibleInStates(
+    page,
+    page.getByRole('button', { name: i18n.t('manageOwners') }),
+    [0, 1, 2, 3, 4, 6],
+    assertIsOnlyVisibleToOwner
+  );
+});
+
+test('Assert "Manage Owners" button allows to add Owners', async ({ page, baseURL }) => {
+  await setUpMocks(page, 0, 6);
+  await logIn(page, SCIPER_OTHER_ADMIN);
+  page.waitForRequest(async (request) => {
+    const body = await request.postDataJSON();
+    return (
+      request.url() === `${baseURL}/api/evoting/auth/forms/${FORMID}/addowner` &&
+      request.method() === 'POST' &&
+      body.TargetUserID === SCIPER_OTHER_ADMIN
+    );
+  });
+
+  await page.getByTestId('manageOwnersButton').click();
+  // menu should be visible
+  const textbox = await page.getByRole('textbox', { name: 'SCIPERs' });
+  await expect(textbox).toBeVisible();
+  // Add 1 owner (other admin) since both others are already owners (as defined in the mock form)
+  await textbox.fill(`${SCIPER_OTHER_ADMIN}\n${SCIPER_ADMIN}\n${SCIPER_USER}`);
+  // click on confirmation
+  await page.getByTestId('manageUserRoleConfirm').click();
+});
+
+test('Assert "Manage Owners" button allows to remove Owners', async ({ page, baseURL }) => {
+  await setUpMocks(page, 1, 6);
+  await logIn(page, SCIPER_OTHER_ADMIN);
+  page.waitForRequest(async (request) => {
+    const body = await request.postDataJSON();
+    return (
+      request.url() === `${baseURL}/api/evoting/auth/forms/${FORMID}/removeowner` &&
+      request.method() === 'POST' &&
+      body.TargetUserID === SCIPER_ADMIN
+    );
+  });
+
+  await page.getByTestId('manageOwnersButton').click();
+  // menu should be visible
+  const textbox = await page.getByRole('textbox', { name: 'SCIPERs' });
+  await expect(textbox).toBeVisible();
+  // Remove 1 owner (other admin), since user and other admin were owners before (as defined in the mock form)
+  await textbox.fill(`${SCIPER_USER}`);
+  // click on confirmation
+  await page.getByTestId('manageUserRoleConfirm').click();
 });

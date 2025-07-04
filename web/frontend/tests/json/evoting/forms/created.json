@@ -114,5 +114,12 @@
   ],
   "ChunksPerBallot": 2,
   "BallotSize": 48,
-  "Voters": []
+  "Voters": [
+    "987564",
+    "654321"
+  ],
+  "Owners": [
+    "789012",
+    "123456"
+  ]
 }

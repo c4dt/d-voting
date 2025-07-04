@@ -1,10 +1,57 @@
+import { Page } from '@playwright/test';
 import Worker0 from './../json/api/proxies/dela-worker-0.json';
 import Worker1 from './../json/api/proxies/dela-worker-1.json';
 import Worker2 from './../json/api/proxies/dela-worker-2.json';
 import Worker3 from './../json/api/proxies/dela-worker-3.json';
 import { FORMID } from './shared';
 
-export async function mockForms(page: page, formList: string) {
+export async function mockAdminList(page: Page, adminList: string[]) {
+  // Clears the mocked route of any already setup mocked response
+  await page.unroute(`${process.env.DELA_PROXY_URL}/evoting/adminlist`);
+  // Sets up a mocked response to a call to this URL
+  await page.route(`${process.env.DELA_PROXY_URL}/evoting/adminlist`, async (route) => {
+    if (route.request().method() === 'OPTIONS') {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          'Access-Control-Allow-Headers': '*',
+          'Access-Control-Allow-Origin': '*',
+        },
+      });
+    } else {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: `{"Admins": ${JSON.stringify(adminList)}}`,
+      });
+    }
+  });
+}
+
+export async function mockOperatorList(page: Page, operatorList: string[]) {
+  // Clears the mocked route of any already setup mocked response
+  await page.unroute(`${process.env.DELA_PROXY_URL}/evoting/operatorlist`);
+  // Sets up a mocked response to a call to this URL
+  await page.route(`${process.env.DELA_PROXY_URL}/evoting/operatorlist`, async (route) => {
+    if (route.request().method() === 'OPTIONS') {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          'Access-Control-Allow-Headers': '*',
+          'Access-Control-Allow-Origin': '*',
+        },
+      });
+    } else {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: `{"Operators": ${JSON.stringify(operatorList)}}`,
+      });
+    }
+  });
+}
+
+export async function mockForms(page: Page, formList: string) {
   // clear current mock
   await page.unroute(`${process.env.DELA_PROXY_URL}/evoting/forms`);
   await page.route(`${process.env.DELA_PROXY_URL}/evoting/forms`, async (route) => {
@@ -34,7 +81,7 @@ export async function mockForms(page: page, formList: string) {
   });
 }
 
-export async function mockFormsFormID(page: page, formStatus: number) {
+export async function mockFormsFormID(page: Page, formStatus: number) {
   // clear current mock
   await page.unroute(`${process.env.DELA_PROXY_URL}/evoting/forms/${FORMID}`);
   await page.route(`${process.env.DELA_PROXY_URL}/evoting/forms/${FORMID}`, async (route) => {
@@ -53,7 +100,7 @@ export async function mockFormsFormID(page: page, formStatus: number) {
   });
 }
 
-export async function mockDKGActors(page: page, dkgActorsStatus: number, initialized: boolean) {
+export async function mockDKGActors(page: Page, dkgActorsStatus: number, initialized: boolean) {
   for (const worker of [Worker0, Worker1, Worker2, Worker3]) {
     await page.route(`${worker.Proxy}/evoting/services/dkg/actors/${FORMID}`, async (route) => {
       if (route.request().method() === 'PUT') {

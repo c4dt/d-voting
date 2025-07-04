@@ -56,7 +56,9 @@ type GetFormResponse struct {
 	Roster          []string
 	ChunksPerBallot int
 	BallotSize      int
+	BallotVoters    []string
 	Voters          []string
+	Owners          []string
 }
 
 // LightForm represents a light version of the form
@@ -65,6 +67,8 @@ type LightForm struct {
 	Title  etypes.Title
 	Status uint16
 	Pubkey string
+	Voters []string
+	Owners []string
 }
 
 // GetFormsResponse defines the HTTP response when getting all forms
@@ -79,4 +83,12 @@ type HTTPError struct {
 	Code    uint
 	Message string
 	Args    map[string]interface{}
+}
+
+type GetAdminsResponse struct {
+	Admins []string
+}
+
+type GetOperatorsResponse struct {
+	Operators []string
 }

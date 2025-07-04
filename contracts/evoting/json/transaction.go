@@ -117,6 +117,7 @@ func (transactionFormat) Encode(ctx serde.Context, msg serde.Message) ([]byte, e
 	case types.DeleteForm:
 		de := DeleteFormJSON{
 			FormID: t.FormID,
+			UserID: t.UserID,
 		}
 
 		m = TransactionJSON{DeleteForm: &de}
@@ -134,6 +135,20 @@ func (transactionFormat) Encode(ctx serde.Context, msg serde.Message) ([]byte, e
 		}
 
 		m = TransactionJSON{RemoveAdmin: &ra}
+	case types.AddOperator:
+		ao := AddOperatorJSON{
+			PerformingUserID: t.PerformingUserID,
+			TargetUserID:     t.TargetUserID,
+		}
+
+		m = TransactionJSON{AddOperator: &ao}
+	case types.RemoveOperator:
+		ro := RemoveOperatorJSON{
+			PerformingUserID: t.PerformingUserID,
+			TargetUserID:     t.TargetUserID,
+		}
+
+		m = TransactionJSON{RemoveOperator: &ro}
 	case types.AddOwner:
 		addOwner := AddOwnerJSON{
 			FormID:           t.FormID,
@@ -237,6 +252,7 @@ func (transactionFormat) Decode(ctx serde.Context, data []byte) (serde.Message, 
 	case m.DeleteForm != nil:
 		return types.DeleteForm{
 			FormID: m.DeleteForm.FormID,
+			UserID: m.DeleteForm.UserID,
 		}, nil
 	case m.AddAdmin != nil:
 		return types.AddAdmin{
@@ -247,6 +263,16 @@ func (transactionFormat) Decode(ctx serde.Context, data []byte) (serde.Message, 
 		return types.RemoveAdmin{
 			TargetUserID:     m.RemoveAdmin.TargetUserID,
 			PerformingUserID: m.RemoveAdmin.PerformingUserID,
+		}, nil
+	case m.AddOperator != nil:
+		return types.AddOperator{
+			TargetUserID:     m.AddOperator.TargetUserID,
+			PerformingUserID: m.AddOperator.PerformingUserID,
+		}, nil
+	case m.RemoveOperator != nil:
+		return types.RemoveOperator{
+			TargetUserID:     m.RemoveOperator.TargetUserID,
+			PerformingUserID: m.RemoveOperator.PerformingUserID,
 		}, nil
 	case m.AddOwner != nil:
 		return types.AddOwner{
@@ -291,6 +317,8 @@ type TransactionJSON struct {
 	DeleteForm        *DeleteFormJSON        `json:",omitempty"`
 	AddAdmin          *AddAdminJSON          `json:",omitempty"`
 	RemoveAdmin       *RemoveAdminJSON       `json:",omitempty"`
+	AddOperator       *AddOperatorJSON       `json:",omitempty"`
+	RemoveOperator    *RemoveOperatorJSON    `json:",omitempty"`
 	AddOwner          *AddOwnerJSON          `json:",omitempty"`
 	RemoveOwner       *RemoveOwnerJSON       `json:",omitempty"`
 	AddVoter          *AddVoterJSON          `json:",omitempty"`
@@ -357,6 +385,7 @@ type CancelFormJSON struct {
 // DeleteFormJSON is the JSON representation of a DeleteForm transaction
 type DeleteFormJSON struct {
 	FormID string
+	UserID string
 }
 
 // AdminList
@@ -369,6 +398,20 @@ type AddAdminJSON struct {
 
 // RemoveAdminJSON is the JSON representation of a RemoveAdmin transaction
 type RemoveAdminJSON struct {
+	TargetUserID     string
+	PerformingUserID string
+}
+
+// OperatorList
+
+// AddOperatorJSON is the JSON representation of a AddOperator transaction
+type AddOperatorJSON struct {
+	TargetUserID     string
+	PerformingUserID string
+}
+
+// RemoveOperatorJSON is the JSON representation of a RemoveOperator transaction
+type RemoveOperatorJSON struct {
 	TargetUserID     string
 	PerformingUserID string
 }
