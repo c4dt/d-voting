@@ -1,11 +1,111 @@
 import express from 'express';
 import axios, { AxiosError } from 'axios';
+import * as oauth from 'oauth4webapi';
 import { sciper2sess } from '../session';
 import { initEnforcer, getUserPermissions, readSCIPER, setMapAuthorization } from '../authManager';
 
 export const authenticationRouter = express.Router();
 
 initEnforcer().catch((e) => console.error(`Couldn't initialize enforcerer: ${e}`));
+
+// Microsoft Entra ID authentication
+
+// set up authentication
+const tenant_id = process.env.MS_ENTRA_TENANT_ID || '';
+const client_id = process.env.MS_ENTRA_CLIENT_ID || '';
+const redirect_uri = process.env.MS_ENTRA_REDIRECT_URI || '';
+const client_secret = process.env.MS_ENTRA_CLIENT_SECRET || '';
+if (!(tenant_id && client_id && redirect_uri && client_secret)) {
+  throw new Error('required Microsoft Entra ID environment variables are not set');
+}
+
+const issuer = new URL(`https://login.microsoftonline.com/${process.env.MS_ENTRA_TENANT_ID}/v2.0`);
+const code_challenge_method = 'S256';
+const client: oauth.Client = { client_id };
+const clientAuth = oauth.ClientSecretPost(client_secret);
+
+let as: oauth.AuthorizationServer;
+let code_verifier: string;
+let nonce: string;
+
+(async () => {
+  as = await oauth
+    .discoveryRequest(issuer)
+    .then((response) => oauth.processDiscoveryResponse(issuer, response));
+})();
+
+// authorization endpoint
+authenticationRouter.get('/auth-redirect', async (req, res) => {
+  try {
+    code_verifier = oauth.generateRandomCodeVerifier();
+    const code_challenge = await oauth.calculatePKCECodeChallenge(code_verifier);
+    if (!as?.authorization_endpoint) {
+      throw new Error('Invalid authorization endpoint');
+    }
+    const authorizationUrl = new URL(as.authorization_endpoint);
+    authorizationUrl.searchParams.set('client_id', client.client_id);
+    authorizationUrl.searchParams.set('redirect_uri', redirect_uri);
+    authorizationUrl.searchParams.set('response_type', 'code');
+    authorizationUrl.searchParams.set('scope', 'openid email');
+    authorizationUrl.searchParams.set('code_challenge', code_challenge);
+    authorizationUrl.searchParams.set('code_challenge_method', code_challenge_method);
+
+    // backwards compatibility
+    // https://github.com/panva/oauth4webapi/blob/222d1cc7b8e5f81ec1bbaab8ff364209e9dd7d98/examples/oidc.ts#L48
+    if (as.code_challenge_methods_supported?.includes(code_challenge_method) !== true) {
+      nonce = oauth.generateRandomNonce();
+      authorizationUrl.searchParams.set('nonce', nonce);
+    }
+
+    // redirect user to Microsoft Entra ID authentication
+    res.json({ url: authorizationUrl.href });
+  } catch (error) {
+    res.status(500).send('Failed to redirect to Microsoft Entra ID for authentication');
+    console.error(error);
+  }
+});
+
+// redirection URI
+authenticationRouter.get(redirect_uri.split('/api')[1], async (req, res) => {
+  try {
+    const params = oauth.validateAuthResponse(
+      as,
+      { client_id },
+      new URL(`${req.protocol}://${req.get('host')}${req.originalUrl}`)
+    );
+    const response = await oauth.authorizationCodeGrantRequest(
+      as,
+      { client_id },
+      clientAuth,
+      params,
+      redirect_uri,
+      code_verifier
+    );
+    const result = await oauth.processAuthorizationCodeResponse(as, client, response, {
+      expectedNonce: nonce,
+      requireIdToken: true,
+    });
+    const claims = oauth.getValidatedIdTokenClaims(result);
+    if (!(claims?.uniqueid && claims?.family_name && claims?.given_name)) {
+      throw new Error('Invalid authentication response');
+    }
+    req.session.userId = parseInt(claims.uniqueid as string, 10);
+    req.session.lastName = claims.family_name as string;
+    req.session.firstName = claims.given_name as string;
+
+    // log user in into React app
+    const sciperSessions = sciper2sess.get(req.session.userId) || new Set<string>();
+    sciperSessions.add(req.sessionID);
+    sciper2sess.set(req.session.userId, sciperSessions);
+
+    console.log(`user ${req.session.userId} successfully logged in`);
+
+    res.redirect('/logged');
+  } catch (error) {
+    res.status(500).send('Failed to log in user');
+    console.error(error);
+  }
+});
 
 authenticationRouter.get('/get_dev_login/:userId', (req, res) => {
   if (process.env.REACT_APP_DEV_LOGIN !== 'true') {
