@@ -1,4 +1,8 @@
-import { ENDPOINT_DEV_LOGIN, ENDPOINT_GET_TEQ_KEY } from 'components/utils/Endpoints';
+import {
+  ENDPOINT_DEV_LOGIN,
+  ENDPOINT_GET_TEQ_KEY,
+  ENDPOINT_MS_ENTRA_AUTH,
+} from 'components/utils/Endpoints';
 import { FlashLevel, FlashState } from 'index';
 
 // The backend will provide the client the URL to make a Tequila authentication.
@@ -13,7 +17,7 @@ const handleLogin = async (fctx: FlashState, dev_id = process.env.REACT_APP_SCIP
       window.location.reload();
       return;
     } else {
-      res = await fetch(ENDPOINT_GET_TEQ_KEY);
+      res = await fetch(ENDPOINT_MS_ENTRA_AUTH);
     }
 
     const d = new Date();
