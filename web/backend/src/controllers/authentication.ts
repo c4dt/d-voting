@@ -138,63 +138,6 @@ authenticationRouter.get('/get_dev_login/:userId', (req, res) => {
   res.redirect('/logged');
 });
 
-// This is via this endpoint that the client request the tequila key, this key
-// will then be used for redirection on the tequila server
-authenticationRouter.get('/get_teq_key', (req, res) => {
-  axios
-    .get(`https://tequila.epfl.ch/cgi-bin/tequila/createrequest`, {
-      params: {
-        urlaccess: `${process.env.FRONT_END_URL}/api/control_key`,
-        service: 'Evoting',
-        request: 'name,firstname,email,uniqueid,allunits',
-      },
-    })
-    .then((response) => {
-      console.info(`[tequila Key] Received response from tequila: ${response.data}`);
-      const key = response.data.split('\n')[0].split('=')[1];
-      const url = `https://tequila.epfl.ch/cgi-bin/tequila/requestauth?requestkey=${key}`;
-      res.json({ url: url });
-    })
-    .catch((error: AxiosError) => {
-      console.log('message:', error.message);
-      res.status(500).send(`failed to request Tequila authentication: ${error.message}`);
-    });
-});
-
-// Here the client will send the key he/she received from the tequila, it is
-// then verified on the tequila. If the key is valid, the user is then logged
-// in the website through this backend
-authenticationRouter.get('/control_key', (req, res) => {
-  const userKey = req.query.key;
-  const body = `key=${userKey}`;
-
-  axios
-    .post('https://tequila.epfl.ch/cgi-bin/tequila/fetchattributes', body)
-    .then((response) => {
-      if (!response.data.includes('status=ok')) {
-        throw new Error('Login did not work');
-      }
-
-      const sciper = response.data.split('uniqueid=')[1].split('\n')[0];
-      const lastname = response.data.split('\nname=')[1].split('\n')[0];
-      const firstname = response.data.split('\nfirstname=')[1].split('\n')[0];
-
-      req.session.userId = parseInt(sciper, 10);
-      req.session.lastName = lastname;
-      req.session.firstName = firstname;
-
-      const sciperSessions = sciper2sess.get(req.session.userId) || new Set<string>();
-      sciperSessions.add(req.sessionID);
-      sciper2sess.set(sciper, sciperSessions);
-
-      res.redirect('/logged');
-    })
-    .catch((error) => {
-      res.status(500).send('Login did not work');
-      console.log(error);
-    });
-});
-
 // This endpoint serves to log out from the app by clearing the session.
 authenticationRouter.post('/logout', (req, res) => {
   if (req.session.userId === undefined) {

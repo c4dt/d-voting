@@ -3,7 +3,6 @@ import ShortUniqueId from 'short-unique-id';
 import { ROUTE_LOGGED } from 'Routes';
 
 import {
-  ENDPOINT_GET_TEQ_KEY,
   ENDPOINT_MS_ENTRA_AUTH,
   ENDPOINT_LOGOUT,
   ENDPOINT_PERSONAL_INFO,

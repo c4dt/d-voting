@@ -1,8 +1,4 @@
-import {
-  ENDPOINT_DEV_LOGIN,
-  ENDPOINT_GET_TEQ_KEY,
-  ENDPOINT_MS_ENTRA_AUTH,
-} from 'components/utils/Endpoints';
+import { ENDPOINT_DEV_LOGIN, ENDPOINT_MS_ENTRA_AUTH } from 'components/utils/Endpoints';
 import { FlashLevel, FlashState } from 'index';
 
 // The backend will provide the client the URL to make a Tequila authentication.
