@@ -28,20 +28,33 @@ let as: oauth.AuthorizationServer;
 let code_verifier: string;
 let nonce: string;
 
-(async () => {
-  as = await oauth
-    .discoveryRequest(issuer)
-    .then((response) => oauth.processDiscoveryResponse(issuer, response));
-})();
+let authServerPromise: Promise<oauth.AuthorizationServer> | null = null;
+let lastFetched: number = 0;
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in ms
+
+function getAuthServer(): Promise<oauth.AuthorizationServer> {
+  const now = Date.now();
+
+  if (authServerPromise === null || now - lastFetched > CACHE_DURATION) {
+    // Renew the setup every 24h: even though the metadata fetched here can be
+    // re-used, there could be a key-rotation happening between the first call and
+    // the next one. Specifically if the backend server runs for more than 24h.
+    lastFetched = now;
+    authServerPromise = (async () => {
+      const response = await oauth.discoveryRequest(issuer);
+      return await oauth.processDiscoveryResponse(issuer, response);
+    })();
+  }
+
+  return authServerPromise;
+}
 
 // authorization endpoint
 authenticationRouter.get('/auth-redirect', async (req, res) => {
   try {
     code_verifier = oauth.generateRandomCodeVerifier();
     const code_challenge = await oauth.calculatePKCECodeChallenge(code_verifier);
-    if (!as?.authorization_endpoint) {
-      throw new Error('Invalid authorization endpoint');
-    }
+    const as = await getAuthServer();
     const authorizationUrl = new URL(as.authorization_endpoint);
     authorizationUrl.searchParams.set('client_id', client.client_id);
     authorizationUrl.searchParams.set('redirect_uri', redirect_uri);
