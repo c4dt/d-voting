@@ -3,8 +3,8 @@ import ShortUniqueId from 'short-unique-id';
 import { ROUTE_LOGGED } from 'Routes';
 
 import {
-  ENDPOINT_MS_ENTRA_AUTH,
   ENDPOINT_LOGOUT,
+  ENDPOINT_MS_ENTRA_AUTH,
   ENDPOINT_PERSONAL_INFO,
 } from '../components/utils/Endpoints';
 import * as endpoints from '../components/utils/Endpoints';
