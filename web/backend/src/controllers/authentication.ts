@@ -27,16 +27,12 @@ let as: oauth.AuthorizationServer;
 let codeVerifier: string;
 let nonce: string;
 
-(async () => {
+export async function initOAuth() {
   as = await oauth
     .discoveryRequest(issuer)
     .then((response) => oauth.processDiscoveryResponse(issuer, response));
-})()
-  .catch((error) => {
-    console.error(error);
-    throw new Error('Failed to discover endpoint');
-  })
-  .then(() => console.log('Discovered endpoint'));
+  console.log('Discovered authorization server');
+}
 
 // authorization endpoint
 authenticationRouter.get('/auth-redirect', async (req, res) => {
