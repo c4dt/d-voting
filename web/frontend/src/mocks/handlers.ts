@@ -3,8 +3,8 @@ import ShortUniqueId from 'short-unique-id';
 import { ROUTE_LOGGED } from 'Routes';
 
 import {
-  ENDPOINT_GET_TEQ_KEY,
   ENDPOINT_LOGOUT,
+  ENDPOINT_MS_ENTRA_AUTH,
   ENDPOINT_PERSONAL_INFO,
 } from '../components/utils/Endpoints';
 import * as endpoints from '../components/utils/Endpoints';
@@ -78,7 +78,7 @@ export const handlers = [
     );
   }),
 
-  rest.get(ENDPOINT_GET_TEQ_KEY, async (req, res, ctx) => {
+  rest.get(ENDPOINT_MS_ENTRA_AUTH, async (req, res, ctx) => {
     const url = ROUTE_LOGGED;
     sessionStorage.setItem('is-authenticated', 'true');
     sessionStorage.setItem('id', mockUserID.toString());

@@ -34,6 +34,7 @@
     "lodash": "^4.17.21",
     "memorystore": "^1.6.7",
     "morgan": "^1.10.0",
+    "oauth4webapi": "^3.8.5",
     "pg": "^8.11.1",
     "request": "^2.88.2",
     "short-unique-id": "^4.4.4",

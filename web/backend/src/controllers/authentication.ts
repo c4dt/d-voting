@@ -1,11 +1,109 @@
 import express from 'express';
-import axios, { AxiosError } from 'axios';
+import * as oauth from 'oauth4webapi';
 import { sciper2sess } from '../session';
 import { initEnforcer, getUserPermissions, readSCIPER, setMapAuthorization } from '../authManager';
 
 export const authenticationRouter = express.Router();
 
 initEnforcer().catch((e) => console.error(`Couldn't initialize enforcerer: ${e}`));
+
+// Microsoft Entra ID authentication
+
+// set up authentication
+const tenantId = process.env.MS_ENTRA_TENANT_ID || '';
+const clientId = process.env.MS_ENTRA_CLIENT_ID || '';
+const redirectUri = process.env.MS_ENTRA_REDIRECT_URI || '';
+const clientSecret = process.env.MS_ENTRA_CLIENT_SECRET || '';
+if (!(tenantId && clientId && redirectUri && clientSecret)) {
+  throw new Error('required Microsoft Entra ID environment variables are not set');
+}
+
+const issuer = new URL(`https://login.microsoftonline.com/${tenantId}/v2.0`);
+const codeChallengeMethod = 'S256';
+const client: oauth.Client = { client_id: clientId };
+const clientAuth = oauth.ClientSecretPost(clientSecret);
+
+let as: oauth.AuthorizationServer;
+let codeVerifier: string;
+let nonce: string;
+
+export async function initOAuth() {
+  as = await oauth.processDiscoveryResponse(issuer, await oauth.discoveryRequest(issuer));
+  console.log('Discovered authorization server');
+}
+
+// authorization endpoint
+authenticationRouter.get('/auth-redirect', async (req, res) => {
+  try {
+    codeVerifier = oauth.generateRandomCodeVerifier();
+    const codeChallenge = await oauth.calculatePKCECodeChallenge(codeVerifier);
+    if (!as?.authorization_endpoint) {
+      throw new Error('Invalid authorization endpoint');
+    }
+    const authorizationUrl = new URL(as.authorization_endpoint);
+    authorizationUrl.searchParams.set('client_id', client.client_id);
+    authorizationUrl.searchParams.set('redirect_uri', redirectUri);
+    authorizationUrl.searchParams.set('response_type', 'code');
+    authorizationUrl.searchParams.set('scope', 'openid email');
+    authorizationUrl.searchParams.set('code_challenge', codeChallenge);
+    authorizationUrl.searchParams.set('code_challenge_method', codeChallengeMethod);
+
+    // backwards compatibility
+    // https://github.com/panva/oauth4webapi/blob/222d1cc7b8e5f81ec1bbaab8ff364209e9dd7d98/examples/oidc.ts#L48
+    if (as.code_challenge_methods_supported?.includes(codeChallengeMethod) !== true) {
+      nonce = oauth.generateRandomNonce();
+      authorizationUrl.searchParams.set('nonce', nonce);
+    }
+
+    // redirect user to Microsoft Entra ID authentication
+    res.json({ url: authorizationUrl.href });
+  } catch (error) {
+    res.status(500).send('Failed to redirect to Microsoft Entra ID for authentication');
+    console.error(error);
+  }
+});
+
+// redirection URI
+authenticationRouter.get(redirectUri.split('/api')[1], async (req, res) => {
+  try {
+    const params = oauth.validateAuthResponse(
+      as,
+      { client_id: clientId },
+      new URL(`${req.protocol}://${req.get('host')}${req.originalUrl}`)
+    );
+    const response = await oauth.authorizationCodeGrantRequest(
+      as,
+      { client_id: clientId },
+      clientAuth,
+      params,
+      redirectUri,
+      codeVerifier
+    );
+    const result = await oauth.processAuthorizationCodeResponse(as, client, response, {
+      expectedNonce: nonce,
+      requireIdToken: true,
+    });
+    const claims = oauth.getValidatedIdTokenClaims(result);
+    if (!(claims?.uniqueid && claims?.family_name && claims?.given_name)) {
+      throw new Error('Invalid authentication response');
+    }
+    req.session.userId = parseInt(claims.uniqueid as string, 10);
+    req.session.lastName = claims.family_name as string;
+    req.session.firstName = claims.given_name as string;
+
+    // log user in into React app
+    const sciperSessions = sciper2sess.get(req.session.userId) || new Set<string>();
+    sciperSessions.add(req.sessionID);
+    sciper2sess.set(req.session.userId, sciperSessions);
+
+    console.log(`user ${req.session.userId} successfully logged in`);
+
+    res.redirect('/logged');
+  } catch (error) {
+    res.status(500).send('Failed to log in user');
+    console.error(error);
+  }
+});
 
 authenticationRouter.get('/get_dev_login/:userId', (req, res) => {
   if (process.env.REACT_APP_DEV_LOGIN !== 'true') {
@@ -36,63 +134,6 @@ authenticationRouter.get('/get_dev_login/:userId', (req, res) => {
   sciper2sess.set(req.session.userId, sciperSessions);
 
   res.redirect('/logged');
-});
-
-// This is via this endpoint that the client request the tequila key, this key
-// will then be used for redirection on the tequila server
-authenticationRouter.get('/get_teq_key', (req, res) => {
-  axios
-    .get(`https://tequila.epfl.ch/cgi-bin/tequila/createrequest`, {
-      params: {
-        urlaccess: `${process.env.FRONT_END_URL}/api/control_key`,
-        service: 'Evoting',
-        request: 'name,firstname,email,uniqueid,allunits',
-      },
-    })
-    .then((response) => {
-      console.info(`[tequila Key] Received response from tequila: ${response.data}`);
-      const key = response.data.split('\n')[0].split('=')[1];
-      const url = `https://tequila.epfl.ch/cgi-bin/tequila/requestauth?requestkey=${key}`;
-      res.json({ url: url });
-    })
-    .catch((error: AxiosError) => {
-      console.log('message:', error.message);
-      res.status(500).send(`failed to request Tequila authentication: ${error.message}`);
-    });
-});
-
-// Here the client will send the key he/she received from the tequila, it is
-// then verified on the tequila. If the key is valid, the user is then logged
-// in the website through this backend
-authenticationRouter.get('/control_key', (req, res) => {
-  const userKey = req.query.key;
-  const body = `key=${userKey}`;
-
-  axios
-    .post('https://tequila.epfl.ch/cgi-bin/tequila/fetchattributes', body)
-    .then((response) => {
-      if (!response.data.includes('status=ok')) {
-        throw new Error('Login did not work');
-      }
-
-      const sciper = response.data.split('uniqueid=')[1].split('\n')[0];
-      const lastname = response.data.split('\nname=')[1].split('\n')[0];
-      const firstname = response.data.split('\nfirstname=')[1].split('\n')[0];
-
-      req.session.userId = parseInt(sciper, 10);
-      req.session.lastName = lastname;
-      req.session.firstName = firstname;
-
-      const sciperSessions = sciper2sess.get(req.session.userId) || new Set<string>();
-      sciperSessions.add(req.sessionID);
-      sciper2sess.set(sciper, sciperSessions);
-
-      res.redirect('/logged');
-    })
-    .catch((error) => {
-      res.status(500).send('Login did not work');
-      console.log(error);
-    });
 });
 
 // This endpoint serves to log out from the app by clearing the session.
