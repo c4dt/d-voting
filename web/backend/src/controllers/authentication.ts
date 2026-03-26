@@ -18,7 +18,7 @@ if (!(tenantId && clientId && redirectUri && clientSecret)) {
   throw new Error('required Microsoft Entra ID environment variables are not set');
 }
 
-const issuer = new URL(`https://login.microsoftonline.com/${process.env.MS_ENTRA_TENANT_ID}/v2.0`);
+const issuer = new URL(`https://login.microsoftonline.com/${tenantId}/v2.0`);
 const codeChallengeMethod = 'S256';
 const client: oauth.Client = { client_id: clientId };
 const clientAuth = oauth.ClientSecretPost(clientSecret);
@@ -28,9 +28,7 @@ let codeVerifier: string;
 let nonce: string;
 
 export async function initOAuth() {
-  as = await oauth
-    .discoveryRequest(issuer)
-    .then((response) => oauth.processDiscoveryResponse(issuer, response));
+  as = await oauth.processDiscoveryResponse(issuer, await oauth.discoveryRequest(issuer));
   console.log('Discovered authorization server');
 }
 
