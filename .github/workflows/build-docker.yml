@@ -12,7 +12,9 @@ jobs:
     name: Build D-Voting Docker images
     runs-on: ubuntu-22.04
     env:
-      DockerTag: latest
+      # use version tag if it exists on commit else default
+      # (default will always be created in addition to other tags)
+      DockerTag: ${{ github.ref_type == 'tag' && github.ref_name || 'latest' }}
       push: ${{ (github.ref == 'refs/heads/main') && 'true' || 'false' }}
 
     steps:
