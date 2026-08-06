@@ -1,8 +1,6 @@
-import { ENDPOINT_ADD_ROLE } from 'components/utils/Endpoints';
+import * as endpoints from 'components/utils/Endpoints';
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import * as endpoints from 'components/utils/Endpoints';
 import { ID } from 'types/configuration';
 import { Action, OngoingAction, Status } from 'types/form';
 import { pollForm } from './PollStatus';
@@ -10,13 +8,13 @@ import { AuthContext, FlashContext, FlashLevel, ProxyContext } from 'index';
 import { useNavigate } from 'react-router';
 import { ROUTE_FORM_INDEX } from 'Routes';
 
-import { AddVotersModal, AddVotersModalSuccess } from 'pages/form/components/AddVotersModal';
+import { ManageUserRoleModal, ManageUserRoleModalSuccess } from '../ManageUserRoleModal';
 import ChooseProxyModal from 'pages/form/components/ChooseProxyModal';
 import ConfirmModal from 'components/modal/ConfirmModal';
 import usePostCall from 'components/utils/usePostCall';
 import InitializeButton from '../ActionButtons/InitializeButton';
 import DeleteButton from '../ActionButtons/DeleteButton';
-import AddVotersButton from '../ActionButtons/AddVotersButton';
+import ManageVotersButton from '../ActionButtons/ManageVotersButton';
 import SetupButton from '../ActionButtons/SetupButton';
 import CancelButton from '../ActionButtons/CancelButton';
 import CloseButton from '../ActionButtons/CloseButton';
@@ -27,6 +25,10 @@ import ResultButton from '../ActionButtons/ResultButton';
 import ShuffleButton from '../ActionButtons/ShuffleButton';
 import VoteButton from '../ActionButtons/VoteButton';
 import handleLogin from 'pages/session/HandleLogin';
+import { isManager } from '../../../../utils/auth';
+import pollTransaction from './TransactionPoll';
+import ManageOwnersButton from '../ActionButtons/ManageOwnersButton';
+import { UserRole } from '../../../../types/userRole';
 
 const useChangeAction = (
   status: Status,
@@ -40,7 +42,9 @@ const useChangeAction = (
   ongoingAction: OngoingAction,
   setOngoingAction: (action: OngoingAction) => void,
   nodeToSetup: [string, string],
-  setNodeToSetup: ([node, proxy]: [string, string]) => void
+  setNodeToSetup: ([node, proxy]: [string, string]) => void,
+  voters: string[],
+  owners: string[]
 ) => {
   const { t } = useTranslation();
   const [, setIsPosting] = useState(false);
@@ -49,15 +53,16 @@ const useChangeAction = (
   const [showModalClose, setShowModalClose] = useState(false);
   const [showModalCancel, setShowModalCancel] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
-  const [showModalAddVoters, setShowModalAddVoters] = useState(false);
-  const [showModalAddVotersSucccess, setShowModalAddVotersSuccess] = useState(false);
-  const [newVoters] = useState('');
+  const [showModalAddRole, setShowModalAddRole] = useState(false);
+  const [showModalAddRoleSuccess, setShowModalAddRoleSuccess] = useState(false);
+  const [addedRole, setAddedRole] = useState<UserRole>(UserRole.None);
+  const [newUsers] = useState('');
 
   const [userConfirmedProxySetup, setUserConfirmedProxySetup] = useState(false);
   const [userConfirmedClosing, setUserConfirmedClosing] = useState(false);
   const [userConfirmedCanceling, setUserConfirmedCanceling] = useState(false);
   const [userConfirmedDeleting, setUserConfirmedDeleting] = useState(false);
-  const [userConfirmedAddVoters, setUserConfirmedAddVoters] = useState('');
+  const [userConfirmedManageRole, setUserConfirmedManageRole] = useState('');
 
   const [getError, setGetError] = useState(null);
   const [postError, setPostError] = useState(null);
@@ -68,11 +73,7 @@ const useChangeAction = (
   const fctx = useContext(FlashContext);
   const navigate = useNavigate();
   const pctx = useContext(ProxyContext);
-  const { authorization, isLogged } = useContext(AuthContext);
-
-  function hasAuthorization(subject: string, action: string): boolean {
-    return authorization.has(subject) && authorization.get(subject).indexOf(action) !== -1;
-  }
+  const authctx = useContext(AuthContext);
 
   const POLLING_INTERVAL = 1000;
   const MAX_ATTEMPTS = 20;
@@ -101,18 +102,22 @@ const useChangeAction = (
       setUserConfirmedAction={setUserConfirmedDeleting}
     />
   );
-  const modalAddVoters = (
-    <AddVotersModal
-      showModal={showModalAddVoters}
-      setShowModal={setShowModalAddVoters}
-      setUserConfirmedAction={setUserConfirmedAddVoters}
+  const modalManageRole = (
+    <ManageUserRoleModal
+      role={addedRole}
+      voters={voters}
+      owners={owners}
+      showModal={showModalAddRole}
+      setShowModal={setShowModalAddRole}
+      setUserConfirmedAction={setUserConfirmedManageRole}
     />
   );
-  const modalAddVotersSuccess = (
-    <AddVotersModalSuccess
-      showModal={showModalAddVotersSucccess}
-      setShowModal={setShowModalAddVotersSuccess}
-      newVoters={newVoters}
+  const modalManageRoleSuccess = (
+    <ManageUserRoleModalSuccess
+      role={addedRole}
+      showModal={showModalAddRoleSuccess}
+      setShowModal={setShowModalAddRoleSuccess}
+      newUsers={newUsers}
     />
   );
 
@@ -301,9 +306,19 @@ const useChangeAction = (
           fctx.addMessage(`failed to send delete request: ${txt}`, FlashLevel.Error);
           return;
         }
-
-        fctx.addMessage('form deleted', FlashLevel.Info);
-        navigate(ROUTE_FORM_INDEX);
+        try {
+          const body = await res.json();
+          pollTransaction(endpoints.checkTransaction, body.Token, 1000, 30)
+            .then(() => {
+              fctx.addMessage('form deleted', FlashLevel.Info);
+              navigate(ROUTE_FORM_INDEX);
+            })
+            .catch((err) => {
+              fctx.addMessage(`failed to get a valid response: ${err}`, FlashLevel.Error);
+            });
+        } catch {
+          fctx.addMessage(`failed to get a valid response`, FlashLevel.Error);
+        }
       };
 
       deleteForm();
@@ -313,11 +328,41 @@ const useChangeAction = (
   }, [userConfirmedDeleting]);
 
   useEffect(() => {
-    if (userConfirmedAddVoters.length > 0) {
+    const getAddRolePromise = (sciper) => {
+      return () =>
+        sendFetchRequest(
+          endpoints.addRoleToForm(formID, addedRole),
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              TargetUserID: sciper,
+            }),
+          },
+          setIsPosting
+        ).catch((err) => Promise.reject([sciper, err]));
+    };
+
+    const getRemoveRolePromise = (sciper) => {
+      return () =>
+        sendFetchRequest(
+          endpoints.removeRoleToForm(formID, addedRole),
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              TargetUserID: sciper,
+            }),
+          },
+          setIsPosting
+        ).catch((err) => Promise.reject([sciper, err]));
+    };
+
+    if (userConfirmedManageRole.length > 0) {
       let sciperErrs = '';
 
-      const providedScipers = userConfirmedAddVoters.split('\n');
-      setUserConfirmedAddVoters('');
+      const providedScipers = userConfirmedManageRole.trim().split('\n');
+      setUserConfirmedManageRole('');
 
       for (const sciperStr of providedScipers) {
         const sciper = parseInt(sciperStr, 10);
@@ -333,44 +378,73 @@ const useChangeAction = (
         setShowModalError(true);
         return;
       }
-      // requests to ENDPOINT_ADD_ROLE cannot be done in parallel because on the
-      // backend, auths are reloaded from the DB each time there is an update.
-      // While auths are reloaded, they cannot be checked in a predictable way.
-      // See isAuthorized, addPolicy, and addListPolicy in backend/src/authManager.ts
       (async () => {
         try {
-          const chunkSize = 1000;
-          setOngoingAction(OngoingAction.AddVoters);
-          for (let i = 0; i < providedScipers.length; i += chunkSize) {
-            await sendFetchRequest(
-              ENDPOINT_ADD_ROLE,
-              {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  userIds: providedScipers.slice(i, i + chunkSize),
-                  subject: formID,
-                  permission: 'vote',
-                }),
-              },
-              setIsPosting
-            );
-          }
+          setOngoingAction(
+            addedRole === UserRole.Owner ? OngoingAction.ManageOwners : OngoingAction.ManageVoters
+          );
+          const oldUsers = addedRole === UserRole.Owner ? owners : voters;
+
+          const addPromises = providedScipers
+            .filter((sciper) => !oldUsers.includes(sciper))
+            .map(getAddRolePromise);
+          const removePromises = oldUsers
+            .filter((sciper) => !providedScipers.includes(sciper))
+            .map(getRemoveRolePromise);
+          const manageRolePromises = [...addPromises, ...removePromises];
+
+          // Create a promise to limit the parallelism. See reference
+          // http://medium.com/@blendedidea/promises-with-limited-parallelism-in-javascript-171291f94c59
+          const manageAll = new Promise((resolve) => {
+            const errors = [];
+            let currIndex = 0;
+            let active = 0;
+
+            function runNext() {
+              if (currIndex >= manageRolePromises.length && active === 0) {
+                resolve(errors);
+                return;
+              }
+              if (currIndex >= manageRolePromises.length) {
+                return;
+              }
+              active++;
+              manageRolePromises[currIndex++]()
+                .catch((err) => {
+                  errors.push(err);
+                })
+                .finally(() => {
+                  active--;
+                  runNext();
+                });
+            }
+
+            for (let i = 0; i < 20; ++i) {
+              runNext();
+            }
+          });
+
+          const errors = await manageAll;
+          console.log(`Ẁhile adding ${addedRole}: ${errors}`);
         } catch (e) {
-          console.error(`While adding voter: ${e}`);
-          setShowModalAddVoters(false);
+          console.error(`While adding ${addedRole}: ${e}`);
+          setShowModalAddRole(false);
         }
+        setAddedRole(UserRole.None);
         setOngoingAction(OngoingAction.None);
       })();
     }
   }, [
     formID,
     sendFetchRequest,
-    userConfirmedAddVoters,
+    userConfirmedManageRole,
     t,
     setTextModalError,
     setShowModalError,
     setOngoingAction,
+    addedRole,
+    owners,
+    voters,
   ]);
 
   useEffect(() => {
@@ -474,14 +548,20 @@ const useChangeAction = (
     setShowModalDelete(true);
   };
 
-  const handleAddVoters = () => {
-    setShowModalAddVoters(true);
+  const handleManageVoters = () => {
+    setAddedRole(UserRole.Voter);
+    setShowModalAddRole(true);
+  };
+
+  const handleManageOwners = () => {
+    setAddedRole(UserRole.Owner);
+    setShowModalAddRole(true);
   };
 
   const getAction = () => {
     // Except for seeing the results, all actions at least require the users
     // to be logged in
-    if (!isLogged && status !== Status.ResultAvailable) {
+    if (!authctx.isLogged && status !== Status.ResultAvailable) {
       return (
         <div>
           {t('notLoggedInActionText1')}
@@ -494,18 +574,11 @@ const useChangeAction = (
     }
 
     // Voters cannot perform any actions except voting and seeing the result
-    if (
-      !hasAuthorization('election', 'create') &&
-      (status < Status.Open || status > Status.Canceled)
-    ) {
+    if (!isManager(formID, authctx) && (status < Status.Open || status > Status.Canceled)) {
       return <div>{t('actionTextVoter1')}</div>;
     }
 
-    if (
-      !hasAuthorization('election', 'create') &&
-      status >= Status.Closed &&
-      status < Status.ResultAvailable
-    ) {
+    if (!isManager(formID, authctx) && status >= Status.Closed && status < Status.ResultAvailable) {
       return <div>{t('actionTextVoter2')}</div>;
     }
 
@@ -520,6 +593,11 @@ const useChangeAction = (
               formID={formID}
             />
             <DeleteButton handleDelete={handleDelete} formID={formID} />
+            <ManageOwnersButton
+              handleManageOwners={handleManageOwners}
+              ongoingAction={ongoingAction}
+              formID={formID}
+            />
           </>
         );
       case Status.Initialized:
@@ -532,6 +610,11 @@ const useChangeAction = (
               formID={formID}
             />
             <DeleteButton handleDelete={handleDelete} formID={formID} />
+            <ManageOwnersButton
+              handleManageOwners={handleManageOwners}
+              ongoingAction={ongoingAction}
+              formID={formID}
+            />
           </>
         );
       case Status.Setup:
@@ -544,8 +627,13 @@ const useChangeAction = (
               formID={formID}
             />
             <DeleteButton handleDelete={handleDelete} formID={formID} />
-            <AddVotersButton
-              handleAddVoters={handleAddVoters}
+            <ManageOwnersButton
+              handleManageOwners={handleManageOwners}
+              ongoingAction={ongoingAction}
+              formID={formID}
+            />
+            <ManageVotersButton
+              handleManageVoters={handleManageVoters}
               formID={formID}
               ongoingAction={ongoingAction}
             />
@@ -568,8 +656,13 @@ const useChangeAction = (
             />
             <VoteButton status={status} formID={formID} />
             <DeleteButton handleDelete={handleDelete} formID={formID} />
-            <AddVotersButton
-              handleAddVoters={handleAddVoters}
+            <ManageOwnersButton
+              handleManageOwners={handleManageOwners}
+              ongoingAction={ongoingAction}
+              formID={formID}
+            />
+            <ManageVotersButton
+              handleManageVoters={handleManageVoters}
               formID={formID}
               ongoingAction={ongoingAction}
             />
@@ -581,6 +674,11 @@ const useChangeAction = (
             <ShuffleButton
               status={status}
               handleShuffle={handleShuffle}
+              ongoingAction={ongoingAction}
+              formID={formID}
+            />
+            <ManageOwnersButton
+              handleManageOwners={handleManageOwners}
               ongoingAction={ongoingAction}
               formID={formID}
             />
@@ -596,6 +694,11 @@ const useChangeAction = (
               ongoingAction={ongoingAction}
               formID={formID}
             />
+            <ManageOwnersButton
+              handleManageOwners={handleManageOwners}
+              ongoingAction={ongoingAction}
+              formID={formID}
+            />
             <DeleteButton handleDelete={handleDelete} formID={formID} />
           </>
         );
@@ -608,6 +711,11 @@ const useChangeAction = (
               ongoingAction={ongoingAction}
               formID={formID}
             />
+            <ManageOwnersButton
+              handleManageOwners={handleManageOwners}
+              ongoingAction={ongoingAction}
+              formID={formID}
+            />
             <DeleteButton handleDelete={handleDelete} formID={formID} />
           </>
         );
@@ -615,7 +723,6 @@ const useChangeAction = (
         return (
           <>
             <ResultButton status={status} formID={formID} />
-            <DeleteButton handleDelete={handleDelete} formID={formID} />
           </>
         );
       default:
@@ -632,9 +739,8 @@ const useChangeAction = (
     modalCancel,
     modalDelete,
     modalSetup,
-    modalAddVoters,
-    modalAddVotersSuccess,
+    modalManageRole,
+    modalManageRoleSuccess,
   };
 };
-
 export default useChangeAction;

@@ -1,5 +1,5 @@
 import React, { FC, useContext, useEffect, useState } from 'react';
-import { ENDPOINT_REMOVE_ROLE } from 'components/utils/Endpoints';
+import { endpointRemoveRole } from 'components/utils/Endpoints';
 import PropTypes from 'prop-types';
 import { Dialog } from '@headlessui/react';
 import { UserRemoveIcon } from '@heroicons/react/outline';
@@ -8,18 +8,21 @@ import { useTranslation } from 'react-i18next';
 import { FlashContext, FlashLevel } from 'index';
 import AdminModal from './AdminModal';
 import usePostCall from 'components/utils/usePostCall';
+import { UserRole } from '../../../types/userRole';
 
 type RemoveAdminUserModalProps = {
   open: boolean;
   setOpen(opened: boolean): void;
-  sciper: number;
-  handleRemoveRoleUser(user: object): void;
+  sciper: string;
+  role: UserRole;
+  handleRemoveRoleUser(): void;
 };
 
 const RemoveAdminUserModal: FC<RemoveAdminUserModalProps> = ({
   open,
   setOpen,
   sciper,
+  role,
   handleRemoveRoleUser,
 }) => {
   const { t } = useTranslation();
@@ -39,22 +42,22 @@ const RemoveAdminUserModal: FC<RemoveAdminUserModalProps> = ({
       setPostError(null);
     }
   }, [fctx, t, postError]);
-  const usersToBeRemoved = [sciper];
+  const userToBeRemoved = { TargetUserID: sciper };
   const saveMapping = async () => {
     const request = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(usersToBeRemoved),
+      body: JSON.stringify(userToBeRemoved),
     };
-    return sendFetchRequest(ENDPOINT_REMOVE_ROLE, request, setIsPosting);
+    return sendFetchRequest(endpointRemoveRole(role), request, setIsPosting);
   };
   const handleDelete = async () => {
     setLoading(true);
-    if (sciper !== 0) {
+    if (sciper !== '0') {
       try {
         const res = await saveMapping();
-        if (!res) {
-          handleRemoveRoleUser(usersToBeRemoved);
+        if (res) {
+          handleRemoveRoleUser();
           fctx.addMessage(t('successRemoveUser'), FlashLevel.Info);
         }
         setOpen(false);
@@ -102,7 +105,7 @@ const RemoveAdminUserModal: FC<RemoveAdminUserModalProps> = ({
 RemoveAdminUserModal.propTypes = {
   open: PropTypes.bool.isRequired,
   setOpen: PropTypes.func.isRequired,
-  sciper: PropTypes.number.isRequired,
+  sciper: PropTypes.string.isRequired,
 };
 
 export default RemoveAdminUserModal;

@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ID, Title } from 'types/configuration';
 import { FormInfo, LightFormInfo, Results, Status } from 'types/form';
+import { AuthContext } from '../../index';
+import { setFormAuth } from '../../utils/auth';
 
 const useFillFormInfo = (formData: FormInfo) => {
+  const authContext = useContext(AuthContext);
   const [id, setId] = useState<ID>('');
   const [status, setStatus] = useState<Status>(null);
   const [pubKey, setPubKey] = useState<string>('');
@@ -10,8 +13,10 @@ const useFillFormInfo = (formData: FormInfo) => {
   const [result, setResult] = useState<Results[]>(null);
   const [chunksPerBallot, setChunksPerBallot] = useState<number>(0);
   const [ballotSize, setBallotSize] = useState<number>(0);
+  const [ballotVoters, setBallotVoters] = useState<string[]>(null);
   const [configObj, setConfigObj] = useState(null);
   const [voters, setVoters] = useState<string[]>(null);
+  const [owners, setOwners] = useState<string[]>(null);
   const [isResultSet, setIsResultSet] = useState<boolean>(false);
 
   useEffect(() => {
@@ -25,13 +30,17 @@ const useFillFormInfo = (formData: FormInfo) => {
     setResult(formData.Result);
     setChunksPerBallot(formData.ChunksPerBallot);
     setBallotSize(formData.BallotSize);
+    setBallotVoters(formData.BallotVoters);
     setConfigObj(formData.Configuration);
     setVoters(formData.Voters);
+    setOwners(formData.Owners);
+
+    setFormAuth(formData, authContext);
 
     if (formData.Result.length > 0) {
       setIsResultSet(true);
     }
-  }, [formData]);
+  }, [authContext, formData]);
 
   return {
     id,
@@ -43,10 +52,12 @@ const useFillFormInfo = (formData: FormInfo) => {
     setResult,
     chunksPerBallot,
     ballotSize,
+    ballotVoters,
     configObj,
     isResultSet,
     setIsResultSet,
     voters,
+    owners,
   };
 };
 

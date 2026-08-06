@@ -1,8 +1,12 @@
 import { FORMID } from './shared';
+
 export const SCIPER_ADMIN = '123456';
 export const SCIPER_OTHER_ADMIN = '987654';
 export const SCIPER_USER = '789012';
 export const SCIPER_OTHER_USER = '654321';
+export const SCIPER_OPERATOR = '111111';
+export const SCIPER_OTHER_OPERATOR = '222222';
+export const SCIPER_NO_ROLE = '999999';
 
 // /api/evoting
 
@@ -70,7 +74,15 @@ export async function mockProxy(page: page) {
   });
 }
 
-// /api
+// /api/proxies
+
+export async function mockProxyList(page: page) {
+  await page.route('/api/proxies', async (route) => {
+    if (route.request().method() === 'GET') {
+      await route.fulfill({ path: './tests/json/api/proxies/dela-workers.json' });
+    }
+  });
+}
 
 export async function mockProxies(page: page, workerNumber: number) {
   await page.route(
@@ -92,6 +104,8 @@ export async function mockProxies(page: page, workerNumber: number) {
     }
   );
 }
+
+// /api
 
 export async function mockPersonalInfo(page: page, sciper?: string) {
   // clear current mock

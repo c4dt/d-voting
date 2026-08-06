@@ -5,13 +5,11 @@ import FormStatus from './FormStatus';
 import QuickAction from './QuickAction';
 import { default as i18n } from 'i18next';
 import { AuthContext } from '../../..';
+import { isManager } from '../../../utils/auth';
 
 type FormRowProps = {
   form: LightFormInfo;
 };
-
-const SUBJECT_ELECTION = 'election';
-const ACTION_CREATE = 'create';
 
 const FormRow: FC<FormRowProps> = ({ form }) => {
   const Blocklist = process.env.REACT_APP_BLOCKLIST?.split(',') ?? [];
@@ -32,9 +30,9 @@ const FormRow: FC<FormRowProps> = ({ form }) => {
     }
   });
   const formTitle = formRowI18n.t('title', { ns: 'form', fallbackLng: 'en' });
-  const isAdmin = authCtx.isLogged && authCtx.isAllowed(SUBJECT_ELECTION, ACTION_CREATE);
+  const canSeeForm = isManager(form.FormID, authCtx);
   const isBlocked = Blocklist.includes(form.FormID);
-  if (!isAdmin && isBlocked) return null;
+  if (!canSeeForm && isBlocked) return null;
   const styleText = isBlocked
     ? 'text-gray-700 hover:text-gray-700'
     : 'text-gray-700 hover:text-[#ff0000]';
@@ -45,7 +43,7 @@ const FormRow: FC<FormRowProps> = ({ form }) => {
   return (
     <tr className={styleBox}>
       <td className="px-1.5 sm:px-6 py-4 font-medium text-gray-900 whitespace-nowrap truncate">
-        {isAdmin ? (
+        {canSeeForm ? (
           <Link className={styleText} to={`/forms/${form.FormID}`}>
             <div className="max-w-[20vw] truncate">{formTitle}</div>
           </Link>

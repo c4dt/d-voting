@@ -29,9 +29,12 @@ const FormShow: FC = () => {
     setStatus,
     roster,
     setResult,
+    ballotSize,
+    ballotVoters,
     configObj,
     setIsResultSet,
     voters,
+    owners,
     error,
   } = useForm(formId);
 
@@ -237,9 +240,9 @@ const FormShow: FC = () => {
           <div className="pt-2 break-all">Form ID : {formId}</div>
           {status >= Status.Open &&
             status <= Status.Canceled &&
-            voters !== null &&
-            voters !== undefined && (
-              <div className="break-all">{t('numVotes', { num: voters.length })}</div>
+            ballotVoters !== null &&
+            ballotVoters !== undefined && (
+              <div className="break-all">{t('numVotes', { num: ballotVoters.length })}</div>
             )}
           <div className="py-6 pl-2">
             <div className="font-bold uppercase text-lg text-gray-700">{t('status')}</div>
@@ -274,15 +277,25 @@ const FormShow: FC = () => {
                   setOngoingAction={setOngoingAction}
                   nodeToSetup={nodeToSetup}
                   setNodeToSetup={setNodeToSetup}
+                  voters={voters}
+                  owners={owners}
                 />
               )}
             </div>
           </div>
-          {voters !== null && voters !== undefined && voters.length > 0 && (
+          {ballotVoters !== null && ballotVoters !== undefined && ballotVoters.length > 0 && (
             <div className="py-4 pl-2 pb-8">
-              <div className="font-bold uppercase text-lg text-gray-700 pb-2">{t('userID')}</div>
+              <div className="font-bold uppercase text-lg text-gray-700 pb-2">{t('votersID')}</div>
               <div className="px-2">
-                <UserIDTable userIDs={voters} />
+                <UserIDTable userIDs={ballotVoters} />
+              </div>
+            </div>
+          )}
+          {owners !== null && owners !== undefined && owners.length > 0 && (
+            <div className="py-4 pl-2 pb-8">
+              <div className="font-bold uppercase text-lg text-gray-700 pb-2">{t('ownersID')}</div>
+              <div className="px-2">
+                <UserIDTable userIDs={owners} />
               </div>
             </div>
           )}
