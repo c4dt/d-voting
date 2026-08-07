@@ -14,9 +14,7 @@
           "Fr": "Couleurs",
           "De": "Farben"
         },
-        "Order": [
-          "CLgNiLbC"
-        ],
+        "Order": ["CLgNiLbC"],
         "Subjects": [],
         "Selects": [
           {
@@ -59,9 +57,7 @@
           "Fr": "Couleurs",
           "De": "Farben"
         },
-        "Order": [
-          "riJFjw0q"
-        ],
+        "Order": ["riJFjw0q"],
         "Subjects": [],
         "Selects": [
           {
@@ -114,12 +110,6 @@
   ],
   "ChunksPerBallot": 2,
   "BallotSize": 48,
-  "Voters": [
-    "987654",
-    "654321"
-    ],
-  "Owners": [
-    "789012",
-    "123456"
-  ]
+  "Voters": ["987654", "654321"],
+  "Owners": ["789012", "123456"]
 }

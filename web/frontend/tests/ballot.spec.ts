@@ -83,37 +83,31 @@ test('Assert minimum/maximum number of choices are handled correctly', async ({ 
   const castVoteButton = await page.getByRole('button', { name: i18n.t('castVote') });
   for (const [index, scaffold] of Form.Configuration.Scaffold.entries()) {
     const select = scaffold.Selects.at(0);
-    await test.step(
-      `Assert minimum number of choices (${select.MinN}) are handled correctly`,
-      async () => {
-        await castVoteButton.click();
-        await expect(
-          content.locator(`xpath=./div/div[3]/div/div[${index + 1}]`).getByText(
-            i18n.t('minSelectError', {
-              min: select.MinN,
-              singularPlural: i18n.t('singularAnswer'),
-            })
-          )
-        ).toBeVisible();
+    await test.step(`Assert minimum number of choices (${select.MinN}) are handled correctly`, async () => {
+      await castVoteButton.click();
+      await expect(
+        content.locator(`xpath=./div/div[3]/div/div[${index + 1}]`).getByText(
+          i18n.t('minSelectError', {
+            min: select.MinN,
+            singularPlural: i18n.t('singularAnswer'),
+          })
+        )
+      ).toBeVisible();
+    });
+    await test.step(`Assert maximum number of choices (${select.MaxN}) are handled correctly`, async () => {
+      for (const choice of select.Choices.map((x) => JSON.parse(x.Choice))) {
+        await page.getByRole('checkbox', { name: choice.en }).setChecked(true);
       }
-    );
-    await test.step(
-      `Assert maximum number of choices (${select.MaxN}) are handled correctly`,
-      async () => {
-        for (const choice of select.Choices.map((x) => JSON.parse(x.Choice))) {
-          await page.getByRole('checkbox', { name: choice.en }).setChecked(true);
-        }
-        await castVoteButton.click();
-        await expect(
-          content.locator(`xpath=./div/div[3]/div/div[${index + 1}]`).getByText(
-            i18n.t('maxSelectError', {
-              max: select.MaxN,
-              singularPlural: i18n.t('singularAnswer'),
-            })
-          )
-        ).toBeVisible();
-      }
-    );
+      await castVoteButton.click();
+      await expect(
+        content.locator(`xpath=./div/div[3]/div/div[${index + 1}]`).getByText(
+          i18n.t('maxSelectError', {
+            max: select.MaxN,
+            singularPlural: i18n.t('singularAnswer'),
+          })
+        )
+      ).toBeVisible();
+    });
   }
 });
 

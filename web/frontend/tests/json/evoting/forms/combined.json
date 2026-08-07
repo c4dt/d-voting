@@ -14,9 +14,7 @@
           "Fr": "Couleurs",
           "De": "Farben"
         },
-        "Order": [
-          "CLgNiLbC"
-        ],
+        "Order": ["CLgNiLbC"],
         "Subjects": [],
         "Selects": [
           {
@@ -59,9 +57,7 @@
           "Fr": "Couleurs",
           "De": "Farben"
         },
-        "Order": [
-          "riJFjw0q"
-        ],
+        "Order": ["riJFjw0q"],
         "Subjects": [],
         "Selects": [
           {
@@ -107,22 +103,10 @@
   "Pubkey": "612fdc867be1a5faccf16e5aed946880005840ee04aaa382fe181a2b46dc9a24",
   "Result": [
     {
-      "SelectResultIDs": [
-        "CLgNiLbC",
-        "riJFjw0q"
-      ],
+      "SelectResultIDs": ["CLgNiLbC", "riJFjw0q"],
       "SelectResult": [
-        [
-          true,
-          false,
-          false
-        ],
-        [
-          true,
-          true,
-          false,
-          false
-        ]
+        [true, false, false],
+        [true, true, false, false]
       ],
       "RankResultIDs": [],
       "RankResult": [],
@@ -130,22 +114,10 @@
       "TextResult": []
     },
     {
-      "SelectResultIDs": [
-        "CLgNiLbC",
-        "riJFjw0q"
-      ],
+      "SelectResultIDs": ["CLgNiLbC", "riJFjw0q"],
       "SelectResult": [
-        [
-          false,
-          true,
-          true
-        ],
-        [
-          true,
-          false,
-          false,
-          true
-        ]
+        [false, true, true],
+        [true, false, false, true]
       ],
       "RankResultIDs": [],
       "RankResult": [],
@@ -153,22 +125,10 @@
       "TextResult": []
     },
     {
-      "SelectResultIDs": [
-        "CLgNiLbC",
-        "riJFjw0q"
-      ],
+      "SelectResultIDs": ["CLgNiLbC", "riJFjw0q"],
       "SelectResult": [
-        [
-          false,
-          true,
-          true
-        ],
-        [
-          false,
-          true,
-          false,
-          false
-        ]
+        [false, true, true],
+        [false, true, false, false]
       ],
       "RankResultIDs": [],
       "RankResult": [],
@@ -176,22 +136,10 @@
       "TextResult": []
     },
     {
-      "SelectResultIDs": [
-        "CLgNiLbC",
-        "riJFjw0q"
-      ],
+      "SelectResultIDs": ["CLgNiLbC", "riJFjw0q"],
       "SelectResult": [
-        [
-          false,
-          false,
-          true
-        ],
-        [
-          false,
-          false,
-          true,
-          false
-        ]
+        [false, false, true],
+        [false, false, true, false]
       ],
       "RankResultIDs": [],
       "RankResult": [],
@@ -207,13 +155,6 @@
   ],
   "ChunksPerBallot": 2,
   "BallotSize": 48,
-  "Voters": [
-    "987564",
-    "654321"
-  ],
-  "Owners": [
-    "789012",
-    "123456"
-  ]
+  "Voters": ["987564", "654321"],
+  "Owners": ["789012", "123456"]
 }
-

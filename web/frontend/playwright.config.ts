@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /* import environment variables used in development instance */
-require("dotenv").config({ path: "./../../.env" });
+require('dotenv').config({ path: './../../.env' });
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -38,5 +38,4 @@ export default defineConfig({
       use: { ...devices['Desktop Firefox'] },
     },
   ],
-
 });

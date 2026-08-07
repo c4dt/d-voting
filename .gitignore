@@ -19,3 +19,8 @@ dela/
 bin/
 nodes/
 cookies.txt
+
+
+docker-compose/docker-compose.local.yml
+scripts/run_docker_local.sh
+scripts/local_browser_proxies.sh

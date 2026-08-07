@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -17,30 +13,17 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": false,
+    "noEmit": false
   },
   "ts-node": {
     "compilerOptions": {
       "module": "CommonJS"
     }
   },
-  "include": [
-    "src/model.conf",
-    "policy.csv",
-    "src/*.ts",
-    "src/controllers/*.ts",
-    "config.json"
-  ],
-  "exclude": [
-    "node_modules",
-    "jest.config.js",
-    ".eslintrc",
-    "dist",
-  ],
+  "include": ["src/model.conf", "policy.csv", "src/*.ts", "src/controllers/*.ts", "config.json"],
+  "exclude": ["node_modules", "jest.config.js", ".eslintrc", "dist"],
   "typedocOptions": {
-    "entryPoints": [
-      "src/Server.ts"
-    ],
+    "entryPoints": ["src/Server.ts"],
     "out": "tsdocs"
   }
 }

@@ -2,6 +2,7 @@
 import { UserRole } from '../../types/userRole';
 
 export const ENDPOINT_GET_TEQ_KEY = '/api/get_teq_key';
+export const ENDPOINT_MS_ENTRA_AUTH = '/api/auth-redirect';
 export const ENDPOINT_DEV_LOGIN = '/api/get_dev_login';
 export const ENDPOINT_PERSONAL_INFO = '/api/personal_info';
 export const ENDPOINT_LOGOUT = '/api/logout';

@@ -24,11 +24,13 @@ Once all the previous steps done, the project can be run using `npm start`
 
 To control the administration right of different users, the CLI tool can be used.
 For example,
+
 ```sh
 $ npx cli addAdmin --sciper MY_SCIPER_NUMBER
 ```
 
 You can also consult the following command for more information
+
 ```sh
 $ npx cli help
 Usage: cli [options] [command]
