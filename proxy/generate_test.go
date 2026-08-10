@@ -19,6 +19,7 @@ How to use it:
 - Run the test and use the provided result as a cURL request.
 */
 func TestGenerateSignatureAndB64Payload(t *testing.T) {
+	t.Skip("developer helper snippet; not part of the automated test suite")
 	// #### INPUT ####
 	// rawPayload must be built following docs/api.md
 	rawPayload := `{"TargetUserID" : "654321", "PerformingUserID" : "123456"}`

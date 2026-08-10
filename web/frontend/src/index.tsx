@@ -27,7 +27,7 @@ const defaultAuth = {
   isAdmin: false,
   isOperator: false,
   authorization: arr,
-  formsAuthorizations: arr,
+  formsAuthorizations: new Map<String, Array<String>>(),
   isAllowed: () => false,
 };
 
@@ -155,7 +155,7 @@ const Failed: FC = ({ children }) => (
       <div className="flex flex-col items-center">
         <div className="p-4">
           <h1 className="text-2xl font-medium text-slate-600 pb-2">
-            Failed to fetch users informations.
+            Failed to fetch user information.
           </h1>
           <p className="text-sm tracking-tight font-light text-slate-400 leading-6">
             Is the backend running ?

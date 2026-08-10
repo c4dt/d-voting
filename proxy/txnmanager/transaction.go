@@ -191,11 +191,10 @@ func (h *manager) checkTxnIncluded(transactionID []byte, lastBlockIdx uint64) (T
 		for _, txn := range transactions {
 
 			if bytes.Equal(txn.GetTransaction().GetID(), transactionID) {
-				accepted, reason := txn.GetStatus()
+				accepted, _ := txn.GetStatus()
 				if accepted {
 					return IncludedTransaction, blockLink.GetBlock().GetIndex()
 				} else {
-					println(reason)
 					return RejectedTransaction, blockLink.GetBlock().GetIndex()
 				}
 

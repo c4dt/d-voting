@@ -5,7 +5,6 @@ import { User, UserRole } from 'types/userRole';
 import AddAdminUserModal from './components/AddAdminUserModal';
 import RemoveAdminUserModal from './components/RemoveAdminUserModal';
 import { AuthContext } from '../../index';
-import { useNavigate } from 'react-router-dom';
 
 const SCIPERS_PER_PAGE = 5;
 
@@ -17,7 +16,6 @@ type AdminTableProps = {
 const AdminTable: FC<AdminTableProps> = ({ users, setUsers }) => {
   const { t } = useTranslation();
 
-  const navigate = useNavigate();
   const authctx = useContext(AuthContext);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [newUserOpen, setNewUserOpen] = useState(false);
@@ -65,13 +63,12 @@ const AdminTable: FC<AdminTableProps> = ({ users, setUsers }) => {
     // All users are considered admins as long as there is none on the admin list. So when someone gives admins rights
     // to someone else, he will lose its own "by default" admins rights
     if (users.length === 0 && user.sciper !== authctx.sciper.toString()) {
-      authctx.isAdmin = false;
-      authctx.isOperator = false;
-      navigate('/');
-    } else {
-      setUsers(newUsers);
-      setPageIndex(partitionArray(newUsers, SCIPERS_PER_PAGE).length - 1);
+      window.location.assign('/');
+      return;
     }
+
+    setUsers(newUsers);
+    setPageIndex(partitionArray(newUsers, SCIPERS_PER_PAGE).length - 1);
   };
 
   const handleRemoveRoleUser = (): void => {
@@ -79,19 +76,15 @@ const AdminTable: FC<AdminTableProps> = ({ users, setUsers }) => {
     const newUsers = users.filter(
       (user) => !(user.sciper === userToDelete.sciper && user.role === userToDelete.role)
     );
-    // If the user removes his own admin rights, we remove his rights client side and redirect it to the homepage
+   // If the current user changes their own role, reload the application
+   // so authorization state is fetched again from the backend.
     if (userToDelete.sciper === authctx.sciper.toString()) {
-      authctx.isAdmin = newUsers.some(
-        (user) => user.sciper === userToDelete.sciper && user.role === UserRole.Admin
-      );
-      authctx.isOperator = newUsers.some(
-        (user) => user.sciper === userToDelete.sciper && user.role === UserRole.Operator
-      );
-      if (!(authctx.isAdmin || authctx.isOperator)) {
-        navigate('/');
-      }
+      window.location.assign('/');
+      return;
     }
+
     setUsers(newUsers);
+
     if (newUsers.length % SCIPERS_PER_PAGE === 0) {
       setPageIndex(pageIndex - 1);
     }

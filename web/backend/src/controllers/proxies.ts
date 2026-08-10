@@ -25,7 +25,7 @@ const isAdmin: RequestHandler = async (req, res, next) => {
   );
   const admin = adminResp.Admins.includes(req.session.userId.toString());
   if (!admin) {
-    res.status(400).send('Unauthorized - only admins and operators allowed');
+    res.status(400).send('Unauthorized - only admins allowed');
     return;
   }
   // Calls the next middleware on the chain, since the request is issued by an admin
