@@ -30,22 +30,6 @@ images with:
 ./scripts/run_docker.sh teardown
 ```
 
-## Native local environment
-
-For development outside Docker, `scripts/local/run_local.sh` builds and starts
-the four DELA nodes, PostgreSQL, backend, and frontend. It requires `asdf`, Go,
-Node.js, Docker, and the other commands used by the script.
-
-```bash
-./scripts/local/run_local.sh
-./scripts/local/local_proxies.sh
-./scripts/local/local_forms.sh
-```
-
-`run_local.sh` also accepts `build`, `init_nodes`, `init_dela`, `init_db`,
-`backend`, `frontend`, and `clean`. The `local_login.sh` and `local_vars.sh`
-files are helpers sourced by the other local scripts.
-
 ## Local system tests
 
 The focused tests in `scripts/system-tests` expect an initialized D-voting
