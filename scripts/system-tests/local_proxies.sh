@@ -2,19 +2,25 @@
 
 set -Eeuo pipefail
 
+# Purpose:
+#   Test proxy registration and CRUD behavior.
+#
 # Requirements:
-#   - D-voting system already running
-#   - Development login enabled
-#   - curl
-#   - jq
+#   - D-voting is running with development login enabled.
+#   - The configured administrator exists; curl and jq are installed.
 #
 # Options:
-#   PROXY_COUNT=5
 #   SYSTEM_TEST_URL=http://127.0.0.1:3000
+#   PROXY_COUNT=5
 #
-# Examples:
-#   bash ./scripts/system-tests/test_proxies.sh
-#   PROXY_COUNT=20 bash ./scripts/system-tests/test_proxies.sh
+# Test steps:
+#   1. Read the existing proxy list.
+#   2. Register temporary proxies and verify list and individual reads.
+#   3. Update every temporary proxy and verify the new addresses.
+#   4. Delete the temporary proxies and verify they return HTTP 404.
+#
+# Example:
+#   PROXY_COUNT=20 ./scripts/system-tests/local_proxies.sh
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"

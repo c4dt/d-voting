@@ -1,15 +1,14 @@
 version: "3.8"
-
 x-dela: &dela
   image: ghcr.io/c4dt/d-voting-dela:latest
   env_file: ../.env
-
 x-dela-env: &dela-env
   PROXYKEY: ${PUBLIC_KEY}
   PROXY_LOG: info
   LLVL: info
 
 services:
+
   dela-worker-0:             # inital DELA leader node
     <<: *dela
     build:
@@ -23,8 +22,7 @@ services:
       - dela-worker-0-data:/data
     networks:
       d-voting:
-        ipv4_address: 10.77.44.254
-
+        ipv4_address: 172.19.44.254
   dela-worker-1:             # DELA worker node
     <<: *dela
     volumes:
@@ -34,8 +32,7 @@ services:
       PUBLIC_URL: grpc://dela-worker-1:2000
     networks:
       d-voting:
-        ipv4_address: 10.77.44.253
-
+        ipv4_address: 172.19.44.253
   dela-worker-2:             # DELA worker node
     <<: *dela
     volumes:
@@ -45,8 +42,7 @@ services:
       PUBLIC_URL: grpc://dela-worker-2:2000
     networks:
       d-voting:
-        ipv4_address: 10.77.44.252
-
+        ipv4_address: 172.19.44.252
   dela-worker-3:             # DELA worker node
     <<: *dela
     volumes:
@@ -56,9 +52,9 @@ services:
       PUBLIC_URL: grpc://dela-worker-3:2000
     networks:
       d-voting:
-        ipv4_address: 10.77.44.251
+        ipv4_address: 172.19.44.251
 
-  frontend:                  # web service frontend
+  frontend:         # web service frontend
     image: ghcr.io/c4dt/d-voting-frontend:latest
     build:
       dockerfile: Dockerfiles/Dockerfile.frontend
@@ -68,9 +64,9 @@ services:
     env_file: ../.env
     networks:
       d-voting:
-        ipv4_address: 10.77.44.2
+        ipv4_address: 172.19.44.2
 
-  backend:                   # web service backend
+  backend:          # web service backend
     image: ghcr.io/c4dt/d-voting-backend:latest
     build:
       dockerfile: Dockerfiles/Dockerfile.backend
@@ -85,9 +81,9 @@ services:
       - backend-data:/data
     networks:
       d-voting:
-        ipv4_address: 10.77.44.3
+        ipv4_address: 172.19.44.3
 
-  db:                        # PostgreSQL database
+  db:               # PostgreSQL database
     image: postgres:15
     environment:
       POSTGRES_USER: ${DATABASE_USERNAME}
@@ -97,10 +93,10 @@ services:
       - ../web/backend/src/migration.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       d-voting:
-        ipv4_address: 10.77.44.4
+        ipv4_address: 172.19.44.4
 
 volumes:
-  postgres-data:             # PostgreSQL database
+  postgres-data:    # PostgreSQL database
   dela-worker-0-data:
   dela-worker-1-data:
   dela-worker-2-data:
@@ -112,5 +108,5 @@ networks:
   d-voting:
     ipam:
       config:
-        - subnet: 10.77.44.0/24
-          gateway: 10.77.44.1
+        - subnet: 172.19.44.0/24
+          gateway: 172.19.44.1

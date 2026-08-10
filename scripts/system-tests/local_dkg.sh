@@ -2,20 +2,29 @@
 
 set -Eeuo pipefail
 
+# Purpose:
+#   Test DKG actor initialization, validation, and setup.
+#
 # Requirements:
-# D-voting system already running
-# Development login enabled
-# All DELA proxies registered
-# curl
-# jq
+#   - D-voting is running with development login enabled.
+#   - The administrator exists and all DELA proxies are registered.
+#   - curl and jq are installed.
 #
 # Options:
-# DKG_POLL_INTERVAL=1
-# DKG_MAX_ATTEMPTS=30
-# SYSTEM_TEST_URL=http://127.0.0.1:3000
+#   SYSTEM_TEST_URL=http://127.0.0.1:3000
+#   DKG_POLL_INTERVAL=1
+#   DKG_MAX_ATTEMPTS=30
+#
+# Test steps:
+#   1. Create a form and resolve every roster node to its proxy.
+#   2. Verify an uninitialized actor is absent.
+#   3. Reject initialization without a proxy and setup before initialization.
+#   4. Initialize every actor and test duplicate initialization.
+#   5. Reject an invalid DKG action, then complete DKG setup.
+#   6. Open the form, verify its public key, and delete it.
 #
 # Example:
-# ./scripts/system-tests/test_dkg.sh
+#   DKG_MAX_ATTEMPTS=60 ./scripts/system-tests/local_dkg.sh
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"

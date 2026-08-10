@@ -2,12 +2,12 @@
 
 set -Eeuo pipefail
 
+# Purpose:
+#   Test basic form CRUD and invalid lifecycle transitions.
+#
 # Requirements:
-#   - D-voting system already running
-#   - Development login enabled
-#   - Admin user already configured
-#   - curl
-#   - jq
+#   - D-voting is running with development login enabled.
+#   - The configured administrator exists; curl and jq are installed.
 #
 # Options:
 #   SYSTEM_TEST_URL=http://127.0.0.1:3000
@@ -15,19 +15,21 @@ set -Eeuo pipefail
 #   TX_POLL_INTERVAL=1
 #   TX_MAX_ATTEMPTS=60
 #
-# Examples:
-#   ./scripts/system-tests/test_forms.sh
-#   FORM_TITLE="Custom test form" ./scripts/system-tests/test_forms.sh
-
-echo "Here"
+# Test steps:
+#   1. Create a simple form and verify its ID, initial status, title, and owner.
+#   2. Verify the form appears in the list and a missing form is rejected.
+#   3. Reject close-before-open and open-without-DKG transitions.
+#   4. Cancel the form and reject opening the canceled form.
+#   5. Repeat cancellation, delete the form, and verify it disappeared.
+#
+# Example:
+#   FORM_TITLE="Custom test form" ./scripts/system-tests/local_forms.sh
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 FORM_TITLE="${FORM_TITLE:-System test form}"
 FORM_ID=""
-
-echo "Here"
 
 # Remove the form if the test exits before normal cleanup
 cleanup() {
@@ -56,7 +58,7 @@ FORM_JSON="$(jq -cn \
                 En: $title,
                 Fr: "",
                 De: "",
-                URL: ""j
+                URL: ""
             },
             Scaffold: [
                 {

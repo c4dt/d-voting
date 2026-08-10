@@ -2,23 +2,33 @@
 
 set -Eeuo pipefail
 
-# Requirements:
-# D-voting system already running
-# Development login enabled
-# All DELA proxies registered
+# Purpose:
+#   Test the complete election lifecycle under a configurable voter load.
 #
+# Requirements:
+#   - D-voting is running with development login and DELA proxies enabled.
+#   - The configured administrator exists.
+#   - Frontend dependencies are available locally or in a Docker container.
+#   - curl and jq are installed.
 #
 # Options:
-# VOTES=300
-# START_VOTER=950000
-# BATCH_SIZE=10
-# SHUFFLE_TIMEOUT=180
-# SYSTEM_TEST_URL=http://127.0.0.1:3000
+#   SYSTEM_TEST_URL=http://127.0.0.1:3000
+#   VOTES=300
+#   START_VOTER=950000
+#   BATCH_SIZE=10
+#   SHUFFLE_TIMEOUT=180
 #
-# Examples:
-# ./scripts/system-tests/test_load.sh
-# VOTES=500 ./scripts/system-tests/test_load.sh
-# VOTES=1000 BATCH_SIZE=20 ./scripts/system-tests/test_load.sh
+# Test steps:
+#   1. Create a yes/no form and register the configured number of voters.
+#   2. Complete DKG setup and open the form.
+#   3. Generate and cast alternating encrypted yes/no ballots in batches.
+#   4. Verify the stored ballot count and unique voter count.
+#   5. Close and shuffle all ballots.
+#   6. Compute public shares, decrypt, and verify every expected result.
+#   7. Delete the form and print operation timings.
+#
+# Example:
+#   VOTES=513 BATCH_SIZE=20 ./scripts/system-tests/local_load.sh
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
@@ -52,103 +62,6 @@ cleanup() {
 }
 
 trap cleanup EXIT
-
-wait_tx() {
-    local response="$1"
-    local label="$2"
-    local token
-
-    token="$(jq -r '.Token // empty' <<<"$response")"
-
-    [[ -n "$token" ]] || fail "$label did not return transaction token"
-
-    poll_transaction "$token"
-
-    [[ "$TX_STATUS" == "1" ]] || fail "$label was rejected"
-}
-
-wait_form_status() {
-    local expected="$1"
-
-    for ((i = 1; i <= 120; i++)); do
-        form="$(api_get "/api/evoting/forms/${FORM_ID}")"
-        status="$(jq -r '.Status' <<<"$form")"
-
-        [[ "$status" == "$expected" ]] && return
-
-        sleep 1
-    done
-
-    fail "form did not reach status $expected"
-}
-
-setup_dkg() {
-    local form
-    local proxy_data
-    local proxy
-    local ready
-
-    form="$(api_get "/api/evoting/forms/${FORM_ID}")"
-    proxy_data="$(api_get "/api/proxies")"
-
-    mapfile -t roster < <(jq -r '.Roster[]' <<<"$form")
-    proxies=()
-
-    for node in "${roster[@]}"; do
-        proxy="$(jq -r \
-            --arg node "$node" \
-            '.Proxies[$node] // empty' \
-            <<<"$proxy_data")"
-
-        [[ -n "$proxy" ]] || fail "no proxy for $node"
-
-        proxies+=("$proxy")
-
-        curl -fsS \
-            -X POST \
-            -H 'Content-Type: application/json' \
-            -b "$COOKIE_FILE" \
-            --data "$(jq -cn \
-                --arg id "$FORM_ID" \
-                --arg proxy "$proxy" \
-                '{FormID:$id, Proxy:$proxy}')" \
-            "${BASE_URL}/api/evoting/services/dkg/actors" \
-            >/dev/null
-    done
-
-    curl -fsS \
-        -X PUT \
-        -H 'Content-Type: application/json' \
-        -b "$COOKIE_FILE" \
-        --data "$(jq -cn \
-            --arg proxy "${proxies[0]}" \
-            '{Action:"setup", Proxy:$proxy}')" \
-        "${BASE_URL}/api/evoting/services/dkg/actors/${FORM_ID}" \
-        >/dev/null
-
-    for ((attempt = 1; attempt <= 30; attempt++)); do
-        ready=0
-
-        for proxy in "${proxies[@]}"; do
-            actor="$(curl -fsS \
-                "${proxy}/evoting/services/dkg/actors/${FORM_ID}")"
-
-            status="$(jq -r '.Status' <<<"$actor")"
-
-            [[ "$status" != "2" ]] || fail "DKG failed at $proxy"
-
-            if [[ "$status" == "1" || "$status" == "6" ]]; then
-                ready=$((ready + 1))
-            fi
-        done
-
-        [[ "$ready" -eq "${#proxies[@]}" ]] && return
-
-        sleep 1
-    done
-
-    fail "DKG setup timed out"
-}
 
 check_system
 login
@@ -202,15 +115,18 @@ for ((start = 0; start < VOTES; start += BATCH_SIZE)); do
         voter=$((START_VOTER + start + j))
 
         body_file="$TMP_DIR/add-voter-response"
+        request_body="$(jq -cn --arg id "$voter" '{TargetUserID:$id}')"
 
         status="$(curl -sS \
+            --max-time "$CURL_MAX_TIME" \
             -o "$body_file" \
             -w '%{http_code}' \
             -X POST \
             -H 'Content-Type: application/json' \
             -b "$COOKIE_FILE" \
-            --data "$(jq -cn --arg id "$voter" '{TargetUserID:$id}')" \
-            "${BASE_URL}/api/evoting/auth/forms/${FORM_ID}/addvoter")"
+            --data-binary @- \
+            "${BASE_URL}/api/evoting/auth/forms/${FORM_ID}/addvoter" \
+            <<<"$request_body")"
 
         response="$(cat "$body_file")"
 
@@ -250,18 +166,14 @@ assert_eq \
 
 info "Setting up DKG"
 
-setup_dkg
+setup_dkg "$FORM_ID"
 pass "DKG ready"
 
 # Open
 
 info "Opening form"
 
-response="$(api_put \
-    "/api/evoting/forms/${FORM_ID}" \
-    '{"Action":"open"}')"
-
-assert_transaction_status "$response" "1" "open load form"
+form_action "$FORM_ID" "open" "1" "open load form"
 
 form="$(api_get "/api/evoting/forms/${FORM_ID}")"
 
@@ -273,69 +185,12 @@ CHUNKS="$(jq -r '.ChunksPerBallot' <<<"$form")"
 
 info "Generating $VOTES encrypted ballots"
 
-FRONTEND_CONTAINER="$(
-    docker ps \
-        --filter "name=frontend" \
-        --format '{{.ID}}' |
-        head -n 1
-)"
-
-[[ -n "$FRONTEND_CONTAINER" ]] || fail "frontend container not found"
-
-mapfile -t BALLOTS < <(
-    docker exec -i \
-        "$FRONTEND_CONTAINER" \
-        node - \
-        "$PUBKEY" \
-        "$BALLOT_SIZE" \
-        "$CHUNKS" \
-        "$VOTES" <<'NODE'
-const kyber = require('@dedis/kyber');
-
-const pubKeyHex = process.argv[2];
-const ballotSize = Number(process.argv[3]);
-const chunks = Number(process.argv[4]);
-const count = Number(process.argv[5]);
-
-const curve = kyber.curve.newCurve('edwards25519');
-
-const pub = curve.point();
-pub.unmarshalBinary(Buffer.from(pubKeyHex, 'hex'));
-
-const id = Buffer.from('select1').toString('base64');
-
-for (let n = 0; n < count; n++) {
-    let encoded =
-        n % 2 === 0
-            ? `select:${id}:1,0\n\n`
-            : `select:${id}:0,1\n\n`;
-
-    while (Buffer.byteLength(encoded) < ballotSize) {
-        encoded += 'x';
-    }
-
-    const ballot = [];
-
-    for (let i = 0; i < chunks; i++) {
-        const chunk = encoded.substring(i * 29, (i + 1) * 29);
-
-        const M = curve.point().embed(Buffer.from(chunk));
-        const k = curve.scalar().pick();
-
-        const K = curve.point().mul(k, null);
-        const S = curve.point().mul(k, pub);
-        const C = S.add(S, M);
-
-        ballot.push({
-            K: Array.from(K.marshalBinary()),
-            C: Array.from(C.marshalBinary())
-        });
-    }
-
-    console.log(JSON.stringify({Ballot: ballot}));
-}
-NODE
-)
+SELECT_ID="$(jq -rn --arg id 'select1' '$id | @base64')"
+YES_ANSWER="select:${SELECT_ID}:1,0"$'\n\n'
+NO_ANSWER="select:${SELECT_ID}:0,1"$'\n\n'
+mapfile -t BALLOTS < <(make_ballots \
+    "$PUBKEY" "$BALLOT_SIZE" "$CHUNKS" "$VOTES" \
+    "$YES_ANSWER" "$NO_ANSWER")
 
 assert_eq "${#BALLOTS[@]}" "$VOTES" "$VOTES ballots generated"
 
@@ -353,17 +208,12 @@ for ((start = 0; start < VOTES; start += BATCH_SIZE)); do
         voter=$((START_VOTER + index))
         voter_cookie="$TMP_DIR/voter-${voter}.cookie"
 
-        curl -fsS -L \
-            -c "$voter_cookie" \
-            "${BASE_URL}/api/get_dev_login/${voter}" \
-            >/dev/null
+        login_cookie "$voter" "$voter_cookie"
 
-        response="$(curl -sS \
-            -X POST \
-            -H 'Content-Type: application/json' \
-            -b "$voter_cookie" \
-            --data "${BALLOTS[$index]}" \
-            "${BASE_URL}/api/evoting/forms/${FORM_ID}/vote")"
+        response="$(api_post_as \
+            "$voter_cookie" \
+            "/api/evoting/forms/${FORM_ID}/vote" \
+            "${BALLOTS[$index]}")"
 
         token="$(jq -r '.Token // empty' <<<"$response")"
 
@@ -408,13 +258,9 @@ assert_eq "$unique_voters" "$VOTES" "all ballot voters are unique"
 
 info "Closing form"
 
-response="$(api_put \
-    "/api/evoting/forms/${FORM_ID}" \
-    '{"Action":"close"}')"
+form_action "$FORM_ID" "close" "1" "close load form"
 
-assert_transaction_status "$response" "1" "close load form"
-
-wait_form_status "2"
+wait_form_status "$FORM_ID" "2" 120
 
 # Shuffle
 
@@ -422,19 +268,11 @@ info "Shuffling $VOTES ballots"
 
 shuffle_start="$(date +%s)"
 
-status="$(curl -s \
-    --max-time "$SHUFFLE_TIMEOUT" \
-    -o "$TMP_DIR/shuffle.out" \
-    -w '%{http_code}' \
-    -X PUT \
-    -H 'Content-Type: application/json' \
-    -b "$COOKIE_FILE" \
-    --data '{"Action":"shuffle"}' \
-    "${BASE_URL}/api/evoting/services/shuffle/${FORM_ID}")"
+status="$(shuffle_form "$FORM_ID" "$SHUFFLE_TIMEOUT" "$TMP_DIR/shuffle.out")"
 
 assert_eq "$status" "200" "shuffle load election"
 
-wait_form_status "3"
+wait_form_status "$FORM_ID" "3" 120
 
 shuffle_seconds=$(( $(date +%s) - shuffle_start ))
 
@@ -444,15 +282,9 @@ pass "shuffled $VOTES ballots in ${shuffle_seconds}s"
 
 info "Computing public shares"
 
-curl -fsS \
-    -X PUT \
-    -H 'Content-Type: application/json' \
-    -b "$COOKIE_FILE" \
-    --data '{"Action":"computePubshares"}' \
-    "${BASE_URL}/api/evoting/services/dkg/actors/${FORM_ID}" \
-    >/dev/null
+compute_pubshares "$FORM_ID"
 
-wait_form_status "4"
+wait_form_status "$FORM_ID" "4" 120
 
 # Combine
 
@@ -460,13 +292,9 @@ info "Decrypting ballots"
 
 decrypt_start="$(date +%s)"
 
-response="$(api_put \
-    "/api/evoting/forms/${FORM_ID}" \
-    '{"Action":"combineShares"}')"
+form_action "$FORM_ID" "combineShares" "1" "combine public shares"
 
-assert_transaction_status "$response" "1" "combine public shares"
-
-wait_form_status "5"
+wait_form_status "$FORM_ID" "5" 120
 
 decrypt_seconds=$(( $(date +%s) - decrypt_start ))
 

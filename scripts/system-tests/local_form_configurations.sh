@@ -2,18 +2,31 @@
 
 set -Eeuo pipefail
 
-# Options:
-# LONG_QUESTIONS=20
-# LONG_CHOICES=12
-# LONG_TEXT_MAX=500
-# LONG_TITLE_LENGTH=2000
-# NESTING_DEPTH=8
-# SYSTEM_TEST_URL=http://127.0.0.1:3000
+# Purpose:
+#   Test valid, boundary, large, nested, and invalid form configurations.
 #
-# Examples:
-# ./scripts/system-tests/test_form_configurations.sh
-# LONG_QUESTIONS=30 LONG_CHOICES=15 ./scripts/system-tests/test_form_configurations.sh
-# NESTING_DEPTH=15 ./scripts/system-tests/test_form_configurations.sh
+# Requirements:
+#   - D-voting is running with development login enabled.
+#   - The configured administrator exists; curl and jq are installed.
+#
+# Options:
+#   SYSTEM_TEST_URL=http://127.0.0.1:3000
+#   LONG_QUESTIONS=20
+#   LONG_CHOICES=12
+#   LONG_TEXT_MAX=500
+#   LONG_TITLE_LENGTH=2000
+#   NESTING_DEPTH=8
+#
+# Test steps:
+#   1. Create and verify select, rank, and text configurations.
+#   2. Create a deeply nested configuration.
+#   3. Test zero-choice and large mixed-form boundaries.
+#   4. Verify ballot-size and chunk metadata for the large form.
+#   5. Reject duplicate IDs, invalid MinN/MaxN, and unknown Order IDs.
+#   6. Delete every form created by the test.
+#
+# Example:
+#   LONG_QUESTIONS=30 NESTING_DEPTH=15 ./scripts/system-tests/local_form_configurations.sh
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"

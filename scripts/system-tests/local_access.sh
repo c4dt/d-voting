@@ -2,26 +2,36 @@
 
 set -Eeuo pipefail
 
+# Purpose:
+#   Test global and form-level authorization rules.
+#
 # Requirements:
-# D-voting system already running
-# Development login enabled
-# Admin user already configured
-# curl
-# jq
+#   - D-voting is running with development login enabled.
+#   - The configured administrator exists; curl and jq are installed.
 #
 # Options:
-# TEST_ADMIN=910001
-# TEST_OPERATOR=910002
-# TEST_OWNER=910003
-# TEST_VOTER=910004
-# TEST_USER=910005
-# EXTRA_OPERATOR=910006
-# TEST_POLICY_VOTER=910007
-# TEST_MISSING_USER=910099
-# SYSTEM_TEST_URL=http://127.0.0.1:3000
+#   SYSTEM_TEST_URL=http://127.0.0.1:3000
+#   TEST_ADMIN=910001
+#   TEST_OPERATOR=910002
+#   TEST_OWNER=910003
+#   TEST_VOTER=910004
+#   TEST_USER=910005
+#   EXTRA_OPERATOR=910006
+#   TEST_POLICY_VOTER=910007
+#   TEST_MISSING_USER=910099
+#
+# Test steps:
+#   1. Verify test identities are unused and unauthenticated mutations fail.
+#   2. Add, reject duplicates for, and validate administrators and operators.
+#   3. Verify operator, ordinary-user, and revoked-user permissions.
+#   4. Reject PerformingUserID and UserID identity spoofing.
+#   5. Verify operator form creation and last-owner protection.
+#   6. Test non-owner operator, user, and administrator behavior.
+#   7. Test owner/voter management, invalid IDs, and duplicate roles.
+#   8. Remove created roles and verify permissions are revoked immediately.
 #
 # Example:
-# ./scripts/system-tests/test_access.sh
+#   ./scripts/system-tests/local_access.sh
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
@@ -55,39 +65,13 @@ warn() {
     printf 'WARN: %s\n' "$1"
 }
 
-# Login without replacing the main admin cookie
-login_cookie() {
-    local user="$1"
-    local cookie="$2"
-
-    curl -fsS \
-        -L \
-        -c "$cookie" \
-        "${BASE_URL}/api/get_dev_login/${user}" \
-        >/dev/null
-}
-
-# POST using a specific user's session
-post_as() {
-    local cookie="$1"
-    local path="$2"
-    local body="$3"
-
-    curl -sS \
-        -X POST \
-        -H 'Content-Type: application/json' \
-        -b "$cookie" \
-        --data "$body" \
-        "${BASE_URL}${path}"
-}
-
 # POST a permission operation
 permission_as() {
     local cookie="$1"
     local path="$2"
     local target="$3"
 
-    post_as \
+    api_post_as \
         "$cookie" \
         "$path" \
         "$(jq -cn --arg id "$target" '{TargetUserID:$id}')"
@@ -142,6 +126,7 @@ assert_form_role() {
     local field="$1"
     local user="$2"
     local expected="$3"
+    local message
 
     response="$(api_get "/api/evoting/forms/${FORM_ID}")"
 
@@ -151,7 +136,13 @@ assert_form_role() {
         '(.[$field] // []) | index($id) != null' \
         <<<"$response")"
 
-    assert_eq "$exists" "$expected" "$field contains $user"
+    if [[ "$expected" == "true" ]]; then
+        message="$field contains $user"
+    else
+        message="$field does not contain $user"
+    fi
+
+    assert_eq "$exists" "$expected" "$message"
 }
 
 # Count occurrences to detect duplicate owners or voters
@@ -408,7 +399,7 @@ assert_transaction_status "$response" "2" "ordinary user cannot add operator"
 # PerformingUserID spoofing
 info "Testing PerformingUserID spoofing"
 
-response="$(post_as \
+response="$(api_post_as \
     "$USER_COOKIE" \
     "/api/evoting/auth/addadmin" \
     "$(jq -cn \
@@ -427,7 +418,7 @@ spoof_form="$(make_form | jq \
     --arg admin "$ADMIN_ID" \
     '. + {UserID:$admin}')"
 
-response="$(post_as \
+response="$(api_post_as \
     "$USER_COOKIE" \
     "/api/evoting/forms" \
     "$spoof_form")"
@@ -450,7 +441,7 @@ fi
 # Operator can create a form
 info "Testing operator form creation"
 
-response="$(post_as \
+response="$(api_post_as \
     "$OPERATOR_COOKIE" \
     "/api/evoting/forms" \
     "$(make_form)")"
@@ -522,7 +513,7 @@ response="$(permission_as \
 assert_transaction_status "$response" "2" "ordinary user cannot add voter"
 
 # Spoof form owner/admin identity
-response="$(post_as \
+response="$(api_post_as \
     "$USER_COOKIE" \
     "/api/evoting/auth/forms/${FORM_ID}/addvoter" \
     "$(jq -cn \
@@ -532,7 +523,7 @@ response="$(post_as \
 
 assert_transaction_status "$response" "2" "spoofed form permission operation is rejected"
 
-# Existing policy conflict
+# Global administrators may manage a form without being one of its owners.
 info "Checking non-owner administrator behavior"
 
 assert_form_role "Owners" "$TEST_ADMIN" "false"
@@ -542,26 +533,24 @@ response="$(permission_as \
     "/api/evoting/auth/forms/${FORM_ID}/addvoter" \
     "$TEST_POLICY_VOTER")"
 
-poll_response "$response"
+assert_transaction_status \
+    "$response" \
+    "1" \
+    "non-owner administrator can add voter"
 
-case "$TX_STATUS" in
-    1)
-        warn "non-owner admin can add voters; this conflicts with the old test_admin_nonowner_addvote.sh expectation"
+assert_form_role "Voters" "$TEST_POLICY_VOTER" "true"
 
-        response="$(permission_as \
-            "$ADMIN_COOKIE" \
-            "/api/evoting/auth/forms/${FORM_ID}/removevoter" \
-            "$TEST_POLICY_VOTER")"
+response="$(permission_as \
+    "$TEST_ADMIN_COOKIE" \
+    "/api/evoting/auth/forms/${FORM_ID}/removevoter" \
+    "$TEST_POLICY_VOTER")"
 
-        assert_transaction_status "$response" "1" "cleanup non-owner admin voter"
-        ;;
-    2)
-        pass "non-owner administrator cannot add voter"
-        ;;
-    *)
-        fail "unexpected transaction status for non-owner administrator: $TX_STATUS"
-        ;;
-esac
+assert_transaction_status \
+    "$response" \
+    "1" \
+    "non-owner administrator can remove voter"
+
+assert_form_role "Voters" "$TEST_POLICY_VOTER" "false"
 
 # Add owner
 info "Testing owner management"
