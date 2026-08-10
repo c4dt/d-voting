@@ -45,7 +45,7 @@ const AddAdminUserModal: FC<AddAdminUserModalProps> = ({ open, setOpen, handleAd
     const sciper = parseInt(e.target.value.trim());
     if (isNaN(sciper)) {
       fctx.addMessage(t('sciperNaN', { sciperStr: e.target.value.trim() }), FlashLevel.Error);
-    } else if (sciper > 999999 && sciper <= 9999999) {
+    } else if (sciper < 100000 || sciper > 999999) {
       fctx.addMessage(t('sciperOutOfRange', { sciper: sciper }), FlashLevel.Error);
     } else {
       // The value is not trimmed to not restrict the user input
