@@ -7,7 +7,4 @@
 - **Front-end**
 - [Front-end](frontend_doc.md)
 - **Smart contract**
-- [Smart contract](smart_contract.md)
 - [Data structure](state_of_smart_contract.md)
-- **Security**
-- [Vote Verifiability](verifiability_doc.md)

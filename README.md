@@ -29,12 +29,6 @@
         <a href="https://github.com/c4dt/d-voting/actions/workflows/go_test.yml">
             <img src="https://github.com/c4dt/d-voting/actions/workflows/go_test.yml/badge.svg">
         </a>
-        <a href="https://github.com/c4dt/d-voting/actions/workflows/go_dvoting_test.yml">
-            <img src="https://github.com/c4dt/d-voting/actions/workflows/go_dvoting_test.yml/badge.svg">
-        </a>
-        <a href="https://github.com/c4dt/d-voting/actions/workflows/go_scenario_test.yml">
-            <img src="https://github.com/c4dt/d-voting/actions/workflows/go_scenario_test.yml/badge.svg">
-        </a>
         <a href="https://github.com/c4dt/d-voting/actions/workflows/go_integration_tests.yml">
             <img src="https://github.com/c4dt/d-voting/actions/workflows/go_integration_tests.yml/badge.svg">
         </a><br/>
@@ -282,7 +276,6 @@ results.
 ├── <b>contracts</b>           
 │   └── <b>evoting</b>             D-Voting smart contract
 │       └── controller      CLI commands for the smart contract
-├── deb-package             Debian package for deployment
 ├── docs                    Documentation 
 ├── integration             Integration tests
 ├── internal                Internal packages: testing, tooling, tracing
@@ -439,65 +432,6 @@ sudo docker-compose down
 
 If you want to have a way to check the database you can install [pgAdmin](https://www.pgadmin.org/download/).
 
-3: Then run the following script to start and setup the nodes and the web server:
-
-```sh
-cd d-voting
-./runSystems.sh -n 5
-```
-
-This will run 8 terminal sessions. You can navigate by hitting
-<kbd>CTRL</kbd>+<kbd>B</kbd> and then <kbd>S</kbd>. Use the arrows to select a
-window.
-
-4: Stop nodes
-If you want to stop the system, you can use the following command:
-
-(If you forgot, this will be done automatically when you start a new system)
-
-```sh
-./kill_test.sh
-```
-
-5: Troubleshoot
-
-If while running
-
-```sh
-./runSystems.sh -n 5
-```
-
-You get this error:
-
-```sh
-Error: listen EADDRINUSE: address already in use :::5000
-```
-
-then in the file runSystems.sh, replace the line:
-
-```sh
-tmux send-keys -t $s:{end} "cd web/backend && npm start" C-m
-```
-
-with
-
-```sh
-tmux send-keys -t $s:{end} "cd web/backend && PORT=4000 npm start" C-m
-#or any other available port
-```
-
-And in the web/frontend/src/setupProxy.js file, change :
-
-```sh
-target: 'http://localhost:5000',
-```
-
-with
-
-```sh
-target: 'http://localhost:4000',
-```
-
 # Setup a simple system with 3 nodes (Windows)
 
 In three different terminal sessions, from the root folder:
@@ -515,21 +449,7 @@ LLVL=info dvoting --config /tmp/node3 start --postinstall \
   --promaddr :9102 --proxyaddr :9082 --proxykey $pk --listen tcp://0.0.0.0:2003 --public //localhost:2003
 ```
 
-Then you should be able to run the setup script:
-
-```sh
-./setup.sh
-```
-
-With this other script using tmux you can choose the number of nodes that you
-want to set up:
-
-```sh
-./setupnNode.sh -n 3
-```
-
-This script will setup the nodes and services. If you restart do not forget to
-remove the old state:
+If you restart, do not forget to remove the old state:
 
 ```sh
 rm -rf /tmp/node{1,2,3}
@@ -564,20 +484,14 @@ form.
 
 ## Run the scenario test
 
-If nodes are running and `setup.sh` or `./runSystem.sh -n 3 --backend false --frontend false` (for this test you don't want the user interface so the web components are not needed) has been called,
-you can run a test scenario:
+If the nodes are already running and configured (the web components are not
+needed for this test), you can run a test scenario:
 
 ```sh
 sk=28912721dfd507e198b31602fb67824856eb5a674c021d49fdccbe52f0234409
 LLVL=info dvoting --config /tmp/node1 e-voting scenarioTest --secretkey $sk
 ```
 
-You can also run scenario_test.go, by running in the integration folder this
-command:
-
-```sh
-NNODES=3 go test -v scenario_test.go
-```
 
 For reference, here is a hex-encoded kyber Ed25519 keypair:
 
@@ -585,57 +499,10 @@ Public key: `adbacd10fdb9822c71025d6d00092b8a4abb5ebcb673d28d863f7c7c5adaddf3`
 
 Secret key: `28912721dfd507e198b31602fb67824856eb5a674c021d49fdccbe52f0234409`
 
-<!---
-Currently not working
-
-## Run the scenario test with docker
-
-Use the following commands to launch and set up nodes, and start the scenario
-test with user defined number of nodes.
-
-First build the docker image `docker build -t node .`
-
-Afterwards use the following commands, replace 4 by the desired nb of nodes :
-
-```sh
-./runNode.sh -n 4 -a true -d true
-./setupnNode.sh -n 4 -d true
-
-NNODES=4 KILLNODE=true go test -v -run ^TestScenario$ github.com/c4dt/d-voting/integration -count=1
-```
-
-Here we set KILLNODE=true or false to decide whether kill and restart a node
-during the voting process. By default, it's set to false.
-
-To end the session, run `./kill_test.sh`.
-
-To launch multiple test and get statistics, run `./autotest.sh -n 10 -r 15`.
-
-N.B. run following commands to get help
-
-```sh
-./runNode.sh -h
-./setupnNode.sh -h
-./autotest.sh -h
-```
-
--->
 
 # Use the frontend
 
 See README in `web/`.
-
-# Debian deployment
-
-A package registry with debian packages is available at http://apt.dedis.ch.
-To install a package run the following:
-
-```sh
-echo "deb http://apt.dedis.ch/ squeeze main" >> /etc/apt/sources.list
-wget -q -O- http://apt.dedis.ch/dvoting-release.pgp | sudo apt-key add -
-sudo apt update
-sudo apt install dedis-dvoting
-```
 
 # Metrics
 
