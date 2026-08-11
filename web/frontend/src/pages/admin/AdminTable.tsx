@@ -76,8 +76,8 @@ const AdminTable: FC<AdminTableProps> = ({ users, setUsers }) => {
     const newUsers = users.filter(
       (user) => !(user.sciper === userToDelete.sciper && user.role === userToDelete.role)
     );
-   // If the current user changes their own role, reload the application
-   // so authorization state is fetched again from the backend.
+    // If the current user changes their own role, reload the application
+    // so authorization state is fetched again from the backend.
     if (userToDelete.sciper === authctx.sciper.toString()) {
       window.location.assign('/');
       return;
