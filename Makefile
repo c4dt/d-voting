@@ -5,7 +5,7 @@ timeFlag="github.com/c4dt/d-voting.BuildTime=$(shell date +'%d/%m/%y_%H:%M')"
 
 lint:
 	# Coding style static check.
-	@GOTOOLCHAIN=go1.25.0 go install honnef.co/go/tools/cmd/staticcheck@latest
+	@GOTOOLCHAIN=go1.25.0 go install honnef.co/go/tools/cmd/staticcheck@v0.7.0
 	@go mod tidy
 	staticcheck ./...
 #	golint -set_exit_status ./...
