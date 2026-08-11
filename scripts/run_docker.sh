@@ -130,7 +130,7 @@ other_proxies)
   local_login
   add_single_proxy;
   add_admin;
-  sleep 100; # give DELA tme to insertr the token
+  sleep 100;    # give DELA time to insert the token
   add_remaining_proxies;
   ;;
 esac
