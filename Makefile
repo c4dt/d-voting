@@ -5,7 +5,7 @@ timeFlag="github.com/c4dt/d-voting.BuildTime=$(shell date +'%d/%m/%y_%H:%M')"
 
 lint:
 	# Coding style static check.
-	@go install honnef.co/go/tools/cmd/staticcheck@latest
+	@GOTOOLCHAIN=go1.25.0 go install honnef.co/go/tools/cmd/staticcheck@latest
 	@go mod tidy
 	staticcheck ./...
 #	golint -set_exit_status ./...
@@ -28,4 +28,3 @@ build:
 	GOOS=linux GOARCH=amd64 go build -ldflags="-X $(versionFlag) -X $(timeFlag)" -o dvoting-linux-amd64-$(versionFile) ./cli/dvoting
 	GOOS=darwin GOARCH=amd64 go build -ldflags="-X $(versionFlag) -X $(timeFlag)" -o dvoting-darwin-amd64-$(versionFile) ./cli/dvoting
 	GOOS=windows GOARCH=amd64 go build -ldflags="-X $(versionFlag) -X $(timeFlag)" -o dvoting-windows-amd64-$(versionFile) ./cli/dvoting
-
