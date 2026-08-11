@@ -2,6 +2,29 @@
 
 Run every command in this document from the repository root.
 
+## Local environment
+
+The following scripts configure and run D-voting directly on the local
+machine. Run them in this order:
+
+- `run_local.sh` sets up a complete system with four nodes, the database, the
+  authentication server, and the frontend. Only the database runs in Docker;
+  the other services run directly on the machine. This allows easier debugging
+  and faster testing of the authentication server and frontend. Debugging DELA
+  still requires restarting the complete environment.
+- `local_proxies.sh` must be run once after `run_local.sh`.
+- `local_forms.sh` creates a new form and prints its ID.
+
+```bash
+./scripts/run_local.sh
+./scripts/local_proxies.sh
+./scripts/local_forms.sh
+```
+
+The following helper is only called by the other scripts:
+
+- `local_login.sh` logs into the frontend and stores the cookie.
+
 ## Docker environment
 
 `run_docker.sh` is the recommended way to start a complete four-node D-voting
@@ -41,7 +64,7 @@ environment with development login enabled. Run the complete suite with:
 
 The suite covers proxies, forms and configuration boundaries, access control,
 DKG, voting validation, shuffling, a complete election lifecycle, and a load
-test with 300 votes by default. Each `local_*.sh` test documents its environment
+test with 300 votes by default. Each test script documents its environment
 options at the top and can be run independently, for example:
 
 ```bash
