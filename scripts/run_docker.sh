@@ -66,15 +66,6 @@ function init_dela() {
   done
 }
 
-
-function local_admin() {
-  echo "adding local user $REACT_APP_SCIPER_ADMIN to admins";
-  docker compose exec backend npx cli addAdmin --sciper "$REACT_APP_SCIPER_ADMIN";
-  docker compose exec backend npx cli addAdmin --sciper 987654;
-  docker compose restart backend;
-}
-
-
 function local_login() {
   if ! [ -f cookies.txt ]; then
    echo "getting dummy login cookie";
@@ -82,11 +73,21 @@ function local_login() {
   fi
 }
 
-function add_proxies() {
+function add_single_proxy() {
+  echo "adding first proxy";
+      curl -sk "$FRONT_END_URL/api/proxies/" -X POST -H 'Content-Type: application/json' -b cookies.txt --data "{\"NodeAddr\":\"grpc://dela-worker-0:$NODEPORT\",\"Proxy\":\"http://172.19.44.254:$PROXYPORT\"}";
+}
 
-  echo "adding proxies";
+# Adds the default admin to the dela blockchain. This is needed to add more proxies.
+function add_admin() {
+  echo "adding admin user $REACT_APP_SCIPER_ADMIN";
+  curl -sk "$FRONT_END_URL/api/evoting/auth/addadmin" -X POST -H 'Content-Type: application/json'  -b cookies.txt --data "{\"TargetUserID\": \"$REACT_APP_SCIPER_ADMIN\"}";
+}
 
-  for node in $(seq 0 3); do
+# Adds the other proxies. Note that you need an admin account to do it.
+# This is checked through the first proxy added in the "add_single_proxy" function.
+function add_remaining_proxies() {
+  for node in $(seq 1 3); do
     echo "adding proxy for node dela-worker-$node";
     curl -sk "$FRONT_END_URL/api/proxies/" -X POST -H 'Content-Type: application/json' -b cookies.txt --data "{\"NodeAddr\":\"grpc://dela-worker-$node:$NODEPORT\",\"Proxy\":\"http://172.19.44.$((254 - node)):$PROXYPORT\"}";
   done
@@ -107,22 +108,29 @@ teardown)
   exit
   ;;
 
-local_admin)
-  local_admin;
+first_proxy)
+  local_login
+  add_single_proxy;
   ;;
 
-add_proxies)
-  local_login;
-  add_proxies;
+add_admin)
+  local_login
+  add_admin;
+  ;;
+
+other_proxies)
+  local_login
+  add_remaining_proxies;
   ;;
 
 *)
   setup;
   sleep 16;     # give DELA nodes time to start up
   init_dela;
-  local_admin;
-  sleep 8;      # give backend time to restart
-  local_login;
-  add_proxies;
+  local_login
+  add_single_proxy;
+  add_admin;
+  sleep 100;    # give DELA time to insert the token
+  add_remaining_proxies;
   ;;
 esac

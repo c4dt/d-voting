@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -22,18 +18,11 @@
     "baseUrl": "./src",
     "rootDir": "./src",
     "paths": {
-      "*": [
-        "*"
-      ]
-    },
+      "*": ["*"]
+    }
   },
   "include": ["src"],
-  "exclude": [
-    "node_modules",
-    "jest.config.js",
-    "tailwind.config.js",
-    ".eslintrc",
-  ],
+  "exclude": ["node_modules", "jest.config.js", "tailwind.config.js", ".eslintrc"],
   "typedocOptions": {
     "entryPoints": ["App.tsx"],
     "out": "tsdocs"

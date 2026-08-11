@@ -1,18 +1,21 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { CogIcon } from '@heroicons/react/outline';
-import { FC, Fragment, useRef, useState } from 'react';
+import { FC, Fragment, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { UserRole } from '../../../types/userRole';
 
-type AddVotersModalSuccessProps = {
+type ManageUserRoleModalSuccessProps = {
+  role: UserRole;
   showModal: boolean;
   setShowModal: (show: boolean) => void;
-  newVoters: string;
+  newUsers: string;
 };
 
-export const AddVotersModalSuccess: FC<AddVotersModalSuccessProps> = ({
+export const ManageUserRoleModalSuccess: FC<ManageUserRoleModalSuccessProps> = ({
+  role,
   showModal,
   setShowModal,
-  newVoters,
+  newUsers,
 }) => {
   const { t } = useTranslation();
 
@@ -57,12 +60,14 @@ export const AddVotersModalSuccess: FC<AddVotersModalSuccessProps> = ({
                   </div>
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                     <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">
-                      {t('addVotersDialog')}
+                      {role === UserRole.Owner ? t('addOwnersDialog') : t('addVotersDialog')}
                     </Dialog.Title>
                     <div className="mt-2">
-                      <p className="text-sm text-gray-500">{t('votersAdded')}</p>
+                      <p className="text-sm text-gray-500">
+                        {role === UserRole.Owner ? t('ownersAdded') : t('votersAdded')}
+                      </p>
                     </div>
-                    <pre>{newVoters}</pre>
+                    <pre>{newUsers}</pre>
                   </div>
                 </div>
               </div>
@@ -81,38 +86,51 @@ export const AddVotersModalSuccess: FC<AddVotersModalSuccessProps> = ({
     </Transition.Root>
   );
 };
-type AddVotersModalProps = {
+type ManageUserRoleModalProps = {
+  role: UserRole;
+  voters: string[];
+  owners: string[];
   showModal: boolean;
   setShowModal: (show: boolean) => void;
   setUserConfirmedAction: (voters: string) => void;
 };
 
-export const AddVotersModal: FC<AddVotersModalProps> = ({
+export const ManageUserRoleModal: FC<ManageUserRoleModalProps> = ({
+  role,
+  voters,
+  owners,
   showModal,
   setShowModal,
   setUserConfirmedAction,
 }) => {
   const { t } = useTranslation();
   const cancelButtonRef = useRef(null);
-  const [voters, setVoters] = useState('');
+  const [users, setUsers] = useState('');
+  const [scipersText, setScipersText] = useState('');
 
+  useEffect(() => {
+    const tmpSciper = [...(role === UserRole.Owner ? owners : voters)];
+    tmpSciper.sort();
+    setScipersText(tmpSciper.join('\n'));
+  }, [role, voters, owners]);
   const cancelModal = () => {
     setUserConfirmedAction('');
     setShowModal(false);
   };
 
   const confirmChoice = () => {
-    setUserConfirmedAction(voters);
+    setUserConfirmedAction(users);
     setShowModal(false);
   };
 
-  const votersBox = () => {
+  const usersBox = () => {
     return (
       <div>
         <textarea
           autoFocus={true}
-          onChange={(e) => setVoters(e.target.value)}
-          name="Voters"
+          defaultValue={scipersText}
+          onChange={(e) => setUsers(e.target.value)}
+          name="Users"
           placeholder="SCIPERs"
           className="m-3 px-1 w-100 text-lg border rounded-md"
           rows={10}
@@ -158,22 +176,24 @@ export const AddVotersModal: FC<AddVotersModalProps> = ({
                   </div>
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                     <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">
-                      {t('addVotersDialog')}
+                      {role === UserRole.Owner ? t('manageOwnersDialog') : t('manageVotersDialog')}
                     </Dialog.Title>
                     <div className="mt-2">
-                      <p className="text-sm text-gray-500">{t('inputAddVoters')}</p>
+                      <p className="text-sm text-gray-500">
+                        {role === UserRole.Owner ? t('inputManageOwners') : t('inputManageVoters')}
+                      </p>
                     </div>
-                    {votersBox()}
+                    {usersBox()}
                   </div>
                 </div>
               </div>
               <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                 <button
-                  data-testid="addVotersConfirm"
+                  data-testid="manageUserRoleConfirm"
                   type="button"
                   className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#ff0000] text-base font-medium text-white hover:bg-[#b51f1f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ff0000] sm:ml-3 sm:w-auto sm:text-sm"
                   onClick={confirmChoice}>
-                  {t('addVotersConfirm')}
+                  {role === UserRole.Owner ? t('manageOwnersConfirm') : t('manageVotersConfirm')}
                 </button>
                 <button
                   type="button"

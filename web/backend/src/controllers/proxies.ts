@@ -1,17 +1,38 @@
-import express from 'express';
+import express, { RequestHandler } from 'express';
 import lmdb from 'lmdb';
-import { initEnforcer, isAuthorized, PERMISSIONS } from '../authManager';
+import { initEnforcer } from '../authManager';
 
 export const proxiesRouter = express.Router();
 
-initEnforcer().catch((e) => console.error(`Couldn't initialize enforcerer: ${e}`));
+initEnforcer().catch((e) => console.error(`Couldn't initialize enforcer: ${e}`));
 
 const proxiesDB = lmdb.open<string, string>({ path: `${process.env.DB_PATH}proxies` });
-proxiesRouter.post('', (req, res) => {
-  if (!isAuthorized(req.session.userId, PERMISSIONS.SUBJECTS.PROXIES, PERMISSIONS.ACTIONS.POST)) {
+
+// Middleware checking that the user is an admin
+const isAdmin: RequestHandler = async (req, res, next) => {
+  if (proxiesDB.getCount({}) === 0) {
+    next();
+    return;
+  }
+  if (req.session.userId === undefined) {
     res.status(400).send('Unauthorized - only admins and operators allowed');
     return;
   }
+  const nodeAddr = proxiesDB.getKeys().asArray[0];
+  const proxy = proxiesDB.get(nodeAddr);
+  const adminResp = await fetch(new URL('/evoting/adminlist', proxy).href).then((response) =>
+    response.json()
+  );
+  const admin = adminResp.Admins.includes(req.session.userId.toString());
+  if (!admin) {
+    res.status(400).send('Unauthorized - only admins allowed');
+    return;
+  }
+  // Calls the next middleware on the chain, since the request is issued by an admin
+  next();
+};
+
+proxiesRouter.post('', isAdmin, async (req, res) => {
   try {
     const bodydata = req.body;
     proxiesDB.put(bodydata.NodeAddr, bodydata.Proxy);
@@ -21,12 +42,7 @@ proxiesRouter.post('', (req, res) => {
   }
 });
 
-proxiesRouter.put('/:nodeAddr', (req, res) => {
-  if (!isAuthorized(req.session.userId, PERMISSIONS.SUBJECTS.PROXIES, PERMISSIONS.ACTIONS.PUT)) {
-    res.status(400).send('Unauthorized - only admins and operators allowed');
-    return;
-  }
-
+proxiesRouter.put('/:nodeAddr', isAdmin, async (req, res) => {
   let { nodeAddr } = req.params;
 
   nodeAddr = decodeURIComponent(nodeAddr);
@@ -57,12 +73,7 @@ proxiesRouter.put('/:nodeAddr', (req, res) => {
   }
 });
 
-proxiesRouter.delete('/:nodeAddr', (req, res) => {
-  if (!isAuthorized(req.session.userId, PERMISSIONS.SUBJECTS.PROXIES, PERMISSIONS.ACTIONS.DELETE)) {
-    res.status(400).send('Unauthorized - only admins and operators allowed');
-    return;
-  }
-
+proxiesRouter.delete('/:nodeAddr', isAdmin, (req, res) => {
   let { nodeAddr } = req.params;
 
   nodeAddr = decodeURIComponent(nodeAddr);

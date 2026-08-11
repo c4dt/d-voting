@@ -1,0 +1,8 @@
+{
+  "Proxies": {
+    "grpc://dela-worker-0:2000": "http://172.19.44.254:8080",
+    "grpc://dela-worker-1:2000": "http://172.19.44.253:8080",
+    "grpc://dela-worker-2:2000": "http://172.19.44.252:8080",
+    "grpc://dela-worker-3:2000": "http://172.19.44.251:8080"
+  }
+}

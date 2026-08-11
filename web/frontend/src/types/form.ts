@@ -42,7 +42,8 @@ export const enum OngoingAction {
   Decrypting,
   Combining,
   Canceling,
-  AddVoters,
+  ManageVoters,
+  ManageOwners,
 }
 
 interface FormInfo {
@@ -53,8 +54,10 @@ interface FormInfo {
   Roster: string[];
   ChunksPerBallot: number;
   BallotSize: number;
+  BallotVoters: string[];
   Configuration: any;
   Voters: string[];
+  Owners: string[];
 }
 
 interface LightFormInfo {
@@ -62,6 +65,8 @@ interface LightFormInfo {
   Title: Title;
   Status: Status;
   Pubkey: string;
+  Voters: string[];
+  Owners: string[];
 }
 
 interface Results {

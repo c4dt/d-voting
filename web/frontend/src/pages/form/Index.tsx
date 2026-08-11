@@ -7,10 +7,12 @@ import * as endpoints from 'components/utils/Endpoints';
 import Loading from 'pages/Loading';
 import { LightFormInfo, Status } from 'types/form';
 import FormTableFilter from './components/FormTableFilter';
-import { FlashContext, FlashLevel, ProxyContext } from 'index';
+import { AuthContext, FlashContext, FlashLevel, ProxyContext } from 'index';
+import { setFormAuth } from '../../utils/auth';
 
 const FormIndex: FC = () => {
   const { t } = useTranslation();
+  const authCtx = useContext(AuthContext);
   const fctx = useContext(FlashContext);
   const pctx = useContext(ProxyContext);
 
@@ -49,6 +51,10 @@ const FormIndex: FC = () => {
   useEffect(() => {
     if (data.Forms === null) return;
 
+    for (const form of data.Forms) {
+      setFormAuth(form, authCtx);
+    }
+
     if (statusToKeep === null) {
       setForms(data.Forms);
       return;
@@ -60,7 +66,7 @@ const FormIndex: FC = () => {
 
     setPageIndex(0);
     setForms(filteredForms);
-  }, [data, statusToKeep]);
+  }, [authCtx, data, statusToKeep]);
 
   return (
     <div className="w-[60rem] font-sans px-4 py-4">

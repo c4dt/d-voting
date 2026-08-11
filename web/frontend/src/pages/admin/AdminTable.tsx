@@ -1,9 +1,10 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { User } from 'types/userRole';
+import { User, UserRole } from 'types/userRole';
 import AddAdminUserModal from './components/AddAdminUserModal';
 import RemoveAdminUserModal from './components/RemoveAdminUserModal';
+import { AuthContext } from '../../index';
 
 const SCIPERS_PER_PAGE = 5;
 
@@ -15,10 +16,11 @@ type AdminTableProps = {
 const AdminTable: FC<AdminTableProps> = ({ users, setUsers }) => {
   const { t } = useTranslation();
 
+  const authctx = useContext(AuthContext);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [newUserOpen, setNewUserOpen] = useState(false);
   const [scipersToDisplay, setScipersToDisplay] = useState([]);
-  const [sciperToDelete, setSciperToDelete] = useState(0);
+  const [userToDelete, setUserToDelete] = useState({ sciper: '', role: UserRole.None });
   const [pageIndex, setPageIndex] = useState(0);
 
   const openModal = () => setNewUserOpen(true);
@@ -34,8 +36,8 @@ const AdminTable: FC<AdminTableProps> = ({ users, setUsers }) => {
     }
   }, [users, pageIndex]);
 
-  const handleDelete = (sciper: number): void => {
-    setSciperToDelete(sciper);
+  const handleDelete = (user): void => {
+    setUserToDelete(user);
     setShowDeleteModal(true);
   };
 
@@ -52,14 +54,37 @@ const AdminTable: FC<AdminTableProps> = ({ users, setUsers }) => {
   };
 
   const handleAddRoleUser = (user: User): void => {
+    // Pulling the new admin list from the server would be a better way, but it leads to a race condition.
+    // We don't do anything if the user already has the required role
+    if (users.some((oldUser) => oldUser.sciper === user.sciper && oldUser.role === user.role)) {
+      return;
+    }
     const newUsers = [...users, user];
+    // All users are considered admins as long as there is none on the admin list. So when someone gives admins rights
+    // to someone else, he will lose its own "by default" admins rights
+    if (users.length === 0 && user.sciper !== authctx.sciper.toString()) {
+      window.location.assign('/');
+      return;
+    }
+
     setUsers(newUsers);
     setPageIndex(partitionArray(newUsers, SCIPERS_PER_PAGE).length - 1);
   };
 
   const handleRemoveRoleUser = (): void => {
-    const newUsers = users.filter((user) => user.sciper !== sciperToDelete.toString());
+    // Pulling the new admin list from the server would be a better way, but it leads to a race condition.
+    const newUsers = users.filter(
+      (user) => !(user.sciper === userToDelete.sciper && user.role === userToDelete.role)
+    );
+    // If the current user changes their own role, reload the application
+    // so authorization state is fetched again from the backend.
+    if (userToDelete.sciper === authctx.sciper.toString()) {
+      window.location.assign('/');
+      return;
+    }
+
     setUsers(newUsers);
+
     if (newUsers.length % SCIPERS_PER_PAGE === 0) {
       setPageIndex(pageIndex - 1);
     }
@@ -75,7 +100,8 @@ const AdminTable: FC<AdminTableProps> = ({ users, setUsers }) => {
       <RemoveAdminUserModal
         setOpen={setShowDeleteModal}
         open={showDeleteModal}
-        sciper={sciperToDelete}
+        sciper={userToDelete.sciper}
+        role={userToDelete.role}
         handleRemoveRoleUser={handleRemoveRoleUser}
       />
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 py-6 pl-2">
@@ -116,18 +142,25 @@ const AdminTable: FC<AdminTableProps> = ({ users, setUsers }) => {
           </thead>
           <tbody>
             {scipersToDisplay !== undefined &&
-              scipersToDisplay.map((user) => (
-                <tr key={user.id} className="bg-white border-b hover:bg-gray-50">
+              scipersToDisplay.map((user, index) => (
+                <tr key={index} className="bg-white border-b hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {user.sciper}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.role}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div
-                      className="cursor-pointer text-[#ff0000] hover:text-indigo-900"
-                      onClick={() => handleDelete(user.sciper)}>
-                      {t('delete')}
-                    </div>
+                    {
+                      // No delete button on admins when they are the only one
+                      (user.role !== UserRole.Admin ||
+                        (user.role === UserRole.Admin &&
+                          users.filter((u) => u.role === UserRole.Admin).length > 1)) && (
+                        <div
+                          className="cursor-pointer text-[#ff0000] hover:text-indigo-900"
+                          onClick={() => handleDelete(user)}>
+                          {t('delete')}
+                        </div>
+                      )
+                    }
                   </td>
                 </tr>
               ))}

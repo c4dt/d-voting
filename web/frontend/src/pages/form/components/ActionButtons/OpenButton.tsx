@@ -8,10 +8,10 @@ import { isManager } from './../../../../utils/auth';
 
 const OpenButton = ({ status, handleOpen, ongoingAction, formID }) => {
   const { t } = useTranslation();
-  const { authorization, isLogged } = useContext(AuthContext);
+  const authCtx = useContext(AuthContext);
 
   return (
-    isManager(formID, authorization, isLogged) &&
+    isManager(formID, authCtx) &&
     status === Status.Setup && (
       <ActionButton
         handleClick={handleOpen}

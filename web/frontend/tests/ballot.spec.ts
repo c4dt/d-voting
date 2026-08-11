@@ -3,7 +3,7 @@ import { default as i18n } from 'i18next';
 import { assertHasFooter, assertHasNavBar, initI18n, logIn, setUp } from './shared';
 import { FORMID } from './mocks/shared';
 import {
-  SCIPER_ADMIN,
+  SCIPER_OTHER_ADMIN,
   SCIPER_OTHER_USER,
   SCIPER_USER,
   mockFormsVote,
@@ -16,7 +16,7 @@ initI18n();
 
 test.beforeEach(async ({ page }) => {
   await mockFormsFormID(page, 1);
-  await logIn(page, SCIPER_ADMIN);
+  await logIn(page, SCIPER_OTHER_ADMIN);
   await setUp(page, `/ballot/show/${FORMID}`);
 });
 
@@ -38,7 +38,7 @@ test('Assert ballot form is correctly handled for anonymous users, non-voter use
     await expect(page).toHaveURL('/login');
   });
   await test.step('Assert non-voter gets page that they are not allowed to vote', async () => {
-    await logIn(page, SCIPER_OTHER_USER);
+    await logIn(page, SCIPER_USER);
     await page.goto(`/ballot/show/${FORMID}`, { waitUntil: 'networkidle' });
     await expect(page).toHaveURL(`/ballot/show/${FORMID}`);
     await expect(castVoteButton).toBeHidden();
@@ -46,7 +46,7 @@ test('Assert ballot form is correctly handled for anonymous users, non-voter use
     await expect(page.getByText(i18n.t('voteNotVoterDescription'))).toBeVisible();
   });
   await test.step('Assert voter gets ballot', async () => {
-    await logIn(page, SCIPER_USER);
+    await logIn(page, SCIPER_OTHER_USER);
     await page.goto(`/ballot/show/${FORMID}`, { waitUntil: 'networkidle' });
     await expect(page).toHaveURL(`/ballot/show/${FORMID}`);
     await expect(castVoteButton).toBeVisible();
@@ -71,7 +71,7 @@ test('Assert ballot is displayed properly', async ({ page }) => {
     await expect(
       page.getByText(i18n.t('selectBetween', { minSelect: select.MinN, maxSelect: select.MaxN }))
     ).toBeVisible();
-    for (const choice of select.Choices.map((x) => JSON.parse(x))) {
+    for (const choice of select.Choices.map((x) => JSON.parse(x.Choice))) {
       await expect(page.getByRole('checkbox', { name: choice.en })).toBeVisible();
     }
   }
@@ -100,7 +100,7 @@ test('Assert minimum/maximum number of choices are handled correctly', async ({ 
     await test.step(
       `Assert maximum number of choices (${select.MaxN}) are handled correctly`,
       async () => {
-        for (const choice of select.Choices.map((x) => JSON.parse(x))) {
+        for (const choice of select.Choices.map((x) => JSON.parse(x.Choice))) {
           await page.getByRole('checkbox', { name: choice.en }).setChecked(true);
         }
         await castVoteButton.click();
@@ -134,12 +134,12 @@ test('Assert that correct number of choices are accepted', async ({ page, baseUR
   });
   await page
     .getByRole('checkbox', {
-      name: JSON.parse(Form.Configuration.Scaffold.at(0).Selects.at(0).Choices.at(0)).en,
+      name: JSON.parse(Form.Configuration.Scaffold.at(0).Selects.at(0).Choices.at(0).Choice).en,
     })
     .setChecked(true);
   await page
     .getByRole('checkbox', {
-      name: JSON.parse(Form.Configuration.Scaffold.at(1).Selects.at(0).Choices.at(0)).en,
+      name: JSON.parse(Form.Configuration.Scaffold.at(1).Selects.at(0).Choices.at(0).Choice).en,
     })
     .setChecked(true);
   await page.getByRole('button', { name: i18n.t('castVote') }).click();

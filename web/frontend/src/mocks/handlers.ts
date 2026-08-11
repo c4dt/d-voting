@@ -384,7 +384,7 @@ export const handlers = [
       return res(ctx.status(403), ctx.json({ message: 'You are not authorized to add a role' }));
     }
 
-    mockUserDB.push({ id: uid(), ...body });
+    mockUserDB.push(body);
 
     return res(ctx.status(200));
   }),

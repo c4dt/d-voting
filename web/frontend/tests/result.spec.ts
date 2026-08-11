@@ -2,14 +2,24 @@ import { expect, test } from '@playwright/test';
 import { default as i18n } from 'i18next';
 import { assertHasFooter, assertHasNavBar, initI18n, setUp } from './shared';
 import { FORMID } from './mocks/shared';
-import { mockFormsFormID } from './mocks/evoting';
+import { mockAdminList, mockFormsFormID, mockOperatorList } from './mocks/evoting';
 import Form from './json/evoting/forms/combined.json';
+import {
+  SCIPER_ADMIN,
+  SCIPER_OPERATOR,
+  SCIPER_OTHER_ADMIN,
+  SCIPER_OTHER_OPERATOR,
+  mockPersonalInfo,
+} from './mocks/api';
 
 initI18n();
 
 test.beforeEach(async ({ page }) => {
   // TODO integrate localisation
   i18n.changeLanguage('en'); // force 'en' for these tests
+  await mockAdminList(page, [SCIPER_ADMIN, SCIPER_OTHER_ADMIN]);
+  await mockOperatorList(page, [SCIPER_OPERATOR, SCIPER_OTHER_OPERATOR]);
+  await mockPersonalInfo(page);
   await mockFormsFormID(page, 5); // mock clear election result per default
   await setUp(page, `/forms/${FORMID}/result`);
 });
@@ -114,7 +124,9 @@ test('Assert individual results are displayed correctly', async ({ page }) => {
             j + 1
           }]`
         );
-        await expect(resultRow.locator('xpath=./div[2]')).toContainText(JSON.parse(choice).en);
+        await expect(resultRow.locator('xpath=./div[2]')).toContainText(
+          JSON.parse(choice.Choice).en
+        );
         if (result.at(j)) {
           await expect(resultRow.getByRole('checkbox')).toBeChecked();
         } else {
