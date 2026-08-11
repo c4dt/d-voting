@@ -29,7 +29,6 @@ const FormShow: FC = () => {
     setStatus,
     roster,
     setResult,
-    ballotSize,
     ballotVoters,
     configObj,
     setIsResultSet,
