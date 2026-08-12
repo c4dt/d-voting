@@ -3,7 +3,7 @@ module github.com/c4dt/d-voting
 go 1.25.0
 
 require (
-	github.com/gorilla/mux v1.8.0
+	github.com/gorilla/mux v1.8.1
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/prometheus/client_golang v1.22.0
 	github.com/rs/zerolog v1.34.0
