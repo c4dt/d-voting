@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - 'v*'
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
 
@@ -14,8 +16,8 @@ jobs:
     env:
       # use version tag if it exists on commit else default
       # (default will always be created in addition to other tags)
-      DockerTag: ${{ github.ref_type == 'tag' && github.ref_name || 'latest' }}
-      push: ${{ (github.ref == 'refs/heads/main') && 'true' || 'false' }}
+      DockerTag: ${{ github.ref_type == 'tag' && github.ref_name || github.sha }}
+      push: ${{ (github.ref == 'refs/heads/main' || github.ref_type == 'tag') && 'true' || 'false' }}
 
     steps:
       - name: Checkout
