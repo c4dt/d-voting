@@ -134,7 +134,7 @@ func (m txManager) addAndWait(args ...txn.Arg) ([]byte, error) {
 		}
 
 		cancel()
-		
+
 		time.Sleep(time.Millisecond * (1 << i))
 	}
 

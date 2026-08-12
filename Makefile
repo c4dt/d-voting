@@ -21,7 +21,7 @@ check: lint vet
 	go test `go list ./... | grep -v /integration`
 
 test_integration:
-	go test ./integration
+	go test ./integration -timeout 50s
 
 build:
 	go build -ldflags="-X $(versionFlag) -X $(timeFlag)" -o dvoting ./cli/dvoting
