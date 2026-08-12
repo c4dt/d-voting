@@ -43,6 +43,16 @@ const deserializeErr = "failed to deserialize Form"
 
 var invalidForm = []byte("fake form")
 
+func TestNewSemiRandomStream(t *testing.T) {
+	_, err := NewSemiRandomStream([]byte{1, 2, 3, 4, 5, 6, 7})
+	require.EqualError(t, err, "the seed has a wrong size (too small)")
+
+	// Hash bytes are arbitrary binary data. In particular, they do not have
+	// to be a valid varint.
+	_, err = NewSemiRandomStream([]byte{0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80})
+	require.NoError(t, err)
+}
+
 var ctx serde.Context
 
 var formFac serde.Factory

@@ -1256,14 +1256,12 @@ type SemiRandomStream struct {
 //
 // - implements cipher.Stream
 func NewSemiRandomStream(seed []byte) (SemiRandomStream, error) {
-	if len(seed) > 8 {
-		seed = seed[0:8]
-	}
-
-	s, n := binary.Varint(seed)
-	if n <= 0 {
+	if len(seed) < 8 {
 		return SemiRandomStream{}, xerrors.Errorf("the seed has a wrong size (too small)")
 	}
+
+	seed = seed[:8]
+	s := int64(binary.LittleEndian.Uint64(seed))
 
 	source := rand.NewSource(s)
 	stream := rand.New(source)
