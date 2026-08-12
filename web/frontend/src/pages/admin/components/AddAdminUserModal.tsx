@@ -63,8 +63,8 @@ const AddAdminUserModal: FC<AddAdminUserModalProps> = ({ open, setOpen, handleAd
   };
   const handleAddUser = async () => {
     setLoading(true);
-    const sciperStr= sciperValue.trim();
-    if (sciperStr!== '') {
+    const sciperStr = sciperValue.trim();
+    if (sciperStr !== '') {
       const sciper = Number(sciperStr);
       if (sciperStr.length !== 6 || sciper < 100000 || sciper > 999999) {
         fctx.addMessage(t('sciperOutOfRange', { sciper: sciper }), FlashLevel.Error);
