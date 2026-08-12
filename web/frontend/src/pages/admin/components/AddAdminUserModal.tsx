@@ -42,11 +42,10 @@ const AddAdminUserModal: FC<AddAdminUserModalProps> = ({ open, setOpen, handleAd
     }
   }, [fctx, t, postError]);
   const handleUserInput = (e: any) => {
-    const sciper = parseInt(e.target.value.trim());
-    if (isNaN(sciper)) {
+    const value = e.target.value;
+    const sciper = Number(value);
+    if (Number.isNaN(sciper)) {
       fctx.addMessage(t('sciperNaN', { sciperStr: e.target.value.trim() }), FlashLevel.Error);
-    } else if (sciper < 100000 || sciper > 999999) {
-      fctx.addMessage(t('sciperOutOfRange', { sciper: sciper }), FlashLevel.Error);
     } else {
       // The value is not trimmed to not restrict the user input
       // The user could think there is a problem if he can't input a space in the field
@@ -64,11 +63,18 @@ const AddAdminUserModal: FC<AddAdminUserModalProps> = ({ open, setOpen, handleAd
   };
   const handleAddUser = async () => {
     setLoading(true);
-    if (sciperValue !== '') {
+    const sciperStr= sciperValue.trim();
+    if (sciperStr!== '') {
+      const sciper = Number(sciperStr);
+      if (sciperStr.length !== 6 || sciper < 100000 || sciper > 999999) {
+        fctx.addMessage(t('sciperOutOfRange', { sciper: sciper }), FlashLevel.Error);
+        setLoading(false);
+        return;
+      }
       try {
         const res = await saveMapping();
         if (res) {
-          handleAddRoleUser({ sciper: sciperValue, role: selectedRole });
+          handleAddRoleUser({ sciper: sciperStr, role: selectedRole });
           setSelectedRole(UserRole.Operator);
           setSciperValue('');
           fctx.addMessage(`${t('successAddUser')}`, FlashLevel.Info);
