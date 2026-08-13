@@ -22,7 +22,6 @@ import (
 	"time"
 
 	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/internal/tracing"
 	"github.com/c4dt/d-voting/dela/internal/traffic"
 	"github.com/c4dt/d-voting/dela/mino"
 	"github.com/c4dt/d-voting/dela/mino/minogrpc/certs"
@@ -30,6 +29,7 @@ import (
 	"github.com/c4dt/d-voting/dela/mino/minogrpc/session"
 	"github.com/c4dt/d-voting/dela/mino/router"
 	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/internal/tracing"
 	otgrpc "github.com/opentracing-contrib/go-grpc"
 	opentracing "github.com/opentracing/opentracing-go"
 	"golang.org/x/xerrors"

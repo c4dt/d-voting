@@ -10,11 +10,11 @@ import (
 	"sync"
 
 	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/internal/tracing"
 	"github.com/c4dt/d-voting/dela/mino"
 	"github.com/c4dt/d-voting/dela/mino/minogrpc/ptypes"
 	"github.com/c4dt/d-voting/dela/mino/minogrpc/session"
 	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/internal/tracing"
 	"github.com/rs/xid"
 	"golang.org/x/xerrors"
 	"google.golang.org/grpc"

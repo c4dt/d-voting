@@ -14,9 +14,9 @@ import (
 	"github.com/c4dt/d-voting/dela/cosi"
 	"github.com/c4dt/d-voting/dela/cosi/threshold/types"
 	"github.com/c4dt/d-voting/dela/crypto"
-	"github.com/c4dt/d-voting/dela/internal/tracing"
 	"github.com/c4dt/d-voting/dela/mino"
 	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/internal/tracing"
 	"golang.org/x/xerrors"
 )
 

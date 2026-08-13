@@ -3,8 +3,8 @@ package pedersen
 import (
 	"github.com/c4dt/d-voting/dela"
 	"github.com/c4dt/d-voting/dela/dkg/pedersen/types"
-	"github.com/c4dt/d-voting/dela/internal/tracing"
 	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/internal/tracing"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/share"
 	"go.dedis.ch/kyber/v3/suites"
