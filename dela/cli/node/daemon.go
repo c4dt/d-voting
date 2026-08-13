@@ -18,8 +18,8 @@ import (
 	"time"
 
 	"github.com/rs/zerolog"
-	"go.dedis.ch/dela"
-	"go.dedis.ch/dela/cli"
+	"github.com/c4dt/d-voting/dela"
+	"github.com/c4dt/d-voting/dela/cli"
 	"golang.org/x/xerrors"
 )
 

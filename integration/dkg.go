@@ -2,7 +2,7 @@ package integration
 
 import (
 	"github.com/c4dt/d-voting/services/dkg"
-	"go.dedis.ch/dela/core/txn"
+	"github.com/c4dt/d-voting/dela/core/txn"
 	"golang.org/x/xerrors"
 )
 

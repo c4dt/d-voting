@@ -19,9 +19,9 @@ import (
 	"context"
 	"errors"
 
-	"go.dedis.ch/dela/core/ordering/cosipbft/types"
-	"go.dedis.ch/dela/core/store"
-	"go.dedis.ch/dela/core/store/hashtree"
+	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/types"
+	"github.com/c4dt/d-voting/dela/core/store"
+	"github.com/c4dt/d-voting/dela/core/store/hashtree"
 )
 
 // ErrNoBlock is the error message returned when the block is unknown.

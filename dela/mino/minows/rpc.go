@@ -13,8 +13,8 @@ import (
 	ma "github.com/multiformats/go-multiaddr"
 	"github.com/rs/xid"
 	"github.com/rs/zerolog"
-	"go.dedis.ch/dela/mino"
-	"go.dedis.ch/dela/serde"
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/serde"
 	"golang.org/x/xerrors"
 	"sync"
 )

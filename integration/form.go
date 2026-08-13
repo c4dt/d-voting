@@ -8,11 +8,11 @@ import (
 	"github.com/c4dt/d-voting/contracts/evoting"
 	"github.com/c4dt/d-voting/contracts/evoting/types"
 	"github.com/c4dt/d-voting/internal/testing/fake"
-	"go.dedis.ch/dela/core/execution/native"
-	"go.dedis.ch/dela/core/ordering"
-	"go.dedis.ch/dela/core/txn"
-	"go.dedis.ch/dela/serde"
-	jsonDela "go.dedis.ch/dela/serde/json"
+	"github.com/c4dt/d-voting/dela/core/execution/native"
+	"github.com/c4dt/d-voting/dela/core/ordering"
+	"github.com/c4dt/d-voting/dela/core/txn"
+	"github.com/c4dt/d-voting/dela/serde"
+	jsonDela "github.com/c4dt/d-voting/dela/serde/json"
 	"golang.org/x/xerrors"
 )
 

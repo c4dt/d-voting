@@ -6,9 +6,9 @@ package controller
 import (
 	"path/filepath"
 
-	"go.dedis.ch/dela/cli"
-	"go.dedis.ch/dela/cli/node"
-	"go.dedis.ch/dela/core/store/kv"
+	"github.com/c4dt/d-voting/dela/cli"
+	"github.com/c4dt/d-voting/dela/cli/node"
+	"github.com/c4dt/d-voting/dela/core/store/kv"
 	"golang.org/x/xerrors"
 )
 

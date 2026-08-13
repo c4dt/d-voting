@@ -4,12 +4,12 @@
 package darc
 
 import (
-	contract "go.dedis.ch/dela/contracts/access"
-	"go.dedis.ch/dela/core/access"
-	"go.dedis.ch/dela/core/access/darc/types"
-	"go.dedis.ch/dela/core/store"
-	"go.dedis.ch/dela/core/store/prefixed"
-	"go.dedis.ch/dela/serde"
+	contract "github.com/c4dt/d-voting/dela/contracts/access"
+	"github.com/c4dt/d-voting/dela/core/access"
+	"github.com/c4dt/d-voting/dela/core/access/darc/types"
+	"github.com/c4dt/d-voting/dela/core/store"
+	"github.com/c4dt/d-voting/dela/core/store/prefixed"
+	"github.com/c4dt/d-voting/dela/serde"
 	"golang.org/x/xerrors"
 )
 

@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/serde/json"
-	"go.dedis.ch/dela/testing/fake"
+	"github.com/c4dt/d-voting/dela/serde/json"
+	"github.com/c4dt/d-voting/dela/testing/fake"
 )
 
 func TestJstore_New(t *testing.T) {

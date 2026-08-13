@@ -6,8 +6,8 @@
 package gossip
 
 import (
-	"go.dedis.ch/dela/mino"
-	"go.dedis.ch/dela/serde"
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/serde"
 )
 
 // Rumor is the message that must be gossiped through the network. It is using

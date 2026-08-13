@@ -8,12 +8,12 @@ import (
 	"sort"
 	"strings"
 
-	"go.dedis.ch/dela"
-	"go.dedis.ch/dela/core/access"
-	"go.dedis.ch/dela/core/execution"
-	"go.dedis.ch/dela/core/execution/native"
-	"go.dedis.ch/dela/core/store"
-	"go.dedis.ch/dela/core/store/prefixed"
+	"github.com/c4dt/d-voting/dela"
+	"github.com/c4dt/d-voting/dela/core/access"
+	"github.com/c4dt/d-voting/dela/core/execution"
+	"github.com/c4dt/d-voting/dela/core/execution/native"
+	"github.com/c4dt/d-voting/dela/core/store"
+	"github.com/c4dt/d-voting/dela/core/store/prefixed"
 	"golang.org/x/xerrors"
 )
 

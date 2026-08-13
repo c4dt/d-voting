@@ -10,7 +10,7 @@ package blocksync
 import (
 	"context"
 
-	"go.dedis.ch/dela/mino"
+	"github.com/c4dt/d-voting/dela/mino"
 )
 
 // Config is the configuration to change the behaviour of the synchronization.

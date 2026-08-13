@@ -6,11 +6,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/cli"
-	"go.dedis.ch/dela/cli/node"
-	"go.dedis.ch/dela/core/execution/native"
-	"go.dedis.ch/dela/crypto/bls"
-	"go.dedis.ch/dela/testing/fake"
+	"github.com/c4dt/d-voting/dela/cli"
+	"github.com/c4dt/d-voting/dela/cli/node"
+	"github.com/c4dt/d-voting/dela/core/execution/native"
+	"github.com/c4dt/d-voting/dela/crypto/bls"
+	"github.com/c4dt/d-voting/dela/testing/fake"
 )
 
 func TestAddAction_Execute(t *testing.T) {

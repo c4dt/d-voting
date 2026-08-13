@@ -9,9 +9,9 @@ import (
 	"context"
 	"io"
 
-	"go.dedis.ch/dela/cosi"
-	"go.dedis.ch/dela/mino"
-	"go.dedis.ch/dela/serde"
+	"github.com/c4dt/d-voting/dela/cosi"
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/serde"
 	"golang.org/x/xerrors"
 )
 

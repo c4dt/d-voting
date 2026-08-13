@@ -1,10 +1,10 @@
 package integration
 
 import (
-	"go.dedis.ch/dela/core/access"
-	"go.dedis.ch/dela/core/ordering"
-	"go.dedis.ch/dela/core/txn"
-	"go.dedis.ch/dela/mino"
+	"github.com/c4dt/d-voting/dela/core/access"
+	"github.com/c4dt/d-voting/dela/core/ordering"
+	"github.com/c4dt/d-voting/dela/core/txn"
+	"github.com/c4dt/d-voting/dela/mino"
 )
 
 // dela defines the common interface for a Dela node.

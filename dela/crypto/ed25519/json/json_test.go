@@ -4,9 +4,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/crypto/ed25519"
-	"go.dedis.ch/dela/serde"
-	"go.dedis.ch/dela/testing/fake"
+	"github.com/c4dt/d-voting/dela/crypto/ed25519"
+	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/dela/testing/fake"
 	"go.dedis.ch/kyber/v3"
 )
 

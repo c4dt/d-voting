@@ -13,7 +13,7 @@ import (
 	_ "github.com/c4dt/d-voting/services/shuffle/neff/json"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
-	delaPkg "go.dedis.ch/dela"
+	delaPkg "github.com/c4dt/d-voting/dela"
 )
 
 func TestBadVote(t *testing.T) {

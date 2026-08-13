@@ -9,11 +9,11 @@ import (
 	prom "github.com/c4dt/d-voting/metrics/controller"
 	dkg "github.com/c4dt/d-voting/services/dkg/pedersen/controller"
 	neff "github.com/c4dt/d-voting/services/shuffle/neff/controller"
-	"go.dedis.ch/dela"
-	"go.dedis.ch/dela/cli"
-	"go.dedis.ch/dela/cli/node"
-	"go.dedis.ch/dela/mino/proxy"
-	"go.dedis.ch/dela/mino/proxy/http"
+	"github.com/c4dt/d-voting/dela"
+	"github.com/c4dt/d-voting/dela/cli"
+	"github.com/c4dt/d-voting/dela/cli/node"
+	"github.com/c4dt/d-voting/dela/mino/proxy"
+	"github.com/c4dt/d-voting/dela/mino/proxy/http"
 	"golang.org/x/xerrors"
 )
 

@@ -5,11 +5,11 @@ import (
 	"io"
 	"os"
 
-	"go.dedis.ch/dela/cli/node"
+	"github.com/c4dt/d-voting/dela/cli/node"
 
-	db "go.dedis.ch/dela/core/store/kv/controller"
-	dkg "go.dedis.ch/dela/dkg/pedersen/controller"
-	mino "go.dedis.ch/dela/mino/minogrpc/controller"
+	db "github.com/c4dt/d-voting/dela/core/store/kv/controller"
+	dkg "github.com/c4dt/d-voting/dela/dkg/pedersen/controller"
+	mino "github.com/c4dt/d-voting/dela/mino/minogrpc/controller"
 )
 
 func main() {

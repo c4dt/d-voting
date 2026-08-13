@@ -3,10 +3,10 @@ package json
 import (
 	"encoding/json"
 
-	"go.dedis.ch/dela/core/access"
-	"go.dedis.ch/dela/core/access/darc/types"
-	"go.dedis.ch/dela/crypto/common"
-	"go.dedis.ch/dela/serde"
+	"github.com/c4dt/d-voting/dela/core/access"
+	"github.com/c4dt/d-voting/dela/core/access/darc/types"
+	"github.com/c4dt/d-voting/dela/crypto/common"
+	"github.com/c4dt/d-voting/dela/serde"
 	"golang.org/x/xerrors"
 )
 

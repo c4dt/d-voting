@@ -5,9 +5,9 @@
 package cosi
 
 import (
-	"go.dedis.ch/dela/crypto"
-	"go.dedis.ch/dela/serde"
-	"go.dedis.ch/dela/serde/registry"
+	"github.com/c4dt/d-voting/dela/crypto"
+	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/dela/serde/registry"
 	"golang.org/x/xerrors"
 )
 

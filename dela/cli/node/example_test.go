@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"go.dedis.ch/dela/cli"
+	"github.com/c4dt/d-voting/dela/cli"
 )
 
 func ExampleCLIBuilder_Build() {

@@ -12,8 +12,8 @@
 package txn
 
 import (
-	"go.dedis.ch/dela/core/access"
-	"go.dedis.ch/dela/serde"
+	"github.com/c4dt/d-voting/dela/core/access"
+	"github.com/c4dt/d-voting/dela/serde"
 )
 
 // Transaction is what triggers a smart contract execution by passing it as part

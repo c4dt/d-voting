@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"io"
 
-	"go.dedis.ch/dela/serde"
+	"github.com/c4dt/d-voting/dela/serde"
 )
 
 func init() {

@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	urfave "github.com/urfave/cli/v2"
-	"go.dedis.ch/dela/cli"
+	"github.com/c4dt/d-voting/dela/cli"
 )
 
 // Builder implements a cli builder based on urfave/cli

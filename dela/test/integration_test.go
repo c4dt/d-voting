@@ -13,13 +13,13 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	accessContract "go.dedis.ch/dela/contracts/access"
-	"go.dedis.ch/dela/contracts/value"
-	"go.dedis.ch/dela/core/store/prefixed"
-	"go.dedis.ch/dela/core/txn"
-	"go.dedis.ch/dela/core/txn/signed"
-	"go.dedis.ch/dela/crypto/bls"
-	"go.dedis.ch/dela/crypto/loader"
+	accessContract "github.com/c4dt/d-voting/dela/contracts/access"
+	"github.com/c4dt/d-voting/dela/contracts/value"
+	"github.com/c4dt/d-voting/dela/core/store/prefixed"
+	"github.com/c4dt/d-voting/dela/core/txn"
+	"github.com/c4dt/d-voting/dela/core/txn/signed"
+	"github.com/c4dt/d-voting/dela/crypto/bls"
+	"github.com/c4dt/d-voting/dela/crypto/loader"
 	"golang.org/x/xerrors"
 )
 

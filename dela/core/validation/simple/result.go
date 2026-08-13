@@ -8,10 +8,10 @@ package simple
 import (
 	"io"
 
-	"go.dedis.ch/dela/core/txn"
-	"go.dedis.ch/dela/core/validation"
-	"go.dedis.ch/dela/serde"
-	"go.dedis.ch/dela/serde/registry"
+	"github.com/c4dt/d-voting/dela/core/txn"
+	"github.com/c4dt/d-voting/dela/core/validation"
+	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/dela/serde/registry"
 	"golang.org/x/xerrors"
 )
 

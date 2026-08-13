@@ -3,7 +3,7 @@ package pedersen
 import (
 	"sync"
 
-	"go.dedis.ch/dela/mino"
+	"github.com/c4dt/d-voting/dela/mino"
 	"go.dedis.ch/kyber/v3"
 	"golang.org/x/xerrors"
 )

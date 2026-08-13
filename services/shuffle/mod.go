@@ -1,7 +1,7 @@
 package shuffle
 
 import (
-	"go.dedis.ch/dela/core/txn"
+	"github.com/c4dt/d-voting/dela/core/txn"
 )
 
 // Shuffle defines the primitive to start a shuffle protocol

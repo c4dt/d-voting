@@ -4,11 +4,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/cosi"
-	"go.dedis.ch/dela/crypto/bls"
-	"go.dedis.ch/dela/mino"
-	"go.dedis.ch/dela/serde"
-	"go.dedis.ch/dela/testing/fake"
+	"github.com/c4dt/d-voting/dela/cosi"
+	"github.com/c4dt/d-voting/dela/crypto/bls"
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/dela/testing/fake"
 )
 
 func TestHandler_Process(t *testing.T) {

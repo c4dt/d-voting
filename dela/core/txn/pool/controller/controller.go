@@ -4,9 +4,9 @@
 package controller
 
 import (
-	"go.dedis.ch/dela/cli"
-	"go.dedis.ch/dela/cli/node"
-	"go.dedis.ch/dela/core/access"
+	"github.com/c4dt/d-voting/dela/cli"
+	"github.com/c4dt/d-voting/dela/cli/node"
+	"github.com/c4dt/d-voting/dela/core/access"
 )
 
 const (

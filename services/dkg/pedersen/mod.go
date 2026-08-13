@@ -6,13 +6,13 @@ import (
 	"sync"
 	"time"
 
-	"go.dedis.ch/dela/core/store/kv"
-	"go.dedis.ch/dela/core/txn"
-	"go.dedis.ch/dela/core/txn/pool"
-	"go.dedis.ch/dela/crypto"
+	"github.com/c4dt/d-voting/dela/core/store/kv"
+	"github.com/c4dt/d-voting/dela/core/txn"
+	"github.com/c4dt/d-voting/dela/core/txn/pool"
+	"github.com/c4dt/d-voting/dela/crypto"
 
-	"go.dedis.ch/dela"
-	"go.dedis.ch/dela/core/ordering"
+	"github.com/c4dt/d-voting/dela"
+	"github.com/c4dt/d-voting/dela/core/ordering"
 
 	"github.com/c4dt/d-voting/contracts/evoting"
 	etypes "github.com/c4dt/d-voting/contracts/evoting/types"
@@ -24,9 +24,9 @@ import (
 	// Register the JSON types for Pedersen
 	_ "github.com/c4dt/d-voting/services/dkg/pedersen/json"
 	"github.com/c4dt/d-voting/services/dkg/pedersen/types"
-	"go.dedis.ch/dela/mino"
-	"go.dedis.ch/dela/serde"
-	jsonserde "go.dedis.ch/dela/serde/json"
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/serde"
+	jsonserde "github.com/c4dt/d-voting/dela/serde/json"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/suites"
 	"go.dedis.ch/kyber/v3/util/random"

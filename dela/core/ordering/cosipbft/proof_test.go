@@ -4,12 +4,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/core/ordering/cosipbft/authority"
-	"go.dedis.ch/dela/core/ordering/cosipbft/types"
-	"go.dedis.ch/dela/core/store/hashtree"
-	"go.dedis.ch/dela/core/validation/simple"
-	"go.dedis.ch/dela/crypto"
-	"go.dedis.ch/dela/testing/fake"
+	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/authority"
+	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/types"
+	"github.com/c4dt/d-voting/dela/core/store/hashtree"
+	"github.com/c4dt/d-voting/dela/core/validation/simple"
+	"github.com/c4dt/d-voting/dela/crypto"
+	"github.com/c4dt/d-voting/dela/testing/fake"
 )
 
 func TestProof_GetKey(t *testing.T) {

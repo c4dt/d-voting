@@ -4,11 +4,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/core/execution"
-	"go.dedis.ch/dela/core/store"
-	"go.dedis.ch/dela/core/txn"
-	"go.dedis.ch/dela/core/validation"
-	"go.dedis.ch/dela/testing/fake"
+	"github.com/c4dt/d-voting/dela/core/execution"
+	"github.com/c4dt/d-voting/dela/core/store"
+	"github.com/c4dt/d-voting/dela/core/txn"
+	"github.com/c4dt/d-voting/dela/core/validation"
+	"github.com/c4dt/d-voting/dela/testing/fake"
 	"golang.org/x/xerrors"
 )
 

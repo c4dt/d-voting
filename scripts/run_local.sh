@@ -29,7 +29,7 @@ PATH="$PATH":"$GOBIN"
 function build_dela() {
   echo "Building dela-node"
   if ! [[ -f $GOBIN/crypto ]]; then
-    go install go.dedis.ch/dela/cli/crypto
+    go install ./dela/cli/crypto
   fi
   if ! [[ -f $GOBIN/dvoting ]]; then
     go install ./cli/dvoting

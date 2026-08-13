@@ -6,9 +6,9 @@
 package cosipbft
 
 import (
-	"go.dedis.ch/dela/core/ordering/cosipbft/types"
-	"go.dedis.ch/dela/core/store/hashtree"
-	"go.dedis.ch/dela/crypto"
+	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/types"
+	"github.com/c4dt/d-voting/dela/core/store/hashtree"
+	"github.com/c4dt/d-voting/dela/crypto"
 	"golang.org/x/xerrors"
 )
 

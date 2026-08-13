@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/serde"
-	"go.dedis.ch/dela/testing/fake"
+	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/dela/testing/fake"
 )
 
 var testCalls = &fake.Call{}

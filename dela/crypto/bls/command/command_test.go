@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/cli"
-	"go.dedis.ch/dela/testing/fake"
+	"github.com/c4dt/d-voting/dela/cli"
+	"github.com/c4dt/d-voting/dela/testing/fake"
 )
 
 func TestSetCommands(t *testing.T) {

@@ -6,13 +6,13 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"go.dedis.ch/dela/mino/minogrpc"
-	"go.dedis.ch/dela/mino/router/tree"
+	"github.com/c4dt/d-voting/dela/mino/minogrpc"
+	"github.com/c4dt/d-voting/dela/mino/router/tree"
 
-	"go.dedis.ch/dela/dkg"
+	"github.com/c4dt/d-voting/dela/dkg"
 
-	"go.dedis.ch/dela/mino"
-	"go.dedis.ch/dela/mino/minoch"
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/mino/minoch"
 
 	"go.dedis.ch/kyber/v3"
 )

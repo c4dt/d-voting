@@ -8,12 +8,12 @@ package controller
 import (
 	"encoding/base64"
 
-	"go.dedis.ch/dela"
-	"go.dedis.ch/dela/cli/node"
-	accessContract "go.dedis.ch/dela/contracts/access"
-	"go.dedis.ch/dela/core/access"
-	"go.dedis.ch/dela/core/execution/native"
-	"go.dedis.ch/dela/crypto/bls"
+	"github.com/c4dt/d-voting/dela"
+	"github.com/c4dt/d-voting/dela/cli/node"
+	accessContract "github.com/c4dt/d-voting/dela/contracts/access"
+	"github.com/c4dt/d-voting/dela/core/access"
+	"github.com/c4dt/d-voting/dela/core/execution/native"
+	"github.com/c4dt/d-voting/dela/crypto/bls"
 	"golang.org/x/xerrors"
 )
 

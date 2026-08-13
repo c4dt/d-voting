@@ -2,8 +2,8 @@ package json
 
 import (
 	"github.com/c4dt/d-voting/services/shuffle/neff/types"
-	"go.dedis.ch/dela/mino"
-	"go.dedis.ch/dela/serde"
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/serde"
 	"go.dedis.ch/kyber/v3/suites"
 	"golang.org/x/xerrors"
 )

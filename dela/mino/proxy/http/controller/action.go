@@ -6,10 +6,10 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"go.dedis.ch/dela"
-	"go.dedis.ch/dela/cli/node"
-	"go.dedis.ch/dela/mino/proxy"
-	"go.dedis.ch/dela/mino/proxy/http"
+	"github.com/c4dt/d-voting/dela"
+	"github.com/c4dt/d-voting/dela/cli/node"
+	"github.com/c4dt/d-voting/dela/mino/proxy"
+	"github.com/c4dt/d-voting/dela/mino/proxy/http"
 	"golang.org/x/xerrors"
 )
 

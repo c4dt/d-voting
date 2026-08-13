@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	urfave "github.com/urfave/cli/v2"
-	"go.dedis.ch/dela/cli"
+	"github.com/c4dt/d-voting/dela/cli"
 )
 
 func TestBuild(t *testing.T) {

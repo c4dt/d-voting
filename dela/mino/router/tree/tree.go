@@ -8,7 +8,7 @@ import (
 	"math"
 	"sync"
 
-	"go.dedis.ch/dela/mino"
+	"github.com/c4dt/d-voting/dela/mino"
 	"golang.org/x/xerrors"
 )
 

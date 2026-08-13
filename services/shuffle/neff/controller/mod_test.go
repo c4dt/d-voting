@@ -5,11 +5,11 @@ import (
 
 	"github.com/c4dt/d-voting/internal/testing/fake"
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/cli"
-	"go.dedis.ch/dela/cli/node"
-	"go.dedis.ch/dela/core/ordering"
-	"go.dedis.ch/dela/core/ordering/cosipbft/blockstore"
-	"go.dedis.ch/dela/core/txn/pool"
+	"github.com/c4dt/d-voting/dela/cli"
+	"github.com/c4dt/d-voting/dela/cli/node"
+	"github.com/c4dt/d-voting/dela/core/ordering"
+	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/blockstore"
+	"github.com/c4dt/d-voting/dela/core/txn/pool"
 )
 
 func TestController_SetCommands(t *testing.T) {

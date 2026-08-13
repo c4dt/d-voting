@@ -9,13 +9,13 @@ import (
 	"time"
 
 	"github.com/c4dt/d-voting/contracts/evoting"
-	"go.dedis.ch/dela"
-	"go.dedis.ch/dela/contracts/access"
-	"go.dedis.ch/dela/core/execution/native"
-	"go.dedis.ch/dela/core/ordering"
-	"go.dedis.ch/dela/core/txn"
-	"go.dedis.ch/dela/core/txn/signed"
-	"go.dedis.ch/dela/crypto"
+	"github.com/c4dt/d-voting/dela"
+	"github.com/c4dt/d-voting/dela/contracts/access"
+	"github.com/c4dt/d-voting/dela/core/execution/native"
+	"github.com/c4dt/d-voting/dela/core/ordering"
+	"github.com/c4dt/d-voting/dela/core/txn"
+	"github.com/c4dt/d-voting/dela/core/txn/signed"
+	"github.com/c4dt/d-voting/dela/crypto"
 	"golang.org/x/xerrors"
 )
 

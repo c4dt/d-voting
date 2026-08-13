@@ -7,7 +7,7 @@
 // Documentation Last Review: 06.10.2020
 package types
 
-import "go.dedis.ch/dela/serde"
+import "github.com/c4dt/d-voting/dela/serde"
 
 // RegisterHandshakeFormat registers the engine for the provided format.
 func RegisterHandshakeFormat(f serde.Format, e serde.FormatEngine) {

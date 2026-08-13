@@ -7,9 +7,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 	urfave "github.com/urfave/cli/v2"
-	"go.dedis.ch/dela/cli"
-	"go.dedis.ch/dela/cli/ucli"
-	"go.dedis.ch/dela/testing/fake"
+	"github.com/c4dt/d-voting/dela/cli"
+	"github.com/c4dt/d-voting/dela/cli/ucli"
+	"github.com/c4dt/d-voting/dela/testing/fake"
 )
 
 func TestCliBuilder_SetStartFlags(t *testing.T) {

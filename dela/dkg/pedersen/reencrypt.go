@@ -1,10 +1,10 @@
 package pedersen
 
 import (
-	"go.dedis.ch/dela"
-	"go.dedis.ch/dela/dkg/pedersen/types"
-	"go.dedis.ch/dela/internal/tracing"
-	"go.dedis.ch/dela/mino"
+	"github.com/c4dt/d-voting/dela"
+	"github.com/c4dt/d-voting/dela/dkg/pedersen/types"
+	"github.com/c4dt/d-voting/dela/internal/tracing"
+	"github.com/c4dt/d-voting/dela/mino"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/share"
 	"go.dedis.ch/kyber/v3/suites"

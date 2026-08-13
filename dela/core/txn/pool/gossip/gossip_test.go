@@ -9,14 +9,14 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/core/access"
-	"go.dedis.ch/dela/core/txn"
-	"go.dedis.ch/dela/core/txn/pool"
-	"go.dedis.ch/dela/mino"
-	"go.dedis.ch/dela/mino/gossip"
-	"go.dedis.ch/dela/mino/minoch"
-	"go.dedis.ch/dela/serde"
-	"go.dedis.ch/dela/testing/fake"
+	"github.com/c4dt/d-voting/dela/core/access"
+	"github.com/c4dt/d-voting/dela/core/txn"
+	"github.com/c4dt/d-voting/dela/core/txn/pool"
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/mino/gossip"
+	"github.com/c4dt/d-voting/dela/mino/minoch"
+	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/dela/testing/fake"
 )
 
 func TestPool_Basic(t *testing.T) {

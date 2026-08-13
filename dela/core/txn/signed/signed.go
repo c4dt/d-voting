@@ -12,13 +12,13 @@ import (
 	"io"
 	"sort"
 
-	"go.dedis.ch/dela"
-	"go.dedis.ch/dela/core/access"
-	"go.dedis.ch/dela/core/txn"
-	"go.dedis.ch/dela/crypto"
-	"go.dedis.ch/dela/crypto/common"
-	"go.dedis.ch/dela/serde"
-	"go.dedis.ch/dela/serde/registry"
+	"github.com/c4dt/d-voting/dela"
+	"github.com/c4dt/d-voting/dela/core/access"
+	"github.com/c4dt/d-voting/dela/core/txn"
+	"github.com/c4dt/d-voting/dela/crypto"
+	"github.com/c4dt/d-voting/dela/crypto/common"
+	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/dela/serde/registry"
 	"golang.org/x/xerrors"
 )
 

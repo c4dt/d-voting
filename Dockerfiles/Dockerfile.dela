@@ -9,7 +9,7 @@ ENV GOCACHE=/root/.cache/go-build
 WORKDIR /go/d-voting/cli/dvoting
 RUN --mount=type=cache,target="/root/.cache/go-build" go install
 # make sure we're using the same head as d-voting
-RUN --mount=type=cache,target="/root/.cache/go-build" cd $( go list -f '{{.Dir}}' go.dedis.ch/dela )/cli/crypto && go install
+RUN --mount=type=cache,target="/root/.cache/go-build" go install ./dela/cli/crypto
 
 FROM golang:1.25.0-bookworm AS build
 WORKDIR /usr/local/bin

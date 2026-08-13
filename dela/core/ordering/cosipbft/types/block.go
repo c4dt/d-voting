@@ -10,12 +10,12 @@ import (
 	"fmt"
 	"io"
 
-	"go.dedis.ch/dela/core/ordering/cosipbft/authority"
-	"go.dedis.ch/dela/core/txn"
-	"go.dedis.ch/dela/core/validation"
-	"go.dedis.ch/dela/crypto"
-	"go.dedis.ch/dela/serde"
-	"go.dedis.ch/dela/serde/registry"
+	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/authority"
+	"github.com/c4dt/d-voting/dela/core/txn"
+	"github.com/c4dt/d-voting/dela/core/validation"
+	"github.com/c4dt/d-voting/dela/crypto"
+	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/dela/serde/registry"
 	"golang.org/x/xerrors"
 )
 

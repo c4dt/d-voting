@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/rs/zerolog"
-	"go.dedis.ch/dela"
-	"go.dedis.ch/dela/mino"
+	"github.com/c4dt/d-voting/dela"
+	"github.com/c4dt/d-voting/dela/mino"
 	"go.dedis.ch/kyber/v3"
 	"golang.org/x/xerrors"
 )

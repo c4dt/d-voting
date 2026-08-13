@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 
 	"github.com/c4dt/d-voting/contracts/evoting/types"
-	"go.dedis.ch/dela/core/ordering/cosipbft/authority"
-	ctypes "go.dedis.ch/dela/core/ordering/cosipbft/types"
-	"go.dedis.ch/dela/serde"
+	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/authority"
+	ctypes "github.com/c4dt/d-voting/dela/core/ordering/cosipbft/types"
+	"github.com/c4dt/d-voting/dela/serde"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/suites"
 	"golang.org/x/xerrors"

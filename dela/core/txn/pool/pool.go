@@ -7,9 +7,9 @@ import (
 	"context"
 	"time"
 
-	"go.dedis.ch/dela/core/txn"
-	"go.dedis.ch/dela/core/validation"
-	"go.dedis.ch/dela/mino"
+	"github.com/c4dt/d-voting/dela/core/txn"
+	"github.com/c4dt/d-voting/dela/core/validation"
+	"github.com/c4dt/d-voting/dela/mino"
 )
 
 // Config is the set of parameters that allows one to change the behavior of the

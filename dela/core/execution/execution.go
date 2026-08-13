@@ -5,8 +5,8 @@
 package execution
 
 import (
-	"go.dedis.ch/dela/core/store"
-	"go.dedis.ch/dela/core/txn"
+	"github.com/c4dt/d-voting/dela/core/store"
+	"github.com/c4dt/d-voting/dela/core/txn"
 )
 
 // Step is a context of execution. It allows for example a smart contract to

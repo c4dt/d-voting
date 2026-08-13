@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/cli"
+	"github.com/c4dt/d-voting/dela/cli"
 )
 
 func TestMain_Happy(t *testing.T) {

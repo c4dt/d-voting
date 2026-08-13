@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
-	"go.dedis.ch/dela/core/access"
-	"go.dedis.ch/dela/core/txn"
-	"go.dedis.ch/dela/core/validation"
+	"github.com/c4dt/d-voting/dela/core/access"
+	"github.com/c4dt/d-voting/dela/core/txn"
+	"github.com/c4dt/d-voting/dela/core/validation"
 	"golang.org/x/xerrors"
 )
 

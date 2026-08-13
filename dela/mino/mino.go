@@ -13,7 +13,7 @@ import (
 	"encoding"
 	"errors"
 
-	"go.dedis.ch/dela/serde"
+	"github.com/c4dt/d-voting/dela/serde"
 )
 
 // Mino is an abstraction of a overlay network. It provides primitives to send

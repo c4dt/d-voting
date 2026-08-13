@@ -20,8 +20,8 @@ import (
 	"encoding"
 	"hash"
 
-	"go.dedis.ch/dela/mino"
-	"go.dedis.ch/dela/serde"
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/serde"
 )
 
 // HashFactory is an interface to produce a hash digest.

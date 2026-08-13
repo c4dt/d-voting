@@ -4,7 +4,7 @@ import (
 	"crypto/rand"
 
 	"github.com/libp2p/go-libp2p/core/crypto"
-	"go.dedis.ch/dela/core/store/kv"
+	"github.com/c4dt/d-voting/dela/core/store/kv"
 	"golang.org/x/xerrors"
 )
 

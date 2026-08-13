@@ -6,11 +6,11 @@ import (
 	"context"
 
 	"github.com/rs/zerolog"
-	"go.dedis.ch/dela"
-	"go.dedis.ch/dela/core/txn"
-	"go.dedis.ch/dela/core/txn/pool"
-	"go.dedis.ch/dela/mino"
-	"go.dedis.ch/dela/mino/gossip"
+	"github.com/c4dt/d-voting/dela"
+	"github.com/c4dt/d-voting/dela/core/txn"
+	"github.com/c4dt/d-voting/dela/core/txn/pool"
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/mino/gossip"
 	"golang.org/x/xerrors"
 )
 

@@ -7,15 +7,15 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/testing/fake"
+	"github.com/c4dt/d-voting/dela/testing/fake"
 
-	"go.dedis.ch/dela/dkg"
-	"go.dedis.ch/dela/dkg/pedersen/types"
-	"go.dedis.ch/dela/mino"
+	"github.com/c4dt/d-voting/dela/dkg"
+	"github.com/c4dt/d-voting/dela/dkg/pedersen/types"
+	"github.com/c4dt/d-voting/dela/mino"
 
-	"go.dedis.ch/dela/mino/minoch"
-	"go.dedis.ch/dela/mino/minogrpc"
-	"go.dedis.ch/dela/mino/router/tree"
+	"github.com/c4dt/d-voting/dela/mino/minoch"
+	"github.com/c4dt/d-voting/dela/mino/minogrpc"
+	"github.com/c4dt/d-voting/dela/mino/router/tree"
 
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/xof/keccak"

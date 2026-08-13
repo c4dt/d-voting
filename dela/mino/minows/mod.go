@@ -2,8 +2,8 @@ package minows
 
 import (
 	"github.com/rs/zerolog"
-	"go.dedis.ch/dela"
-	"go.dedis.ch/dela/serde/json"
+	"github.com/c4dt/d-voting/dela"
+	"github.com/c4dt/d-voting/dela/serde/json"
 	"regexp"
 	"strings"
 
@@ -12,8 +12,8 @@ import (
 	"github.com/libp2p/go-libp2p/core/host"
 	"github.com/libp2p/go-libp2p/core/protocol"
 	ma "github.com/multiformats/go-multiaddr"
-	"go.dedis.ch/dela/mino"
-	"go.dedis.ch/dela/serde"
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/serde"
 	"golang.org/x/xerrors"
 )
 

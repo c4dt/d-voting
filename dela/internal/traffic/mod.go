@@ -12,10 +12,10 @@ import (
 	"sync"
 	"time"
 
-	"go.dedis.ch/dela"
-	"go.dedis.ch/dela/core"
-	"go.dedis.ch/dela/mino"
-	"go.dedis.ch/dela/mino/router"
+	"github.com/c4dt/d-voting/dela"
+	"github.com/c4dt/d-voting/dela/core"
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/mino/router"
 	"golang.org/x/xerrors"
 	"google.golang.org/grpc/metadata"
 )

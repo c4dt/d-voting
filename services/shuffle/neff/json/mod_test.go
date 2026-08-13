@@ -6,8 +6,8 @@ import (
 	"github.com/c4dt/d-voting/internal/testing/fake"
 	"github.com/c4dt/d-voting/services/shuffle/neff/types"
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/mino"
-	"go.dedis.ch/dela/serde"
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/serde"
 )
 
 func TestMessageFormat_StartShuffle_Encode(t *testing.T) {

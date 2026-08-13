@@ -6,7 +6,7 @@ import (
 	"testing/quick"
 
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/mino"
+	"github.com/c4dt/d-voting/dela/mino"
 )
 
 func TestAddress_Equal(t *testing.T) {

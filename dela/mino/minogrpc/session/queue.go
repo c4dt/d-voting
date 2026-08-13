@@ -6,7 +6,7 @@
 package session
 
 import (
-	"go.dedis.ch/dela/mino/router"
+	"github.com/c4dt/d-voting/dela/mino/router"
 	"golang.org/x/xerrors"
 	"math"
 	"sync"

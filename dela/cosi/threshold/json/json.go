@@ -3,9 +3,9 @@ package json
 import (
 	"encoding/json"
 
-	"go.dedis.ch/dela/cosi/threshold/types"
-	"go.dedis.ch/dela/crypto"
-	"go.dedis.ch/dela/serde"
+	"github.com/c4dt/d-voting/dela/cosi/threshold/types"
+	"github.com/c4dt/d-voting/dela/crypto"
+	"github.com/c4dt/d-voting/dela/serde"
 	"golang.org/x/xerrors"
 )
 

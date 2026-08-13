@@ -6,12 +6,12 @@ import (
 	"strings"
 	"testing"
 
-	"go.dedis.ch/dela"
-	"go.dedis.ch/dela/core/ordering/cosipbft/authority"
-	"go.dedis.ch/dela/crypto"
-	"go.dedis.ch/dela/mino"
-	"go.dedis.ch/dela/serde"
-	"go.dedis.ch/dela/serde/json"
+	"github.com/c4dt/d-voting/dela"
+	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/authority"
+	"github.com/c4dt/d-voting/dela/crypto"
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/dela/serde/json"
 
 	etypes "github.com/c4dt/d-voting/contracts/evoting/types"
 	"github.com/c4dt/d-voting/internal/testing/fake"

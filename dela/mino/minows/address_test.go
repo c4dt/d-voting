@@ -3,7 +3,7 @@ package minows
 import (
 	"github.com/libp2p/go-libp2p/core/peer"
 	ma "github.com/multiformats/go-multiaddr"
-	"go.dedis.ch/dela/mino"
+	"github.com/c4dt/d-voting/dela/mino"
 	"testing"
 
 	"github.com/stretchr/testify/require"

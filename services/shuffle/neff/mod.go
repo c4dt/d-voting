@@ -8,18 +8,18 @@ import (
 	etypes "github.com/c4dt/d-voting/contracts/evoting/types"
 	"github.com/c4dt/d-voting/services/shuffle"
 	"github.com/c4dt/d-voting/services/shuffle/neff/types"
-	"go.dedis.ch/dela"
-	"go.dedis.ch/dela/core/ordering"
-	"go.dedis.ch/dela/core/ordering/cosipbft/blockstore"
-	"go.dedis.ch/dela/core/txn"
-	"go.dedis.ch/dela/core/txn/pool"
-	"go.dedis.ch/dela/crypto"
-	"go.dedis.ch/dela/mino"
-	"go.dedis.ch/dela/serde"
+	"github.com/c4dt/d-voting/dela"
+	"github.com/c4dt/d-voting/dela/core/ordering"
+	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/blockstore"
+	"github.com/c4dt/d-voting/dela/core/txn"
+	"github.com/c4dt/d-voting/dela/core/txn/pool"
+	"github.com/c4dt/d-voting/dela/crypto"
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/serde"
 	"golang.org/x/net/context"
 	"golang.org/x/xerrors"
 
-	"go.dedis.ch/dela/serde/json"
+	"github.com/c4dt/d-voting/dela/serde/json"
 )
 
 const (

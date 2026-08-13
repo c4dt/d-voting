@@ -7,13 +7,13 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/internal/tracing"
-	"go.dedis.ch/dela/mino"
-	"go.dedis.ch/dela/mino/minogrpc/certs"
-	"go.dedis.ch/dela/mino/minogrpc/session"
-	"go.dedis.ch/dela/mino/minogrpc/tokens"
-	"go.dedis.ch/dela/mino/router/tree"
-	"go.dedis.ch/dela/testing/fake"
+	"github.com/c4dt/d-voting/dela/internal/tracing"
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/mino/minogrpc/certs"
+	"github.com/c4dt/d-voting/dela/mino/minogrpc/session"
+	"github.com/c4dt/d-voting/dela/mino/minogrpc/tokens"
+	"github.com/c4dt/d-voting/dela/mino/router/tree"
+	"github.com/c4dt/d-voting/dela/testing/fake"
 	"google.golang.org/grpc"
 )
 

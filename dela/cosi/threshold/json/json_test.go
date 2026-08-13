@@ -4,9 +4,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/cosi/threshold/types"
-	"go.dedis.ch/dela/serde"
-	"go.dedis.ch/dela/testing/fake"
+	"github.com/c4dt/d-voting/dela/cosi/threshold/types"
+	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/dela/testing/fake"
 )
 
 func TestFormat_Encode(t *testing.T) {

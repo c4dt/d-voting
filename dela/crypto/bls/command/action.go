@@ -6,10 +6,10 @@ import (
 	"io"
 	"os"
 
-	"go.dedis.ch/dela/crypto"
+	"github.com/c4dt/d-voting/dela/crypto"
 
-	"go.dedis.ch/dela/cli"
-	"go.dedis.ch/dela/crypto/bls"
+	"github.com/c4dt/d-voting/dela/cli"
+	"github.com/c4dt/d-voting/dela/crypto/bls"
 	"golang.org/x/xerrors"
 )
 

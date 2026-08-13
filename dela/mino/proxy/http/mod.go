@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/rs/zerolog"
-	"go.dedis.ch/dela"
-	"go.dedis.ch/dela/mino/proxy"
+	"github.com/c4dt/d-voting/dela"
+	"github.com/c4dt/d-voting/dela/mino/proxy"
 )
 
 type key int

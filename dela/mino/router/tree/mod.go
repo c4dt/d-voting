@@ -13,9 +13,9 @@
 package tree
 
 import (
-	"go.dedis.ch/dela/mino"
-	"go.dedis.ch/dela/mino/router"
-	"go.dedis.ch/dela/mino/router/tree/types"
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/mino/router"
+	"github.com/c4dt/d-voting/dela/mino/router/tree/types"
 	"golang.org/x/xerrors"
 )
 

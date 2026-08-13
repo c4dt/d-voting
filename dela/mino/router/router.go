@@ -5,8 +5,8 @@
 package router
 
 import (
-	"go.dedis.ch/dela/mino"
-	"go.dedis.ch/dela/serde"
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/serde"
 )
 
 // Packet is the type of message processed by the router. It contains

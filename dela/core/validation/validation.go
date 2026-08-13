@@ -5,10 +5,10 @@
 package validation
 
 import (
-	"go.dedis.ch/dela/core/access"
-	"go.dedis.ch/dela/core/store"
-	"go.dedis.ch/dela/core/txn"
-	"go.dedis.ch/dela/serde"
+	"github.com/c4dt/d-voting/dela/core/access"
+	"github.com/c4dt/d-voting/dela/core/store"
+	"github.com/c4dt/d-voting/dela/core/txn"
+	"github.com/c4dt/d-voting/dela/serde"
 )
 
 // TransactionResult is the result of a transaction execution.

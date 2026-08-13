@@ -1,11 +1,11 @@
 package json
 
 import (
-	"go.dedis.ch/dela/crypto/common/json"
-	"go.dedis.ch/dela/crypto/ed25519"
+	"github.com/c4dt/d-voting/dela/crypto/common/json"
+	"github.com/c4dt/d-voting/dela/crypto/ed25519"
 	"golang.org/x/xerrors"
 
-	"go.dedis.ch/dela/serde"
+	"github.com/c4dt/d-voting/dela/serde"
 )
 
 func init() {

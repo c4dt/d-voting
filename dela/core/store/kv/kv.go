@@ -6,7 +6,7 @@
 // Documentation Last Review: 08.10.2020
 package kv
 
-import "go.dedis.ch/dela/core/store"
+import "github.com/c4dt/d-voting/dela/core/store"
 
 // Bucket is a general interface to operate on a database bucket.
 type Bucket interface {

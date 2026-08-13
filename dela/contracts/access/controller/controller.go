@@ -6,11 +6,11 @@ package controller
 import (
 	"path/filepath"
 
-	"go.dedis.ch/dela/cli"
-	"go.dedis.ch/dela/cli/node"
-	accessContract "go.dedis.ch/dela/contracts/access"
-	"go.dedis.ch/dela/core/access"
-	"go.dedis.ch/dela/core/execution/native"
+	"github.com/c4dt/d-voting/dela/cli"
+	"github.com/c4dt/d-voting/dela/cli/node"
+	accessContract "github.com/c4dt/d-voting/dela/contracts/access"
+	"github.com/c4dt/d-voting/dela/core/access"
+	"github.com/c4dt/d-voting/dela/core/execution/native"
 	"golang.org/x/xerrors"
 )
 

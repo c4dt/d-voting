@@ -27,7 +27,7 @@ package fastsync
 import (
 	"context"
 
-	"go.dedis.ch/dela/mino"
+	"github.com/c4dt/d-voting/dela/mino"
 )
 
 // Config of the current run of the fastsync.

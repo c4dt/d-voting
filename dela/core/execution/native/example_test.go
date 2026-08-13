@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"sync"
 
-	"go.dedis.ch/dela/core/execution"
-	"go.dedis.ch/dela/core/store"
-	"go.dedis.ch/dela/core/txn/signed"
-	"go.dedis.ch/dela/crypto/bls"
+	"github.com/c4dt/d-voting/dela/core/execution"
+	"github.com/c4dt/d-voting/dela/core/store"
+	"github.com/c4dt/d-voting/dela/core/txn/signed"
+	"github.com/c4dt/d-voting/dela/crypto/bls"
 )
 
 func ExampleService_Execute() {

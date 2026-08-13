@@ -8,11 +8,11 @@ import (
 	"time"
 
 	"github.com/rs/zerolog"
-	"go.dedis.ch/dela/testing/fake"
+	"github.com/c4dt/d-voting/dela/testing/fake"
 
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/mino"
-	"go.dedis.ch/dela/serde"
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/serde"
 )
 
 func TestHandler_Stream_Deadline(t *testing.T) {

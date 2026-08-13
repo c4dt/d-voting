@@ -10,8 +10,8 @@ import (
 	dvoting "github.com/c4dt/d-voting"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"go.dedis.ch/dela"
-	"go.dedis.ch/dela/cli/node"
+	"github.com/c4dt/d-voting/dela"
+	"github.com/c4dt/d-voting/dela/cli/node"
 	"golang.org/x/xerrors"
 )
 

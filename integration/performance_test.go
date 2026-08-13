@@ -15,9 +15,9 @@ import (
 	"github.com/c4dt/d-voting/contracts/evoting/types"
 	"github.com/c4dt/d-voting/services/dkg"
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/core/execution/native"
-	"go.dedis.ch/dela/core/ordering/cosipbft"
-	"go.dedis.ch/dela/core/txn"
+	"github.com/c4dt/d-voting/dela/core/execution/native"
+	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft"
+	"github.com/c4dt/d-voting/dela/core/txn"
 	"golang.org/x/xerrors"
 )
 

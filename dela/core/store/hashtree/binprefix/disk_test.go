@@ -5,10 +5,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/core/store/kv"
-	"go.dedis.ch/dela/crypto"
-	"go.dedis.ch/dela/serde/json"
-	"go.dedis.ch/dela/testing/fake"
+	"github.com/c4dt/d-voting/dela/core/store/kv"
+	"github.com/c4dt/d-voting/dela/crypto"
+	"github.com/c4dt/d-voting/dela/serde/json"
+	"github.com/c4dt/d-voting/dela/testing/fake"
 )
 
 var testCtx = json.NewContext()

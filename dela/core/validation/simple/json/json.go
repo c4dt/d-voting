@@ -3,9 +3,9 @@ package json
 import (
 	"encoding/json"
 
-	"go.dedis.ch/dela/core/txn"
-	"go.dedis.ch/dela/core/validation/simple"
-	"go.dedis.ch/dela/serde"
+	"github.com/c4dt/d-voting/dela/core/txn"
+	"github.com/c4dt/d-voting/dela/core/validation/simple"
+	"github.com/c4dt/d-voting/dela/serde"
 	"golang.org/x/xerrors"
 )
 

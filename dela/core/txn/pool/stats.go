@@ -3,7 +3,7 @@ package pool
 import (
 	"time"
 
-	"go.dedis.ch/dela/core/txn"
+	"github.com/c4dt/d-voting/dela/core/txn"
 )
 
 // transactionStats enhances a transaction with some statistics

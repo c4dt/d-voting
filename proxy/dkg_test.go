@@ -15,8 +15,8 @@ import (
 	dkgSrv "github.com/c4dt/d-voting/services/dkg"
 
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/cli/node"
-	"go.dedis.ch/dela/core/txn"
+	"github.com/c4dt/d-voting/dela/cli/node"
+	"github.com/c4dt/d-voting/dela/core/txn"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"

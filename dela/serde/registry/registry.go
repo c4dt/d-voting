@@ -8,7 +8,7 @@
 package registry
 
 import (
-	"go.dedis.ch/dela/serde"
+	"github.com/c4dt/d-voting/dela/serde"
 )
 
 // Registry is an interface to register and get format engines for a specific

@@ -3,9 +3,9 @@ package minows
 import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/cli"
-	"go.dedis.ch/dela/cli/node"
-	"go.dedis.ch/dela/testing/fake"
+	"github.com/c4dt/d-voting/dela/cli"
+	"github.com/c4dt/d-voting/dela/cli/node"
+	"github.com/c4dt/d-voting/dela/testing/fake"
 	"testing"
 	"time"
 )

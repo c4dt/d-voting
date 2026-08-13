@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"testing"
 
-	"go.dedis.ch/dela/testing/fake"
+	"github.com/c4dt/d-voting/dela/testing/fake"
 	"go.dedis.ch/kyber/v3/share"
 
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/dkg/pedersen/types"
-	"go.dedis.ch/dela/mino"
-	"go.dedis.ch/dela/serde"
+	"github.com/c4dt/d-voting/dela/dkg/pedersen/types"
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/serde"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/suites"
 )

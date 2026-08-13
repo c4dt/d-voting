@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"testing"
 
-	"go.dedis.ch/dela/core/store"
-	"go.dedis.ch/dela/serde"
-	"go.dedis.ch/dela/serde/json"
+	"github.com/c4dt/d-voting/dela/core/store"
+	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/dela/serde/json"
 
 	"github.com/c4dt/d-voting/services/shuffle/neff/types"
 	"go.dedis.ch/kyber/v3"
@@ -15,9 +15,9 @@ import (
 	etypes "github.com/c4dt/d-voting/contracts/evoting/types"
 	"github.com/c4dt/d-voting/internal/testing/fake"
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/core/access"
-	"go.dedis.ch/dela/core/txn/signed"
-	"go.dedis.ch/dela/mino"
+	"github.com/c4dt/d-voting/dela/core/access"
+	"github.com/c4dt/d-voting/dela/core/txn/signed"
+	"github.com/c4dt/d-voting/dela/mino"
 	"go.dedis.ch/kyber/v3/util/random"
 	"golang.org/x/xerrors"
 )

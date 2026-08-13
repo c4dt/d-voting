@@ -4,14 +4,14 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	contract "go.dedis.ch/dela/contracts/access"
-	"go.dedis.ch/dela/core/access"
-	"go.dedis.ch/dela/core/access/darc/types"
-	"go.dedis.ch/dela/core/store/prefixed"
-	"go.dedis.ch/dela/crypto/bls"
-	"go.dedis.ch/dela/serde"
-	"go.dedis.ch/dela/serde/json"
-	"go.dedis.ch/dela/testing/fake"
+	contract "github.com/c4dt/d-voting/dela/contracts/access"
+	"github.com/c4dt/d-voting/dela/core/access"
+	"github.com/c4dt/d-voting/dela/core/access/darc/types"
+	"github.com/c4dt/d-voting/dela/core/store/prefixed"
+	"github.com/c4dt/d-voting/dela/crypto/bls"
+	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/dela/serde/json"
+	"github.com/c4dt/d-voting/dela/testing/fake"
 )
 
 var testCtx = json.NewContext()

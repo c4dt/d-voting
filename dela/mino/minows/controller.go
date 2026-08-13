@@ -3,11 +3,11 @@ package minows
 import (
 	"fmt"
 	ma "github.com/multiformats/go-multiaddr"
-	"go.dedis.ch/dela/cli"
-	"go.dedis.ch/dela/cli/node"
-	"go.dedis.ch/dela/core/store/kv"
-	"go.dedis.ch/dela/mino"
-	"go.dedis.ch/dela/mino/minows/key"
+	"github.com/c4dt/d-voting/dela/cli"
+	"github.com/c4dt/d-voting/dela/cli/node"
+	"github.com/c4dt/d-voting/dela/core/store/kv"
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/mino/minows/key"
 	"golang.org/x/xerrors"
 )
 

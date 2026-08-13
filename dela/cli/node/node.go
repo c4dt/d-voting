@@ -11,7 +11,7 @@ package node
 import (
 	"io"
 
-	"go.dedis.ch/dela/cli"
+	"github.com/c4dt/d-voting/dela/cli"
 )
 
 // Builder is the builder that will be provided to the initializers, which can

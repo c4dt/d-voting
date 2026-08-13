@@ -11,14 +11,14 @@ import (
 	"sync"
 
 	"github.com/rs/zerolog"
-	"go.dedis.ch/dela"
-	"go.dedis.ch/dela/core/ordering/cosipbft/blockstore"
-	"go.dedis.ch/dela/core/ordering/cosipbft/blocksync/types"
-	"go.dedis.ch/dela/core/ordering/cosipbft/pbft"
-	otypes "go.dedis.ch/dela/core/ordering/cosipbft/types"
-	"go.dedis.ch/dela/crypto"
-	"go.dedis.ch/dela/internal/tracing"
-	"go.dedis.ch/dela/mino"
+	"github.com/c4dt/d-voting/dela"
+	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/blockstore"
+	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/blocksync/types"
+	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/pbft"
+	otypes "github.com/c4dt/d-voting/dela/core/ordering/cosipbft/types"
+	"github.com/c4dt/d-voting/dela/crypto"
+	"github.com/c4dt/d-voting/dela/internal/tracing"
+	"github.com/c4dt/d-voting/dela/mino"
 	"golang.org/x/xerrors"
 )
 

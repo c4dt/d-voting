@@ -13,10 +13,10 @@ import (
 	"net/url"
 	"strings"
 
-	"go.dedis.ch/dela/cli/node"
-	"go.dedis.ch/dela/mino"
-	"go.dedis.ch/dela/mino/minogrpc"
-	"go.dedis.ch/dela/mino/minogrpc/certs"
+	"github.com/c4dt/d-voting/dela/cli/node"
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/mino/minogrpc"
+	"github.com/c4dt/d-voting/dela/mino/minogrpc/certs"
 	"golang.org/x/xerrors"
 )
 

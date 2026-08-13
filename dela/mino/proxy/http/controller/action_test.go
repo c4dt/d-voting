@@ -9,10 +9,10 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela"
-	"go.dedis.ch/dela/cli/node"
-	"go.dedis.ch/dela/mino/proxy"
-	"go.dedis.ch/dela/mino/proxy/http"
+	"github.com/c4dt/d-voting/dela"
+	"github.com/c4dt/d-voting/dela/cli/node"
+	"github.com/c4dt/d-voting/dela/mino/proxy"
+	"github.com/c4dt/d-voting/dela/mino/proxy/http"
 )
 
 func TestStartAction_Happy(t *testing.T) {

@@ -14,9 +14,9 @@ import (
 	"syscall"
 
 	urfave "github.com/urfave/cli/v2"
-	"go.dedis.ch/dela"
-	"go.dedis.ch/dela/cli"
-	"go.dedis.ch/dela/cli/ucli"
+	"github.com/c4dt/d-voting/dela"
+	"github.com/c4dt/d-voting/dela/cli"
+	"github.com/c4dt/d-voting/dela/cli/ucli"
 	"golang.org/x/xerrors"
 )
 

@@ -4,8 +4,8 @@ package command
 import (
 	"os"
 
-	"go.dedis.ch/dela/cli"
-	"go.dedis.ch/dela/crypto/bls"
+	"github.com/c4dt/d-voting/dela/cli"
+	"github.com/c4dt/d-voting/dela/crypto/bls"
 )
 
 // Initializer implements the BLS initializer for the crypto CLI.

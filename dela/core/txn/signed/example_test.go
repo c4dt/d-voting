@@ -3,8 +3,8 @@ package signed
 import (
 	"fmt"
 
-	"go.dedis.ch/dela/core/access"
-	"go.dedis.ch/dela/crypto/bls"
+	"github.com/c4dt/d-voting/dela/core/access"
+	"github.com/c4dt/d-voting/dela/crypto/bls"
 )
 
 func ExampleTransactionManager_Make() {

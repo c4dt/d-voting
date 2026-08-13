@@ -1,9 +1,9 @@
 package controller
 
 import (
-	"go.dedis.ch/dela/cli"
-	"go.dedis.ch/dela/cli/node"
-	"go.dedis.ch/dela/mino/proxy/http"
+	"github.com/c4dt/d-voting/dela/cli"
+	"github.com/c4dt/d-voting/dela/cli/node"
+	"github.com/c4dt/d-voting/dela/mino/proxy/http"
 )
 
 const defaultAddr = "127.0.0.1:8080"

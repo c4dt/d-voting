@@ -4,8 +4,8 @@ import (
 	"strconv"
 
 	"github.com/c4dt/d-voting/contracts/evoting/types"
-	"go.dedis.ch/dela/core/store"
-	"go.dedis.ch/dela/serde"
+	"github.com/c4dt/d-voting/dela/core/store"
+	"github.com/c4dt/d-voting/dela/serde"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/suites"
 	"go.dedis.ch/kyber/v3/util/random"

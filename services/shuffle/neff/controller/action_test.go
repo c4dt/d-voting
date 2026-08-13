@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/cli/node"
+	"github.com/c4dt/d-voting/dela/cli/node"
 )
 
 func TestInitAction_Execute(t *testing.T) {

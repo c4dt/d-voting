@@ -10,8 +10,8 @@ import (
 	"crypto/tls"
 	"sync"
 
-	"go.dedis.ch/dela/crypto"
-	"go.dedis.ch/dela/mino"
+	"github.com/c4dt/d-voting/dela/crypto"
+	"github.com/c4dt/d-voting/dela/mino"
 	"golang.org/x/xerrors"
 )
 

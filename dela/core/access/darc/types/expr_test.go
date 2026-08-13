@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/core/access"
+	"github.com/c4dt/d-voting/dela/core/access"
 )
 
 func TestIdentitySet_New(t *testing.T) {

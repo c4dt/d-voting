@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/cosi"
-	"go.dedis.ch/dela/testing/fake"
+	"github.com/c4dt/d-voting/dela/cosi"
+	"github.com/c4dt/d-voting/dela/testing/fake"
 )
 
 func TestThresholdHandler_Stream(t *testing.T) {

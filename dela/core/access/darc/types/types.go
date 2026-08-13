@@ -7,8 +7,8 @@
 package types
 
 import (
-	"go.dedis.ch/dela/core/access"
-	"go.dedis.ch/dela/serde"
+	"github.com/c4dt/d-voting/dela/core/access"
+	"github.com/c4dt/d-voting/dela/serde"
 )
 
 // Permission is the interface of the underlying permissions used by the

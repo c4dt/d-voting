@@ -5,12 +5,12 @@ import (
 	"testing"
 	"testing/quick"
 
-	"go.dedis.ch/dela/testing/fake"
+	"github.com/c4dt/d-voting/dela/testing/fake"
 	"go.dedis.ch/kyber/v3/share"
 
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/mino"
-	"go.dedis.ch/dela/serde"
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/serde"
 	"go.dedis.ch/kyber/v3"
 )
 

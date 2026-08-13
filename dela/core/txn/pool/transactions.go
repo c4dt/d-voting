@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"sort"
 
-	"go.dedis.ch/dela/core/txn"
+	"github.com/c4dt/d-voting/dela/core/txn"
 )
 
 // Transactions is a sortable list of transactions.

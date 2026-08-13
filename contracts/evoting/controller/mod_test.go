@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/dela/cli/node"
+	"github.com/c4dt/d-voting/dela/cli/node"
 )
 
 func TestController_OnStart(t *testing.T) {
