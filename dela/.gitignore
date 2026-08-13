@@ -1,0 +1,7 @@
+.DS_Store
+.idea
+dkg/logs
+dkg/pedersen/dkgcli/dkgcli
+mino/minogrpc/controller/cert.key
+
+contracts/access/controller/access.json
