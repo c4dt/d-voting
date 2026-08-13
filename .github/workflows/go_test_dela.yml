@@ -31,13 +31,13 @@ jobs:
         env:
           CRY_LVL: "warn"
         if: ${{ env.coverage == 'false' }}
-        run: make -C dela test
+        run: make test-dela
 
       - name: Test DELA with coverage
         env:
           CRY_LVL: "warn"
         if: ${{ env.coverage == 'true' }}
-        run: make -C dela coverage
+        run: make coverage-dela
 
       - name: SonarCloud scan
         if: ${{ env.coverage == 'true' }}
