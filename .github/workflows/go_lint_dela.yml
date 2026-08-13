@@ -22,4 +22,4 @@ jobs:
           go-version: "1.25"
 
       - name: Lint DELA
-        run: make -C dela lint
+        run: make lint-dela

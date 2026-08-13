@@ -50,4 +50,3 @@ ij_go_wrap_func_params_newline_before_rparen = true
 ij_go_wrap_func_result = on_every_item
 ij_go_wrap_func_result_newline_after_lparen = true
 ij_go_wrap_func_result_newline_before_rparen = true
-
