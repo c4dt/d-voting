@@ -8,10 +8,10 @@ import (
 	"time"
 
 	dvoting "github.com/c4dt/d-voting"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/c4dt/d-voting/dela"
 	"github.com/c4dt/d-voting/dela/cli/node"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"golang.org/x/xerrors"
 )
 

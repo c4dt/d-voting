@@ -6,8 +6,6 @@ import (
 	"time"
 
 	etypes "github.com/c4dt/d-voting/contracts/evoting/types"
-	"github.com/c4dt/d-voting/services/shuffle"
-	"github.com/c4dt/d-voting/services/shuffle/neff/types"
 	"github.com/c4dt/d-voting/dela"
 	"github.com/c4dt/d-voting/dela/core/ordering"
 	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/blockstore"
@@ -16,6 +14,8 @@ import (
 	"github.com/c4dt/d-voting/dela/crypto"
 	"github.com/c4dt/d-voting/dela/mino"
 	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/services/shuffle"
+	"github.com/c4dt/d-voting/services/shuffle/neff/types"
 	"golang.org/x/net/context"
 	"golang.org/x/xerrors"
 

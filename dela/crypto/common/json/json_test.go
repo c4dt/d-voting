@@ -3,10 +3,10 @@ package json
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/crypto/common"
 	"github.com/c4dt/d-voting/dela/serde"
 	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAlgoFormat_Encode(t *testing.T) {

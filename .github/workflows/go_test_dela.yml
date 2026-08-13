@@ -1,0 +1,71 @@
+name: Go test DELA
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  test-dela:
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.platform }}
+    env:
+      LLVL: trace
+      coverage: ${{ matrix.platform == 'ubuntu-latest' && secrets.SONAR_TOKEN != '' }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Go 1.25
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+
+      - name: Test DELA without coverage
+        env:
+          CRY_LVL: "warn"
+        if: ${{ env.coverage == 'false' }}
+        run: make -C dela test
+
+      - name: Test DELA with coverage
+        env:
+          CRY_LVL: "warn"
+        if: ${{ env.coverage == 'true' }}
+        run: make -C dela coverage
+
+      - name: SonarCloud scan
+        if: ${{ env.coverage == 'true' }}
+        uses: sonarsource/sonarcloud-github-action@master
+        with:
+          args: >
+            -Dsonar.organization=dedis
+            -Dsonar.projectKey=dedis_dela
+            -Dsonar.go.tests.reportPaths=dela/report.json
+            -Dsonar.go.coverage.reportPaths=dela/profile.cov
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Send coverage
+        if: ${{ env.coverage == 'true' }}
+        uses: shogo82148/actions-goveralls@v1
+        with:
+          path-to-profile: dela/profile.cov
+          parallel: true
+
+  finish:
+    needs: test-dela
+    runs-on: ubuntu-latest
+    env:
+      coverage: ${{ secrets.SONAR_TOKEN != '' }}
+    steps:
+      - uses: shogo82148/actions-goveralls@v1
+        if: ${{ env.coverage == 'true' }}
+        with:
+          parallel-finished: true

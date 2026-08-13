@@ -3,12 +3,12 @@ package json
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/authority"
 	"github.com/c4dt/d-voting/dela/crypto"
 	"github.com/c4dt/d-voting/dela/mino"
 	"github.com/c4dt/d-voting/dela/serde"
 	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/stretchr/testify/require"
 )
 
 func TestChangeSetFormat_Encode(t *testing.T) {

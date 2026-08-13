@@ -10,13 +10,13 @@ import (
 	"github.com/c4dt/d-voting/dela/core/validation/simple"
 	"github.com/c4dt/d-voting/dela/crypto/bls"
 
-	"github.com/c4dt/d-voting/internal/testing/fake"
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/cli/node"
 	"github.com/c4dt/d-voting/dela/core/access/darc"
 	"github.com/c4dt/d-voting/dela/core/execution/native"
 	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft"
 	"github.com/c4dt/d-voting/dela/cosi/threshold"
+	"github.com/c4dt/d-voting/internal/testing/fake"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMinimal_OnStart(t *testing.T) {

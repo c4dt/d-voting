@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/core/access"
+	"github.com/stretchr/testify/require"
 )
 
 func TestIdentitySet_New(t *testing.T) {

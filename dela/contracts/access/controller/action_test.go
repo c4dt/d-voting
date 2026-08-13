@@ -5,12 +5,12 @@ import (
 	"io"
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/cli"
 	"github.com/c4dt/d-voting/dela/cli/node"
 	"github.com/c4dt/d-voting/dela/core/execution/native"
 	"github.com/c4dt/d-voting/dela/crypto/bls"
 	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAddAction_Execute(t *testing.T) {

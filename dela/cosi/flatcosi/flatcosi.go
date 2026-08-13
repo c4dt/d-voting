@@ -8,12 +8,12 @@ package flatcosi
 import (
 	"context"
 
-	"github.com/rs/zerolog"
 	"github.com/c4dt/d-voting/dela"
 	"github.com/c4dt/d-voting/dela/cosi"
 	"github.com/c4dt/d-voting/dela/crypto"
 	"github.com/c4dt/d-voting/dela/mino"
 	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
 )
 

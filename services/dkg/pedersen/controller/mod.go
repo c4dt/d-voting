@@ -11,7 +11,6 @@ import (
 	"github.com/c4dt/d-voting/dela/crypto/bls"
 	"github.com/c4dt/d-voting/dela/crypto/loader"
 
-	"github.com/c4dt/d-voting/services/dkg/pedersen"
 	"github.com/c4dt/d-voting/dela/cli"
 	"github.com/c4dt/d-voting/dela/cli/node"
 	"github.com/c4dt/d-voting/dela/core/access/darc"
@@ -21,6 +20,7 @@ import (
 	"github.com/c4dt/d-voting/dela/core/store/kv"
 	"github.com/c4dt/d-voting/dela/cosi/threshold"
 	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/services/dkg/pedersen"
 	"golang.org/x/xerrors"
 
 	etypes "github.com/c4dt/d-voting/contracts/evoting/types"

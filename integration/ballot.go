@@ -9,10 +9,10 @@ import (
 
 	"github.com/c4dt/d-voting/contracts/evoting"
 	"github.com/c4dt/d-voting/contracts/evoting/types"
-	"github.com/c4dt/d-voting/services/dkg"
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/core/execution/native"
 	"github.com/c4dt/d-voting/dela/core/txn"
+	"github.com/c4dt/d-voting/services/dkg"
+	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 	"golang.org/x/xerrors"
 )

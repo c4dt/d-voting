@@ -6,14 +6,14 @@ import (
 	"time"
 
 	evoting "github.com/c4dt/d-voting/contracts/evoting/controller"
-	prom "github.com/c4dt/d-voting/metrics/controller"
-	dkg "github.com/c4dt/d-voting/services/dkg/pedersen/controller"
-	neff "github.com/c4dt/d-voting/services/shuffle/neff/controller"
 	"github.com/c4dt/d-voting/dela"
 	"github.com/c4dt/d-voting/dela/cli"
 	"github.com/c4dt/d-voting/dela/cli/node"
 	"github.com/c4dt/d-voting/dela/mino/proxy"
 	"github.com/c4dt/d-voting/dela/mino/proxy/http"
+	prom "github.com/c4dt/d-voting/metrics/controller"
+	dkg "github.com/c4dt/d-voting/services/dkg/pedersen/controller"
+	neff "github.com/c4dt/d-voting/services/shuffle/neff/controller"
 	"golang.org/x/xerrors"
 )
 

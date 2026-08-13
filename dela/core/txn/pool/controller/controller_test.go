@@ -3,10 +3,10 @@ package controller
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/cli"
 	"github.com/c4dt/d-voting/dela/cli/node"
 	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMiniController_Build(t *testing.T) {

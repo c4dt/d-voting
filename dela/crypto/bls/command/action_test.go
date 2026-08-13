@@ -6,11 +6,11 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/cli/node"
 	"github.com/c4dt/d-voting/dela/crypto"
 	"github.com/c4dt/d-voting/dela/crypto/bls"
 	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNewSignerAction(t *testing.T) {

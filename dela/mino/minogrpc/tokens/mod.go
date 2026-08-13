@@ -3,7 +3,6 @@
 // The package also provides an in-memory implementation.
 //
 // Documentation Last Review: 07.10.2020
-//
 package tokens
 
 import (

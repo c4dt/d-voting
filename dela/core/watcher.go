@@ -1,7 +1,6 @@
 // Package core implements commonly used tools.
 //
 // Documentation Last Review: 08.10.2020
-//
 package core
 
 import "sync"

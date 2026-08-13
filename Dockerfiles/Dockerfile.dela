@@ -8,7 +8,8 @@ COPY . .
 ENV GOCACHE=/root/.cache/go-build
 WORKDIR /go/d-voting/cli/dvoting
 RUN --mount=type=cache,target="/root/.cache/go-build" go install
-# make sure we're using the same head as d-voting
+# DELA is part of the D-Voting module and is built from this checkout.
+WORKDIR /go/d-voting
 RUN --mount=type=cache,target="/root/.cache/go-build" go install ./dela/cli/crypto
 
 FROM golang:1.25.0-bookworm AS build

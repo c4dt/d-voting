@@ -6,15 +6,15 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/c4dt/d-voting/services/dkg"
 	"github.com/c4dt/d-voting/dela/core/ordering"
+	"github.com/c4dt/d-voting/services/dkg"
 
-	"github.com/c4dt/d-voting/internal/testing/fake"
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/cli"
 	"github.com/c4dt/d-voting/dela/cli/node"
 	"github.com/c4dt/d-voting/dela/core/store/kv"
 	"github.com/c4dt/d-voting/dela/core/txn/pool"
+	"github.com/c4dt/d-voting/internal/testing/fake"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMinimal_SetCommands(t *testing.T) {

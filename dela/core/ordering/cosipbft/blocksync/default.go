@@ -10,7 +10,6 @@ import (
 	"io"
 	"sync"
 
-	"github.com/rs/zerolog"
 	"github.com/c4dt/d-voting/dela"
 	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/blockstore"
 	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/blocksync/types"
@@ -19,6 +18,7 @@ import (
 	"github.com/c4dt/d-voting/dela/crypto"
 	"github.com/c4dt/d-voting/dela/internal/tracing"
 	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
 )
 

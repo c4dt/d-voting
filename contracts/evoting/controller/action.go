@@ -18,13 +18,6 @@ import (
 	"go.dedis.ch/kyber/v3/suites"
 
 	"github.com/c4dt/d-voting/contracts/evoting/types"
-	"github.com/c4dt/d-voting/internal/testing/fake"
-	eproxy "github.com/c4dt/d-voting/proxy"
-	"github.com/c4dt/d-voting/proxy/txnmanager"
-	ptypes "github.com/c4dt/d-voting/proxy/types"
-	"github.com/c4dt/d-voting/services/dkg"
-	"github.com/c4dt/d-voting/services/shuffle"
-	"github.com/gorilla/mux"
 	"github.com/c4dt/d-voting/dela"
 	"github.com/c4dt/d-voting/dela/cli/node"
 	"github.com/c4dt/d-voting/dela/core/ordering"
@@ -41,6 +34,13 @@ import (
 	"github.com/c4dt/d-voting/dela/mino/proxy"
 	"github.com/c4dt/d-voting/dela/serde"
 	sjson "github.com/c4dt/d-voting/dela/serde/json"
+	"github.com/c4dt/d-voting/internal/testing/fake"
+	eproxy "github.com/c4dt/d-voting/proxy"
+	"github.com/c4dt/d-voting/proxy/txnmanager"
+	ptypes "github.com/c4dt/d-voting/proxy/types"
+	"github.com/c4dt/d-voting/services/dkg"
+	"github.com/c4dt/d-voting/services/shuffle"
+	"github.com/gorilla/mux"
 	"golang.org/x/xerrors"
 )
 

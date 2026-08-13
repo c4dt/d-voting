@@ -37,18 +37,16 @@ import (
 	cosipbft "github.com/c4dt/d-voting/cli/cosipbftcontroller"
 	"github.com/c4dt/d-voting/cli/postinstall"
 	evoting "github.com/c4dt/d-voting/contracts/evoting/controller"
+	"github.com/c4dt/d-voting/dela/cli/node"
+	access "github.com/c4dt/d-voting/dela/contracts/access/controller"
+	db "github.com/c4dt/d-voting/dela/core/store/kv/controller"
+	pool "github.com/c4dt/d-voting/dela/core/txn/pool/controller"
+	signed "github.com/c4dt/d-voting/dela/core/txn/signed/controller"
+	mino "github.com/c4dt/d-voting/dela/mino/minogrpc/controller"
+	proxy "github.com/c4dt/d-voting/dela/mino/proxy/http/controller"
 	metrics "github.com/c4dt/d-voting/metrics/controller"
-	"go.dedis.ch/dela/cli/node"
-	access "go.dedis.ch/dela/contracts/access/controller"
-	db "go.dedis.ch/dela/core/store/kv/controller"
-	pool "go.dedis.ch/dela/core/txn/pool/controller"
-	signed "go.dedis.ch/dela/core/txn/signed/controller"
-	mino "go.dedis.ch/dela/mino/minogrpc/controller"
-	proxy "go.dedis.ch/dela/mino/proxy/http/controller"
 
 	_ "github.com/c4dt/d-voting/services/shuffle/neff/json"
-
-	gapi "go.dedis.ch/dela-apps/gapi/controller"
 )
 
 func main() {
@@ -83,7 +81,6 @@ func runWithCfg(args []string, cfg config) error {
 		proxy.NewController(),
 		shuffle.NewController(),
 		evoting.NewController(),
-		gapi.NewController(),
 		metrics.NewController(),
 		postinstall.NewController(),
 	)

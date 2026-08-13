@@ -21,7 +21,7 @@ asdf_shell() {
   asdf local "$1" "$2"
 }
 asdf_shell nodejs 16.20.2
-asdf_shell golang 1.21.0
+asdf_shell golang 1.25.0
 mkdir -p nodes
 export GOBIN=$(pwd)/bin
 PATH="$PATH":"$GOBIN"

@@ -22,11 +22,11 @@ import (
 	"github.com/c4dt/d-voting/services/dkg"
 
 	// Register the JSON types for Pedersen
-	_ "github.com/c4dt/d-voting/services/dkg/pedersen/json"
-	"github.com/c4dt/d-voting/services/dkg/pedersen/types"
 	"github.com/c4dt/d-voting/dela/mino"
 	"github.com/c4dt/d-voting/dela/serde"
 	jsonserde "github.com/c4dt/d-voting/dela/serde/json"
+	_ "github.com/c4dt/d-voting/services/dkg/pedersen/json"
+	"github.com/c4dt/d-voting/services/dkg/pedersen/types"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/suites"
 	"go.dedis.ch/kyber/v3/util/random"

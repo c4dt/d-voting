@@ -17,8 +17,6 @@ import (
 	"context"
 	"sync"
 
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/rs/zerolog"
 	"github.com/c4dt/d-voting/dela"
 	"github.com/c4dt/d-voting/dela/core"
 	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/authority"
@@ -30,6 +28,8 @@ import (
 	"github.com/c4dt/d-voting/dela/core/validation"
 	"github.com/c4dt/d-voting/dela/crypto"
 	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
 )
 

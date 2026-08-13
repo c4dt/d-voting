@@ -1,19 +1,19 @@
 package minows
 
 import (
-	"github.com/rs/zerolog"
 	"github.com/c4dt/d-voting/dela"
 	"github.com/c4dt/d-voting/dela/serde/json"
+	"github.com/rs/zerolog"
 	"regexp"
 	"strings"
 
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/serde"
 	"github.com/libp2p/go-libp2p"
 	"github.com/libp2p/go-libp2p/core/crypto"
 	"github.com/libp2p/go-libp2p/core/host"
 	"github.com/libp2p/go-libp2p/core/protocol"
 	ma "github.com/multiformats/go-multiaddr"
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/dela/serde"
 	"golang.org/x/xerrors"
 )
 

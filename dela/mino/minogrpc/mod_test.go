@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/internal/tracing"
 	"github.com/c4dt/d-voting/dela/mino"
 	"github.com/c4dt/d-voting/dela/mino/minogrpc/certs"
@@ -14,6 +13,7 @@ import (
 	"github.com/c4dt/d-voting/dela/mino/minogrpc/tokens"
 	"github.com/c4dt/d-voting/dela/mino/router/tree"
 	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 )
 

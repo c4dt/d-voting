@@ -3,7 +3,6 @@ package threshold
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/cosi"
 	"github.com/c4dt/d-voting/dela/crypto"
 	"github.com/c4dt/d-voting/dela/crypto/bls"
@@ -11,6 +10,7 @@ import (
 	"github.com/c4dt/d-voting/dela/mino/minoch"
 	"github.com/c4dt/d-voting/dela/serde"
 	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/stretchr/testify/require"
 )
 
 func TestThreshold_Scenario_Basic(t *testing.T) {

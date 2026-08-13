@@ -5,8 +5,8 @@ package ucli
 import (
 	"fmt"
 
-	urfave "github.com/urfave/cli/v2"
 	"github.com/c4dt/d-voting/dela/cli"
+	urfave "github.com/urfave/cli/v2"
 )
 
 // Builder implements a cli builder based on urfave/cli

@@ -10,7 +10,6 @@ import (
 
 	"github.com/c4dt/d-voting/contracts/evoting"
 	etypes "github.com/c4dt/d-voting/contracts/evoting/types"
-	"github.com/c4dt/d-voting/services/shuffle/neff/types"
 	"github.com/c4dt/d-voting/dela"
 	"github.com/c4dt/d-voting/dela/core/execution/native"
 	"github.com/c4dt/d-voting/dela/core/ordering"
@@ -19,6 +18,7 @@ import (
 	"github.com/c4dt/d-voting/dela/crypto"
 	"github.com/c4dt/d-voting/dela/mino"
 	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/services/shuffle/neff/types"
 	"go.dedis.ch/kyber/v3/proof"
 	shuffleKyber "go.dedis.ch/kyber/v3/shuffle"
 	"go.dedis.ch/kyber/v3/suites"

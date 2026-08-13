@@ -8,11 +8,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/serde"
 	"github.com/libp2p/go-libp2p/core/network"
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/rs/zerolog"
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/dela/serde"
 	"golang.org/x/xerrors"
 )
 

@@ -4,11 +4,11 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/types"
 	"github.com/c4dt/d-voting/dela/core/store"
 	"github.com/c4dt/d-voting/dela/core/validation/simple"
 	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/stretchr/testify/require"
 )
 
 func TestInMemory_Len(t *testing.T) {

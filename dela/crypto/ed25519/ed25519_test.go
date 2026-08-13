@@ -4,8 +4,8 @@ import (
 	"testing"
 	"testing/quick"
 
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"go.dedis.ch/kyber/v3/util/key"

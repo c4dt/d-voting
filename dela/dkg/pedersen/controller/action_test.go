@@ -7,13 +7,13 @@ import (
 	"io"
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/cli/node"
 	"github.com/c4dt/d-voting/dela/crypto"
 	"github.com/c4dt/d-voting/dela/dkg"
 	"github.com/c4dt/d-voting/dela/dkg/pedersen/types"
 	"github.com/c4dt/d-voting/dela/mino"
 	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 )
 

@@ -3,8 +3,8 @@ package controller
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/cli/node"
+	"github.com/stretchr/testify/require"
 )
 
 func TestController_OnStart(t *testing.T) {

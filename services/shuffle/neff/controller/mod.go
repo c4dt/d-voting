@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 
 	etypes "github.com/c4dt/d-voting/contracts/evoting/types"
-	"github.com/c4dt/d-voting/services/shuffle/neff"
 	"github.com/c4dt/d-voting/dela"
 	"github.com/c4dt/d-voting/dela/cli"
 	"github.com/c4dt/d-voting/dela/cli/node"
@@ -17,6 +16,7 @@ import (
 	"github.com/c4dt/d-voting/dela/crypto/bls"
 	"github.com/c4dt/d-voting/dela/crypto/loader"
 	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/services/shuffle/neff"
 	"golang.org/x/xerrors"
 )
 

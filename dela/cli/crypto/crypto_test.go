@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/cli"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMain_Happy(t *testing.T) {

@@ -3,12 +3,12 @@ package flatcosi
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/cosi"
 	"github.com/c4dt/d-voting/dela/crypto/bls"
 	"github.com/c4dt/d-voting/dela/mino"
 	"github.com/c4dt/d-voting/dela/serde"
 	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/stretchr/testify/require"
 )
 
 func TestHandler_Process(t *testing.T) {

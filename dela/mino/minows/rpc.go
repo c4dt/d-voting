@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
+	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/dela/serde"
 	"github.com/libp2p/go-libp2p"
 	"github.com/libp2p/go-libp2p/core/host"
 	"github.com/libp2p/go-libp2p/core/network"
@@ -13,8 +15,6 @@ import (
 	ma "github.com/multiformats/go-multiaddr"
 	"github.com/rs/xid"
 	"github.com/rs/zerolog"
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/dela/serde"
 	"golang.org/x/xerrors"
 	"sync"
 )

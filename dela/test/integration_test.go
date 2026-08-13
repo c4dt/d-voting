@@ -12,7 +12,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/require"
 	accessContract "github.com/c4dt/d-voting/dela/contracts/access"
 	"github.com/c4dt/d-voting/dela/contracts/value"
 	"github.com/c4dt/d-voting/dela/core/store/prefixed"
@@ -20,6 +19,7 @@ import (
 	"github.com/c4dt/d-voting/dela/core/txn/signed"
 	"github.com/c4dt/d-voting/dela/crypto/bls"
 	"github.com/c4dt/d-voting/dela/crypto/loader"
+	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
 )
 

@@ -16,11 +16,6 @@ import (
 
 	"github.com/c4dt/d-voting/contracts/evoting"
 	etypes "github.com/c4dt/d-voting/contracts/evoting/types"
-	"github.com/c4dt/d-voting/services/dkg"
-	"github.com/c4dt/d-voting/services/dkg/pedersen"
-	"github.com/c4dt/d-voting/services/shuffle"
-	"github.com/c4dt/d-voting/services/shuffle/neff"
-	"github.com/stretchr/testify/require"
 	accessContract "github.com/c4dt/d-voting/dela/contracts/access"
 	"github.com/c4dt/d-voting/dela/contracts/value"
 	"github.com/c4dt/d-voting/dela/core/access"
@@ -51,6 +46,11 @@ import (
 	"github.com/c4dt/d-voting/dela/mino/minogrpc/session"
 	"github.com/c4dt/d-voting/dela/mino/router/tree"
 	"github.com/c4dt/d-voting/dela/serde/json"
+	"github.com/c4dt/d-voting/services/dkg"
+	"github.com/c4dt/d-voting/services/dkg/pedersen"
+	"github.com/c4dt/d-voting/services/shuffle"
+	"github.com/c4dt/d-voting/services/shuffle/neff"
+	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
 )
 

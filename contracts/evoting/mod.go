@@ -3,8 +3,6 @@ package evoting
 import (
 	dvoting "github.com/c4dt/d-voting"
 	"github.com/c4dt/d-voting/contracts/evoting/types"
-	"github.com/c4dt/d-voting/services/dkg"
-	"github.com/prometheus/client_golang/prometheus"
 	"github.com/c4dt/d-voting/dela/core/access"
 	"github.com/c4dt/d-voting/dela/core/execution"
 	"github.com/c4dt/d-voting/dela/core/execution/native"
@@ -12,6 +10,8 @@ import (
 	"github.com/c4dt/d-voting/dela/core/store"
 	"github.com/c4dt/d-voting/dela/serde"
 	"github.com/c4dt/d-voting/dela/serde/json"
+	"github.com/c4dt/d-voting/services/dkg"
+	"github.com/prometheus/client_golang/prometheus"
 
 	"go.dedis.ch/kyber/v3/proof"
 	"go.dedis.ch/kyber/v3/suites"

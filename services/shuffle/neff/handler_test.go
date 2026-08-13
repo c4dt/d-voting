@@ -13,11 +13,11 @@ import (
 	"go.dedis.ch/kyber/v3"
 
 	etypes "github.com/c4dt/d-voting/contracts/evoting/types"
-	"github.com/c4dt/d-voting/internal/testing/fake"
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/core/access"
 	"github.com/c4dt/d-voting/dela/core/txn/signed"
 	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/internal/testing/fake"
+	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3/util/random"
 	"golang.org/x/xerrors"
 )

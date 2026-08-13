@@ -21,8 +21,6 @@ import (
 	"sync"
 	"time"
 
-	otgrpc "github.com/opentracing-contrib/go-grpc"
-	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/c4dt/d-voting/dela"
 	"github.com/c4dt/d-voting/dela/internal/tracing"
 	"github.com/c4dt/d-voting/dela/internal/traffic"
@@ -32,6 +30,8 @@ import (
 	"github.com/c4dt/d-voting/dela/mino/minogrpc/session"
 	"github.com/c4dt/d-voting/dela/mino/router"
 	"github.com/c4dt/d-voting/dela/serde"
+	otgrpc "github.com/opentracing-contrib/go-grpc"
+	opentracing "github.com/opentracing/opentracing-go"
 	"golang.org/x/xerrors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"

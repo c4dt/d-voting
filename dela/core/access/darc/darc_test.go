@@ -3,7 +3,6 @@ package darc
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	contract "github.com/c4dt/d-voting/dela/contracts/access"
 	"github.com/c4dt/d-voting/dela/core/access"
 	"github.com/c4dt/d-voting/dela/core/access/darc/types"
@@ -12,6 +11,7 @@ import (
 	"github.com/c4dt/d-voting/dela/serde"
 	"github.com/c4dt/d-voting/dela/serde/json"
 	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/stretchr/testify/require"
 )
 
 var testCtx = json.NewContext()

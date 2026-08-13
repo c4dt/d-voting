@@ -3,10 +3,10 @@ package json
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/core/access/darc/types"
 	"github.com/c4dt/d-voting/dela/serde"
 	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/stretchr/testify/require"
 )
 
 const testValue = `{"Expressions":{"test":{"Identities":[{}],"Matches":[[0]]}}}`

@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/cli"
 	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/stretchr/testify/require"
 	"golang.org/x/net/nettest"
 	"golang.org/x/xerrors"
 )
@@ -81,7 +81,7 @@ func TestSocketDaemon_Listen(t *testing.T) {
 	actions := &actionMap{}
 	actions.Set(fakeAction{
 		intFlags: map[string]int{"1": 1},
-	})                                            // id 0
+	}) // id 0
 	actions.Set(fakeAction{err: fake.GetError()}) // id 1
 
 	daemon := &socketDaemon{

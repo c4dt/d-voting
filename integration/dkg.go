@@ -1,8 +1,8 @@
 package integration
 
 import (
-	"github.com/c4dt/d-voting/services/dkg"
 	"github.com/c4dt/d-voting/dela/core/txn"
+	"github.com/c4dt/d-voting/services/dkg"
 	"golang.org/x/xerrors"
 )
 

@@ -5,7 +5,6 @@
 // the hash as integrity validation.
 //
 // Documentation Last Review: 07.10.2020
-//
 package certs
 
 import (

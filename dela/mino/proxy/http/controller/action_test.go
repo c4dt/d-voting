@@ -7,12 +7,12 @@ import (
 	nhttp "net/http"
 	"testing"
 
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela"
 	"github.com/c4dt/d-voting/dela/cli/node"
 	"github.com/c4dt/d-voting/dela/mino/proxy"
 	"github.com/c4dt/d-voting/dela/mino/proxy/http"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/stretchr/testify/require"
 )
 
 func TestStartAction_Happy(t *testing.T) {

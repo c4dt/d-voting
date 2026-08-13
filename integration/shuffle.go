@@ -1,8 +1,8 @@
 package integration
 
 import (
-	"github.com/c4dt/d-voting/services/shuffle"
 	"github.com/c4dt/d-voting/dela/core/txn/signed"
+	"github.com/c4dt/d-voting/services/shuffle"
 	"golang.org/x/xerrors"
 )
 

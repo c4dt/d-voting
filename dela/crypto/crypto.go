@@ -13,7 +13,6 @@
 // provide the primitives to verify using the aggregate instead of a single one.
 //
 // Documentation Last Review: 05.10.2020
-//
 package crypto
 
 import (

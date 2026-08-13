@@ -10,7 +10,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/rs/zerolog"
 	"github.com/c4dt/d-voting/dela/core"
 	"github.com/c4dt/d-voting/dela/core/access"
 	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/authority"
@@ -27,6 +26,7 @@ import (
 	"github.com/c4dt/d-voting/dela/mino"
 	"github.com/c4dt/d-voting/dela/serde"
 	"github.com/c4dt/d-voting/dela/serde/json"
+	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
 )
 

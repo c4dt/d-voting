@@ -14,8 +14,6 @@ import (
 	"time"
 
 	"github.com/c4dt/d-voting/contracts/evoting"
-	"github.com/gorilla/mux"
-	"github.com/rs/zerolog"
 	"github.com/c4dt/d-voting/dela"
 	"github.com/c4dt/d-voting/dela/core/execution/native"
 	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/blockstore"
@@ -23,6 +21,8 @@ import (
 	"github.com/c4dt/d-voting/dela/core/txn/pool"
 	"github.com/c4dt/d-voting/dela/crypto"
 	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/gorilla/mux"
+	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
 	"golang.org/x/xerrors"
 )

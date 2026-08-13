@@ -3,7 +3,6 @@ package viewchange
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/core/access"
 	"github.com/c4dt/d-voting/dela/core/execution"
 	"github.com/c4dt/d-voting/dela/core/execution/native"
@@ -13,6 +12,7 @@ import (
 	"github.com/c4dt/d-voting/dela/core/txn/signed"
 	"github.com/c4dt/d-voting/dela/serde"
 	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/stretchr/testify/require"
 )
 
 func TestRegisterContract(t *testing.T) {

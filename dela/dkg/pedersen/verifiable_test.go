@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/stretchr/testify/require"
 
 	"github.com/c4dt/d-voting/dela/dkg"
 	"github.com/c4dt/d-voting/dela/dkg/pedersen/types"

@@ -3,8 +3,8 @@ package binprefix
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/stretchr/testify/require"
 )
 
 func TestPath_GetKey(t *testing.T) {

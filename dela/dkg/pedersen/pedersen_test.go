@@ -10,8 +10,6 @@ import (
 	"go.dedis.ch/kyber/v3/util/key"
 	"golang.org/x/xerrors"
 
-	"github.com/rs/zerolog"
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela"
 	"github.com/c4dt/d-voting/dela/crypto"
 	"github.com/c4dt/d-voting/dela/crypto/ed25519"
@@ -20,6 +18,8 @@ import (
 	"github.com/c4dt/d-voting/dela/mino"
 	"github.com/c4dt/d-voting/dela/mino/minogrpc"
 	"github.com/c4dt/d-voting/dela/mino/router/tree"
+	"github.com/rs/zerolog"
+	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 )
 

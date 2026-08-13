@@ -5,12 +5,12 @@ package gossip
 import (
 	"context"
 
-	"github.com/rs/zerolog"
 	"github.com/c4dt/d-voting/dela"
 	"github.com/c4dt/d-voting/dela/core/txn"
 	"github.com/c4dt/d-voting/dela/core/txn/pool"
 	"github.com/c4dt/d-voting/dela/mino"
 	"github.com/c4dt/d-voting/dela/mino/gossip"
+	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
 )
 

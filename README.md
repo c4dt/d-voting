@@ -378,14 +378,12 @@ results.
 
 # ⚙️ Setup
 
-1: Install [Go](https://go.dev/dl/) (at least 1.19).
+1: Install [Go](https://go.dev/dl/) 1.25.
 
-2: Install the `crypto` utility from Dela:
+2: Install the `crypto` utility from the DELA source included in this repository:
 
 ```sh
-git clone https://github.com/c4dt/dela.git
-cd dela/cli/crypto
-go install
+go install ./dela/cli/crypto
 ```
 
 Go will install the binaries in `$GOPATH/bin`, so be sure this it is correctly

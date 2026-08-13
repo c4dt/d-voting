@@ -3,13 +3,13 @@ package controller
 import (
 	"testing"
 
-	"github.com/c4dt/d-voting/internal/testing/fake"
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/cli"
 	"github.com/c4dt/d-voting/dela/cli/node"
 	"github.com/c4dt/d-voting/dela/core/ordering"
 	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/blockstore"
 	"github.com/c4dt/d-voting/dela/core/txn/pool"
+	"github.com/c4dt/d-voting/internal/testing/fake"
+	"github.com/stretchr/testify/require"
 )
 
 func TestController_SetCommands(t *testing.T) {

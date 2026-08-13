@@ -2,12 +2,12 @@ package minows
 
 import (
 	"fmt"
-	ma "github.com/multiformats/go-multiaddr"
 	"github.com/c4dt/d-voting/dela/cli"
 	"github.com/c4dt/d-voting/dela/cli/node"
 	"github.com/c4dt/d-voting/dela/core/store/kv"
 	"github.com/c4dt/d-voting/dela/mino"
 	"github.com/c4dt/d-voting/dela/mino/minows/key"
+	ma "github.com/multiformats/go-multiaddr"
 	"golang.org/x/xerrors"
 )
 

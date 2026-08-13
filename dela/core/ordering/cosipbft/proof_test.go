@@ -3,13 +3,13 @@ package cosipbft
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/authority"
 	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/types"
 	"github.com/c4dt/d-voting/dela/core/store/hashtree"
 	"github.com/c4dt/d-voting/dela/core/validation/simple"
 	"github.com/c4dt/d-voting/dela/crypto"
 	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/stretchr/testify/require"
 )
 
 func TestProof_GetKey(t *testing.T) {

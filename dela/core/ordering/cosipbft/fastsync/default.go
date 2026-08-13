@@ -6,7 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/rs/zerolog"
 	"github.com/c4dt/d-voting/dela"
 	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/blockstore"
 	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/blocksync"
@@ -17,6 +16,7 @@ import (
 	"github.com/c4dt/d-voting/dela/internal/tracing"
 	"github.com/c4dt/d-voting/dela/mino"
 	"github.com/c4dt/d-voting/dela/serde/json"
+	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
 )
 

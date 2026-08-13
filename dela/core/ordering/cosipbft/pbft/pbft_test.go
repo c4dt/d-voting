@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/core"
 	"github.com/c4dt/d-voting/dela/core/execution"
 	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/authority"
@@ -22,6 +21,7 @@ import (
 	"github.com/c4dt/d-voting/dela/crypto/bls"
 	"github.com/c4dt/d-voting/dela/mino"
 	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/stretchr/testify/require"
 )
 
 func TestState_String(t *testing.T) {

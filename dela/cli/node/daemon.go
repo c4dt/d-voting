@@ -17,9 +17,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/rs/zerolog"
 	"github.com/c4dt/d-voting/dela"
 	"github.com/c4dt/d-voting/dela/cli"
+	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
 )
 

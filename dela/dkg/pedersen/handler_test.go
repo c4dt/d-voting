@@ -7,12 +7,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/rs/zerolog"
 	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/rs/zerolog"
 
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/mino"
 	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/stretchr/testify/require"
 )
 
 func TestHandler_Stream_Deadline(t *testing.T) {

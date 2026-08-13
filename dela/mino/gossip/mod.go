@@ -2,7 +2,6 @@
 // participants.
 //
 // Documentation Last Review: 06.10.2020
-//
 package gossip
 
 import (

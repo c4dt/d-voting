@@ -12,14 +12,14 @@ import (
 	"github.com/c4dt/d-voting/dela/core/txn/signed"
 	"github.com/c4dt/d-voting/dela/core/validation"
 
-	"github.com/c4dt/d-voting/services/dkg"
-	"github.com/c4dt/d-voting/services/dkg/pedersen"
-	"github.com/gorilla/mux"
 	"github.com/c4dt/d-voting/dela"
 	"github.com/c4dt/d-voting/dela/cli/node"
 	"github.com/c4dt/d-voting/dela/core/store/kv"
 	"github.com/c4dt/d-voting/dela/mino"
 	"github.com/c4dt/d-voting/dela/mino/proxy"
+	"github.com/c4dt/d-voting/services/dkg"
+	"github.com/c4dt/d-voting/services/dkg/pedersen"
+	"github.com/gorilla/mux"
 	"go.dedis.ch/kyber/v3/suites"
 	"golang.org/x/xerrors"
 

@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/core/access"
 	"github.com/c4dt/d-voting/dela/core/execution"
 	"github.com/c4dt/d-voting/dela/core/execution/native"
@@ -13,6 +12,7 @@ import (
 	"github.com/c4dt/d-voting/dela/core/txn/signed"
 	"github.com/c4dt/d-voting/dela/crypto/bls"
 	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/stretchr/testify/require"
 )
 
 func TestExecute(t *testing.T) {

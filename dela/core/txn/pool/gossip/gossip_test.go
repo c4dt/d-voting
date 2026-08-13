@@ -7,8 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/rs/zerolog"
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/core/access"
 	"github.com/c4dt/d-voting/dela/core/txn"
 	"github.com/c4dt/d-voting/dela/core/txn/pool"
@@ -17,6 +15,8 @@ import (
 	"github.com/c4dt/d-voting/dela/mino/minoch"
 	"github.com/c4dt/d-voting/dela/serde"
 	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/rs/zerolog"
+	"github.com/stretchr/testify/require"
 )
 
 func TestPool_Basic(t *testing.T) {

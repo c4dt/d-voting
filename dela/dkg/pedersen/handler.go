@@ -8,9 +8,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/rs/zerolog"
 	"github.com/c4dt/d-voting/dela"
 	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
 	"golang.org/x/xerrors"
 )

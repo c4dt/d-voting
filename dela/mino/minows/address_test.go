@@ -1,9 +1,9 @@
 package minows
 
 import (
+	"github.com/c4dt/d-voting/dela/mino"
 	"github.com/libp2p/go-libp2p/core/peer"
 	ma "github.com/multiformats/go-multiaddr"
-	"github.com/c4dt/d-voting/dela/mino"
 	"testing"
 
 	"github.com/stretchr/testify/require"

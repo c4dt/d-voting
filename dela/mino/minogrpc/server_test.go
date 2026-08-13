@@ -12,8 +12,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/opentracing/opentracing-go"
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/internal/tracing"
 	"github.com/c4dt/d-voting/dela/mino"
 	"github.com/c4dt/d-voting/dela/mino/minogrpc/certs"
@@ -25,6 +23,8 @@ import (
 	"github.com/c4dt/d-voting/dela/serde"
 	"github.com/c4dt/d-voting/dela/serde/json"
 	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/opentracing/opentracing-go"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/metadata"
 )
 

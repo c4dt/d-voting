@@ -7,12 +7,12 @@ import (
 
 	"github.com/c4dt/d-voting/contracts/evoting"
 	"github.com/c4dt/d-voting/contracts/evoting/types"
-	"github.com/c4dt/d-voting/internal/testing/fake"
 	"github.com/c4dt/d-voting/dela/core/execution/native"
 	"github.com/c4dt/d-voting/dela/core/ordering"
 	"github.com/c4dt/d-voting/dela/core/txn"
 	"github.com/c4dt/d-voting/dela/serde"
 	jsonDela "github.com/c4dt/d-voting/dela/serde/json"
+	"github.com/c4dt/d-voting/internal/testing/fake"
 	"golang.org/x/xerrors"
 )
 

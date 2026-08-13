@@ -4,9 +4,9 @@ import (
 	"testing"
 
 	"github.com/c4dt/d-voting/contracts/evoting/types"
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/serde"
 	sjson "github.com/c4dt/d-voting/dela/serde/json"
+	"github.com/stretchr/testify/require"
 )
 
 var ctxAdminTest serde.Context

@@ -13,11 +13,10 @@ import (
 	"path/filepath"
 	"time"
 
-	ma "github.com/multiformats/go-multiaddr"
 	"github.com/c4dt/d-voting/dela/mino/minows"
 	"github.com/c4dt/d-voting/dela/mino/minows/key"
+	ma "github.com/multiformats/go-multiaddr"
 
-	"github.com/stretchr/testify/require"
 	accessContract "github.com/c4dt/d-voting/dela/contracts/access"
 	"github.com/c4dt/d-voting/dela/contracts/value"
 	"github.com/c4dt/d-voting/dela/core/access"
@@ -48,6 +47,7 @@ import (
 	"github.com/c4dt/d-voting/dela/mino/minogrpc/session"
 	"github.com/c4dt/d-voting/dela/mino/router/tree"
 	"github.com/c4dt/d-voting/dela/serde/json"
+	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
 )
 

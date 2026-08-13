@@ -10,12 +10,12 @@ package threshold
 import (
 	"sync/atomic"
 
-	"github.com/rs/zerolog"
 	"github.com/c4dt/d-voting/dela"
 	"github.com/c4dt/d-voting/dela/cosi"
 	"github.com/c4dt/d-voting/dela/cosi/threshold/types"
 	"github.com/c4dt/d-voting/dela/crypto"
 	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/rs/zerolog"
 )
 
 var (

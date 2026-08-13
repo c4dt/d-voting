@@ -8,9 +8,9 @@ import (
 	"github.com/c4dt/d-voting/dela/testing/fake"
 	"go.dedis.ch/kyber/v3/share"
 
-	"github.com/stretchr/testify/require"
 	"github.com/c4dt/d-voting/dela/mino"
 	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 )
 
