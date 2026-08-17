@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/c4dt/d-voting/dela/core/execution"
-	"github.com/c4dt/d-voting/dela/core/store"
-	"github.com/c4dt/d-voting/dela/core/txn/signed"
-	"github.com/c4dt/d-voting/dela/crypto/bls"
+	"github.com/c4dt/d-voting/internal/core/execution"
+	"github.com/c4dt/d-voting/internal/core/store"
+	"github.com/c4dt/d-voting/internal/core/txn/signed"
+	"github.com/c4dt/d-voting/internal/crypto/bls"
 )
 
 func ExampleService_Execute() {

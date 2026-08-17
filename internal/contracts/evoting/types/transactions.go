@@ -6,8 +6,8 @@ import (
 	"io"
 	"strconv"
 
-	"github.com/c4dt/d-voting/dela/serde"
-	"github.com/c4dt/d-voting/dela/serde/registry"
+	"github.com/c4dt/d-voting/internal/serde"
+	"github.com/c4dt/d-voting/internal/serde/registry"
 	"golang.org/x/xerrors"
 )
 

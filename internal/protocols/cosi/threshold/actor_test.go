@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/c4dt/d-voting/dela/cosi"
-	"github.com/c4dt/d-voting/dela/crypto"
-	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/c4dt/d-voting/internal/crypto"
+	"github.com/c4dt/d-voting/internal/protocols/cosi"
+	"github.com/c4dt/d-voting/internal/testing/fake"
 	"github.com/stretchr/testify/require"
 )
 

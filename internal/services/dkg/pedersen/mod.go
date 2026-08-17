@@ -6,27 +6,27 @@ import (
 	"sync"
 	"time"
 
-	"github.com/c4dt/d-voting/dela/core/store/kv"
-	"github.com/c4dt/d-voting/dela/core/txn"
-	"github.com/c4dt/d-voting/dela/core/txn/pool"
-	"github.com/c4dt/d-voting/dela/crypto"
+	"github.com/c4dt/d-voting/internal/core/store/kv"
+	"github.com/c4dt/d-voting/internal/core/txn"
+	"github.com/c4dt/d-voting/internal/core/txn/pool"
+	"github.com/c4dt/d-voting/internal/crypto"
 
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/core/ordering"
+	"github.com/c4dt/d-voting/internal/core/ordering"
+	"github.com/c4dt/d-voting/internal/dela"
 
-	"github.com/c4dt/d-voting/contracts/evoting"
-	etypes "github.com/c4dt/d-voting/contracts/evoting/types"
+	"github.com/c4dt/d-voting/internal/contracts/evoting"
+	etypes "github.com/c4dt/d-voting/internal/contracts/evoting/types"
 	"github.com/rs/zerolog"
 
-	"github.com/c4dt/d-voting/internal/tracing"
-	"github.com/c4dt/d-voting/services/dkg"
+	"github.com/c4dt/d-voting/internal/observability/tracing"
+	"github.com/c4dt/d-voting/internal/services/dkg"
 
 	// Register the JSON types for Pedersen
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/dela/serde"
-	jsonserde "github.com/c4dt/d-voting/dela/serde/json"
-	_ "github.com/c4dt/d-voting/services/dkg/pedersen/json"
-	"github.com/c4dt/d-voting/services/dkg/pedersen/types"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/serde"
+	jsonserde "github.com/c4dt/d-voting/internal/serde/json"
+	_ "github.com/c4dt/d-voting/internal/services/dkg/pedersen/json"
+	"github.com/c4dt/d-voting/internal/services/dkg/pedersen/types"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/suites"
 	"go.dedis.ch/kyber/v3/util/random"
@@ -34,7 +34,7 @@ import (
 	"golang.org/x/xerrors"
 
 	// Register the JSON format for the form
-	_ "github.com/c4dt/d-voting/contracts/evoting/json"
+	_ "github.com/c4dt/d-voting/internal/contracts/evoting/json"
 )
 
 // BucketName is the name of the bucket in the database.

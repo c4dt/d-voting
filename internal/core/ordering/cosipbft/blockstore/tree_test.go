@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/c4dt/d-voting/dela/core/store/hashtree"
+	"github.com/c4dt/d-voting/internal/core/store/hashtree"
 	"github.com/stretchr/testify/require"
 )
 

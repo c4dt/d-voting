@@ -9,7 +9,7 @@ package minoch
 import (
 	"sync"
 
-	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/internal/network/mino"
 	"golang.org/x/xerrors"
 )
 

@@ -13,9 +13,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/cli"
-	"github.com/c4dt/d-voting/dela/cli/ucli"
+	"github.com/c4dt/d-voting/internal/cli"
+	"github.com/c4dt/d-voting/internal/cli/ucli"
+	"github.com/c4dt/d-voting/internal/dela"
 	urfave "github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 )

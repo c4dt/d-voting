@@ -5,8 +5,8 @@
 package execution
 
 import (
-	"github.com/c4dt/d-voting/dela/core/store"
-	"github.com/c4dt/d-voting/dela/core/txn"
+	"github.com/c4dt/d-voting/internal/core/store"
+	"github.com/c4dt/d-voting/internal/core/txn"
 )
 
 // Step is a context of execution. It allows for example a smart contract to

@@ -3,9 +3,9 @@ package json
 import (
 	"testing"
 
-	"github.com/c4dt/d-voting/dela/crypto/common"
-	"github.com/c4dt/d-voting/dela/serde"
-	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/c4dt/d-voting/internal/crypto/common"
+	"github.com/c4dt/d-voting/internal/serde"
+	"github.com/c4dt/d-voting/internal/testing/fake"
 	"github.com/stretchr/testify/require"
 )
 

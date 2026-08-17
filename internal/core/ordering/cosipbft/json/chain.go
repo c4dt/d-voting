@@ -3,8 +3,8 @@ package json
 import (
 	"encoding/json"
 
-	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/types"
-	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/types"
+	"github.com/c4dt/d-voting/internal/serde"
 	"golang.org/x/xerrors"
 )
 

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/c4dt/d-voting/dela/cli"
+	"github.com/c4dt/d-voting/internal/cli"
 	"github.com/stretchr/testify/require"
 )
 

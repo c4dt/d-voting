@@ -3,7 +3,7 @@ package mino
 import (
 	"testing"
 
-	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/internal/serde"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
 )

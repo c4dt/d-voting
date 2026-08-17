@@ -3,9 +3,9 @@ package json
 import (
 	"testing"
 
-	"github.com/c4dt/d-voting/dela/cosi/threshold/types"
-	"github.com/c4dt/d-voting/dela/serde"
-	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/c4dt/d-voting/internal/protocols/cosi/threshold/types"
+	"github.com/c4dt/d-voting/internal/serde"
+	"github.com/c4dt/d-voting/internal/testing/fake"
 	"github.com/stretchr/testify/require"
 )
 

@@ -3,10 +3,10 @@ package minows
 import (
 	"strings"
 
-	"github.com/c4dt/d-voting/dela"
+	"github.com/c4dt/d-voting/internal/dela"
 
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/serde"
 	"github.com/libp2p/go-libp2p/core/peer"
 	ma "github.com/multiformats/go-multiaddr"
 	"golang.org/x/xerrors"

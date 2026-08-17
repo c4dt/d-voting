@@ -6,10 +6,10 @@ import (
 	"io"
 	"os"
 
-	"github.com/c4dt/d-voting/dela/crypto"
+	"github.com/c4dt/d-voting/internal/crypto"
 
-	"github.com/c4dt/d-voting/dela/cli"
-	"github.com/c4dt/d-voting/dela/crypto/bls"
+	"github.com/c4dt/d-voting/internal/cli"
+	"github.com/c4dt/d-voting/internal/crypto/bls"
 	"golang.org/x/xerrors"
 )
 

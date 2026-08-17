@@ -1,8 +1,8 @@
 package fake
 
 import (
-	"github.com/c4dt/d-voting/dela/core/store"
-	"github.com/c4dt/d-voting/dela/core/store/kv"
+	"github.com/c4dt/d-voting/internal/core/store"
+	"github.com/c4dt/d-voting/internal/core/store/kv"
 )
 
 // InMemorySnapshot is a fake implementation of a store snapshot.

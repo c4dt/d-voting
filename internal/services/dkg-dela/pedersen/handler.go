@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/internal/dela"
+	"github.com/c4dt/d-voting/internal/network/mino"
 	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
 	"golang.org/x/xerrors"

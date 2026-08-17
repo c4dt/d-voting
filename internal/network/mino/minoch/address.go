@@ -7,8 +7,8 @@
 package minoch
 
 import (
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/serde"
 )
 
 // Address is the representation of an identifier for minoch.

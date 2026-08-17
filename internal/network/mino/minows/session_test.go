@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/dela/serde"
-	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/serde"
+	"github.com/c4dt/d-voting/internal/testing/fake"
 	"github.com/libp2p/go-libp2p/core/network"
 	"github.com/libp2p/go-yamux/v4"
 	"github.com/stretchr/testify/require"

@@ -8,8 +8,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/mino/proxy"
+	"github.com/c4dt/d-voting/internal/dela"
+	"github.com/c4dt/d-voting/internal/network/mino/proxy"
 	"github.com/rs/zerolog"
 )
 

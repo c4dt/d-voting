@@ -11,8 +11,8 @@ package ordering
 import (
 	"context"
 
-	"github.com/c4dt/d-voting/dela/core/store"
-	"github.com/c4dt/d-voting/dela/core/validation"
+	"github.com/c4dt/d-voting/internal/core/store"
+	"github.com/c4dt/d-voting/internal/core/validation"
 )
 
 // Proof contains the value of a specific key.

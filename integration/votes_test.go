@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/c4dt/d-voting/contracts/evoting/types"
-	delaPkg "github.com/c4dt/d-voting/dela"
-	_ "github.com/c4dt/d-voting/services/dkg/pedersen/json"
-	_ "github.com/c4dt/d-voting/services/shuffle/neff/json"
+	"github.com/c4dt/d-voting/internal/contracts/evoting/types"
+	delaPkg "github.com/c4dt/d-voting/internal/dela"
+	_ "github.com/c4dt/d-voting/internal/services/dkg/pedersen/json"
+	_ "github.com/c4dt/d-voting/internal/services/shuffle/neff/json"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 )

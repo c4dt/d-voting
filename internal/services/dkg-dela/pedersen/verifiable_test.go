@@ -6,16 +6,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/c4dt/d-voting/internal/testing/fake"
 	"github.com/stretchr/testify/require"
 
-	"github.com/c4dt/d-voting/dela/dkg"
-	"github.com/c4dt/d-voting/dela/dkg/pedersen/types"
-	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/services/dkg-dela"
+	"github.com/c4dt/d-voting/internal/services/dkg-dela/pedersen/types"
 
-	"github.com/c4dt/d-voting/dela/mino/minoch"
-	"github.com/c4dt/d-voting/dela/mino/minogrpc"
-	"github.com/c4dt/d-voting/dela/mino/router/tree"
+	"github.com/c4dt/d-voting/internal/network/mino/minoch"
+	"github.com/c4dt/d-voting/internal/network/mino/minogrpc"
+	"github.com/c4dt/d-voting/internal/network/mino/router/tree"
 
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/xof/keccak"
