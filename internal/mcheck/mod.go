@@ -7,6 +7,7 @@ package main
 import (
 	"go/ast"
 	"strings"
+	"unicode/utf8"
 
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/inspect"
@@ -80,10 +81,11 @@ func checkPrefixes(line string) bool {
 
 // ifTooLong reports a comment if it's too long
 func ifTooLong(line string, pass *analysis.Pass, c *ast.Comment) {
-	if len(line) > MaxLen {
+	lineLen := utf8.RuneCountInString(line)
+	if lineLen > MaxLen {
 		pass.Reportf( // `c` is a comment.
 			c.Pos(), "Comment too long: %s (%d)",
-			line, len(line))
+			line, lineLen)
 	}
 }
 

@@ -13,9 +13,9 @@ import (
 	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/pbft"
 	otypes "github.com/c4dt/d-voting/dela/core/ordering/cosipbft/types"
 	"github.com/c4dt/d-voting/dela/crypto"
-	"github.com/c4dt/d-voting/dela/internal/tracing"
 	"github.com/c4dt/d-voting/dela/mino"
 	"github.com/c4dt/d-voting/dela/serde/json"
+	"github.com/c4dt/d-voting/internal/tracing"
 	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
 )

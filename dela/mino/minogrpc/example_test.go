@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/c4dt/d-voting/dela/internal/tracing"
 	"github.com/c4dt/d-voting/dela/mino"
 	"github.com/c4dt/d-voting/dela/mino/router/tree"
 	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/internal/tracing"
 )
 
 func ExampleRPC_Call() {

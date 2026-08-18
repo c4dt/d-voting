@@ -12,14 +12,14 @@
         <a href="https://sonarcloud.io/summary/new_code?id=dedis_d-voting">
             <img src="https://sonarcloud.io/api/project_badges/measure?project=dedis_d-voting&metric=alert_status">
         </a>
-        <a href="https://github.com/c4dt/d-voting/actions/workflows/go_release.yml">
-            <img src="https://github.com/c4dt/d-voting/actions/workflows/go_release.yml/badge.svg">
+        <a href="https://github.com/c4dt/d-voting/actions/workflows/releases.yml">
+            <img src="https://github.com/c4dt/d-voting/actions/workflows/releases.yml/badge.svg">
         </a><br/>
         <a href="https://github.com/c4dt/d-voting/graphs/contributors">
-            <img alt="GitHub contributors" src="https://img.shields.io/github/contributors/dedis/d-voting">
+            <img alt="GitHub contributors" src="https://img.shields.io/github/contributors/c4dt/d-voting">
         </a>
         <a href="https://github.com/c4dt/d-voting/releases">
-            <img alt="GitHub release (latest SemVer)" src="https://img.shields.io/github/v/release/dedis/d-voting">
+            <img alt="GitHub release (latest SemVer)" src="https://img.shields.io/github/v/release/c4dt/d-voting">
         </a>
       </td>
 </tr>
@@ -32,8 +32,8 @@
         <a href="https://github.com/c4dt/d-voting/actions/workflows/go_integration_tests.yml">
             <img src="https://github.com/c4dt/d-voting/actions/workflows/go_integration_tests.yml/badge.svg">
         </a><br/>
-        <a href="https://coveralls.io/github/dedis/d-voting?branch=main">
-            <img src="https://coveralls.io/repos/github/dedis/d-voting/badge.svg?branch=main">
+        <a href="https://coveralls.io/github/c4dt/d-voting?branch=main">
+            <img src="https://coveralls.io/repos/github/c4dt/d-voting/badge.svg?branch=main">
         </a>
         <a href="https://goreportcard.com/report/github.com/c4dt/d-voting">
             <img src="https://goreportcard.com/badge/github.com/c4dt/d-voting">
@@ -61,7 +61,7 @@
 # D-Voting
 
 **D-Voting** is an e-voting platform based on the
-[Dela](https://github.com/c4dt/dela) blockchain. It uses state-of-the-art
+[Dela](./dela) blockchain. It uses state-of-the-art
 protocols that guarantee privacy of votes and a fully decentralized process.
 This project was born in early 2021 and has been iteratively implemented by EPFL
 students under the supervision of DEDIS members.
@@ -141,9 +141,9 @@ sometimes refer to the blockchain node simply as a "node".
 The following component diagrams summarizes the interaction between those
 high-level components:
 
-[minogrpc]: https://github.com/c4dt/dela/tree/master/mino/minogrpc
+[minogrpc]: ./dela/mino/minogrpc
 
-![Global component diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/dedis/d-voting/main/docs/assets/component-global.puml)
+![Global component diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/c4dt/d-voting/main/docs/assets/component-global.puml)
 
 You can find more information about the architecture on the [documentation
 website](https://dedis.github.io/d-voting/#/).

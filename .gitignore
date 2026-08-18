@@ -18,3 +18,10 @@ bin/
 nodes/
 cookies.txt
 
+# DELA runtime and test artifacts
+dela/dkg/logs/
+dela/dkg/pedersen/dkgcli/dkgcli
+dela/mino/minogrpc/controller/cert.key
+dela/contracts/access/controller/access.json
+dela/profile.cov
+dela/report.json

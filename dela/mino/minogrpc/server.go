@@ -23,7 +23,6 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/internal/tracing"
 	"github.com/c4dt/d-voting/dela/mino"
 	"github.com/c4dt/d-voting/dela/mino/minogrpc/certs"
 	"github.com/c4dt/d-voting/dela/mino/minogrpc/ptypes"
@@ -32,6 +31,7 @@ import (
 	"github.com/c4dt/d-voting/dela/mino/router"
 	"github.com/c4dt/d-voting/dela/serde"
 	"github.com/c4dt/d-voting/dela/serde/json"
+	"github.com/c4dt/d-voting/internal/tracing"
 	"golang.org/x/xerrors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/backoff"
