@@ -5,16 +5,10 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
-	"testing"
 	"time"
 
 	"github.com/c4dt/d-voting/contracts/evoting"
-	"github.com/c4dt/d-voting/proxy/txnmanager"
-	"github.com/stretchr/testify/require"
 	"go.dedis.ch/dela"
 	"go.dedis.ch/dela/contracts/access"
 	"go.dedis.ch/dela/core/execution/native"
@@ -46,59 +40,6 @@ type txManager struct {
 	n     dVotingCosiDela
 	t     time.Duration
 	retry int
-}
-
-// For scenarioTest
-func pollTxnInclusion(maxPollCount int, interPollWait time.Duration, proxyAddr, token string, t *testing.T) (bool, error) {
-	t.Logf("Starting polling for transaction inclusion")
-	for i := 0; i < maxPollCount; i++ {
-		if i%10 == 0 {
-			t.Logf("Polling for transaction inclusion: %d/%d", i, maxPollCount)
-		}
-		timeBegin := time.Now()
-
-		req, err := http.NewRequest(http.MethodGet, proxyAddr+"/evoting/transactions/"+token, bytes.NewBuffer([]byte("")))
-		if err != nil {
-			return false, xerrors.Errorf("failed to create request: %v", err)
-		}
-
-		resp, err := http.DefaultClient.Do(req)
-		if err != nil {
-			return false, xerrors.Errorf("failed retrieve the decryption from the server: %v", err)
-		}
-
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return false, xerrors.Errorf("failed to read response body: %v", err)
-		}
-		require.Equal(t, http.StatusOK, resp.StatusCode, "unexpected status: %s", body)
-
-		// get the body of the response as json
-		var result txnmanager.TransactionClientInfo
-		err = json.Unmarshal(body, &result)
-		if err != nil {
-			return false, xerrors.Errorf("failed to unmarshal response body: %v", err)
-		}
-
-		// check if the transaction is included in the blockchain
-
-		switch result.Status {
-		case 2:
-			return false, nil
-		case 1:
-			t.Logf("Transaction included in the blockchain at iteration: %d/%d", i, maxPollCount)
-			return true, nil
-		case 0:
-			token = result.Token
-		}
-
-		if time.Since(timeBegin) < interPollWait {
-			time.Sleep(interPollWait - time.Since(timeBegin))
-		}
-
-	}
-
-	return false, xerrors.Errorf("transaction not included after timeout")
 }
 
 // For integrationTest

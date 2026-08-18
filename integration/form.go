@@ -1,29 +1,18 @@
 package integration
 
 import (
-	"bytes"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
-	"encoding/json"
-	"io"
-	"net/http"
-	"testing"
-	"time"
 
 	"github.com/c4dt/d-voting/contracts/evoting"
 	"github.com/c4dt/d-voting/contracts/evoting/types"
 	"github.com/c4dt/d-voting/internal/testing/fake"
-	"github.com/c4dt/d-voting/proxy/txnmanager"
-	ptypes "github.com/c4dt/d-voting/proxy/types"
-	"github.com/stretchr/testify/require"
 	"go.dedis.ch/dela/core/execution/native"
 	"go.dedis.ch/dela/core/ordering"
 	"go.dedis.ch/dela/core/txn"
 	"go.dedis.ch/dela/serde"
 	jsonDela "go.dedis.ch/dela/serde/json"
-	"go.dedis.ch/kyber/v3"
-	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 )
 
@@ -90,48 +79,6 @@ func createForm(m txManager, title string, admin string) ([]byte, error) {
 	return formID, nil
 }
 
-// for scenario/load test
-func createFormScenario(contentType, proxy string, secret kyber.Scalar, t *testing.T) string {
-	t.Log("Create form")
-
-	configuration := fake.BasicConfiguration
-
-	createSimpleFormRequest := ptypes.CreateFormRequest{
-		Configuration: configuration,
-		UserID:        "adminId",
-	}
-
-	signed, err := createSignedRequest(secret, createSimpleFormRequest)
-	require.NoError(t, err)
-
-	resp, err := http.Post(proxy+"/evoting/forms", contentType, bytes.NewBuffer(signed))
-	require.NoError(t, err)
-	body, err := io.ReadAll(resp.Body)
-	require.NoError(t, err)
-
-	require.Equal(t, resp.StatusCode, http.StatusOK, "unexpected status: %s", body)
-
-	t.Log("response body:", string(body))
-	resp.Body.Close()
-
-	var createFormResponse ptypes.CreateFormResponse
-
-	err = json.Unmarshal(body, &createFormResponse)
-	require.NoError(t, err)
-
-	t.Log("response token:", createFormResponse.Token)
-	formID := createFormResponse.FormID
-
-	// wait for the election to be created
-	ok, err := pollTxnInclusion(60, time.Second, proxy, createFormResponse.Token, t)
-	require.NoError(t, err)
-	require.True(t, ok)
-
-	t.Logf("ID of the form : " + formID)
-
-	return formID
-}
-
 // for integration tests
 func openForm(m txManager, formID []byte, userID string) error {
 	openForm := &types.OpenForm{
@@ -188,110 +135,4 @@ func closeForm(m txManager, formID []byte, admin string) error {
 	}
 
 	return nil
-}
-
-// for Scenario
-func waitForFormStatus(proxyAddr, formID string, status uint16, timeOut time.Duration, t *testing.T) error {
-	expired := time.Now().Add(timeOut)
-
-	isOK := func() bool {
-		infoForm := getFormInfo(proxyAddr, formID, t)
-		return infoForm.Status == status
-	}
-
-	for !isOK() {
-		if time.Now().After(expired) {
-			return xerrors.New("expired")
-		}
-
-		time.Sleep(time.Millisecond * 1000)
-	}
-
-	return nil
-}
-
-// updateForm updates the form with the given action for the scenario tests
-func updateForm(secret kyber.Scalar, proxyAddr, formIDHex, action string, t *testing.T) (bool, error) {
-	msg := ptypes.UpdateFormRequest{
-		Action: action,
-	}
-
-	signed, err := createSignedRequest(secret, msg)
-	require.NoError(t, err)
-
-	req, err := http.NewRequest(http.MethodPut, proxyAddr+"/evoting/forms/"+formIDHex, bytes.NewBuffer(signed))
-	if err != nil {
-		return false, xerrors.Errorf("failed to create request: %v", err)
-	}
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return false, xerrors.Errorf("failed retrieve the decryption from the server: %v", err)
-	}
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return false, xerrors.Errorf("failed to read response body: %v", err)
-	}
-	require.Equal(t, resp.StatusCode, http.StatusOK, "unexpected status: %s", body)
-
-	// use the pollTxnInclusion func
-	var result txnmanager.TransactionClientInfo
-	err = json.Unmarshal(body, &result)
-	if err != nil {
-		return false, xerrors.Errorf("failed to unmarshal response body: %v", err)
-	}
-
-	// wait until the update is completed
-	return pollTxnInclusion(60, time.Second, proxyAddr, result.Token, t)
-
-}
-
-// for Scenario
-func getFormInfo(proxyAddr, formID string, t *testing.T) ptypes.GetFormResponse {
-	// t.Log("Get form info")
-
-	resp, err := http.Get(proxyAddr + "/evoting/forms" + "/" + formID)
-	require.NoError(t, err)
-
-	var infoForm ptypes.GetFormResponse
-	decoder := json.NewDecoder(resp.Body)
-
-	err = decoder.Decode(&infoForm)
-	require.NoError(t, err)
-
-	resp.Body.Close()
-
-	return infoForm
-
-}
-
-func createSignedRequest(secret kyber.Scalar, msg interface{}) ([]byte, error) {
-	jsonMsg, err := json.Marshal(msg)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to marshal json: %v", err)
-	}
-
-	payload := base64.URLEncoding.EncodeToString(jsonMsg)
-
-	hash := sha256.New()
-
-	hash.Write([]byte(payload))
-	md := hash.Sum(nil)
-
-	signature, err := schnorr.Sign(suite, secret, md)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to sign: %v", err)
-	}
-
-	signed := ptypes.SignedRequest{
-		Payload:   payload,
-		Signature: hex.EncodeToString(signature),
-	}
-
-	signedJSON, err := json.Marshal(signed)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to create json signed: %v", err)
-	}
-
-	return signedJSON, nil
 }
