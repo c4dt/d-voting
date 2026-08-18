@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/c4dt/d-voting/internal/proxy/types"
+	"github.com/c4dt/d-voting/internal/api/types"
 	dkgSrv "github.com/c4dt/d-voting/internal/services/dkg"
 
 	"github.com/c4dt/d-voting/internal/cli/node"
