@@ -5,7 +5,7 @@ private.key
 web/app/node_modules
 .idea
 
-dvoting*
+/dvoting*
 
 *.log
 
@@ -25,3 +25,4 @@ dela/mino/minogrpc/controller/cert.key
 dela/contracts/access/controller/access.json
 dela/profile.cov
 dela/report.json
+scripts/system-tests/.cookies
