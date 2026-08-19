@@ -8,7 +8,7 @@ import (
 	"github.com/c4dt/d-voting/internal/core/access"
 	"github.com/c4dt/d-voting/internal/core/execution/native"
 	"github.com/c4dt/d-voting/internal/core/store"
-	"github.com/c4dt/d-voting/internal/testing/fake"
+	"github.com/c4dt/d-voting/internal/testing/dela/fake"
 	"github.com/stretchr/testify/require"
 )
 

@@ -13,7 +13,7 @@ import (
 	"github.com/c4dt/d-voting/internal/cli/node"
 	"github.com/c4dt/d-voting/internal/core/store/kv"
 	"github.com/c4dt/d-voting/internal/network/mino/minogrpc"
-	"github.com/c4dt/d-voting/internal/testing/fake"
+	"github.com/c4dt/d-voting/internal/testing/dela/fake"
 	"github.com/stretchr/testify/require"
 )
 

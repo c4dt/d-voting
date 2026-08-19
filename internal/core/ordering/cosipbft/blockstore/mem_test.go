@@ -7,7 +7,7 @@ import (
 	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/types"
 	"github.com/c4dt/d-voting/internal/core/store"
 	"github.com/c4dt/d-voting/internal/core/validation/simple"
-	"github.com/c4dt/d-voting/internal/testing/fake"
+	"github.com/c4dt/d-voting/internal/testing/dela/fake"
 	"github.com/stretchr/testify/require"
 )
 

@@ -7,7 +7,7 @@ import (
 	"github.com/c4dt/d-voting/internal/core/store/kv"
 	"github.com/c4dt/d-voting/internal/crypto"
 	"github.com/c4dt/d-voting/internal/serde/json"
-	"github.com/c4dt/d-voting/internal/testing/fake"
+	"github.com/c4dt/d-voting/internal/testing/dela/fake"
 	"github.com/stretchr/testify/require"
 )
 

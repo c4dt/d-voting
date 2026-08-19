@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/c4dt/d-voting/internal/network/mino/minoch"
-	"github.com/c4dt/d-voting/internal/testing/fake"
+	"github.com/c4dt/d-voting/internal/testing/dela/fake"
 	"go.dedis.ch/kyber/v3/suites"
 	"go.dedis.ch/kyber/v3/util/key"
 	"golang.org/x/xerrors"

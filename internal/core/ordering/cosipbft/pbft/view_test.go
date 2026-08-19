@@ -5,7 +5,7 @@ import (
 
 	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/types"
 	"github.com/c4dt/d-voting/internal/crypto/bls"
-	"github.com/c4dt/d-voting/internal/testing/fake"
+	"github.com/c4dt/d-voting/internal/testing/dela/fake"
 	"github.com/stretchr/testify/require"
 )
 

@@ -3,7 +3,7 @@ package minows
 import (
 	"github.com/c4dt/d-voting/internal/cli"
 	"github.com/c4dt/d-voting/internal/cli/node"
-	"github.com/c4dt/d-voting/internal/testing/fake"
+	"github.com/c4dt/d-voting/internal/testing/dela/fake"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"testing"

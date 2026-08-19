@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/c4dt/d-voting/internal/cli"
-	"github.com/c4dt/d-voting/internal/testing/fake"
+	"github.com/c4dt/d-voting/internal/testing/dela/fake"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/net/nettest"
 	"golang.org/x/xerrors"

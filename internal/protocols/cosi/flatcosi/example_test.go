@@ -11,7 +11,7 @@ import (
 	"github.com/c4dt/d-voting/internal/network/mino"
 	"github.com/c4dt/d-voting/internal/network/mino/minoch"
 	"github.com/c4dt/d-voting/internal/serde"
-	"github.com/c4dt/d-voting/internal/testing/fake"
+	"github.com/c4dt/d-voting/internal/testing/dela/fake"
 )
 
 func Example() {

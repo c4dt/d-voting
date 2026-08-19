@@ -8,7 +8,7 @@ import (
 	"github.com/c4dt/d-voting/internal/core/store/hashtree"
 	"github.com/c4dt/d-voting/internal/core/validation/simple"
 	"github.com/c4dt/d-voting/internal/crypto"
-	"github.com/c4dt/d-voting/internal/testing/fake"
+	"github.com/c4dt/d-voting/internal/testing/dela/fake"
 	"github.com/stretchr/testify/require"
 )
 
