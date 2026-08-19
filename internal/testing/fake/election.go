@@ -3,9 +3,9 @@ package fake
 import (
 	"strconv"
 
-	"github.com/c4dt/d-voting/contracts/evoting/types"
-	"github.com/c4dt/d-voting/dela/core/store"
-	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/internal/contracts/evoting/types"
+	"github.com/c4dt/d-voting/internal/core/store"
+	"github.com/c4dt/d-voting/internal/serde"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/suites"
 	"go.dedis.ch/kyber/v3/util/random"

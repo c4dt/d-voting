@@ -2,7 +2,7 @@ package pedersen
 
 import (
 	"crypto/sha256"
-	"github.com/c4dt/d-voting/dela/dkg/pedersen/types"
+	"github.com/c4dt/d-voting/internal/services/dkg-dela/pedersen/types"
 	"go.dedis.ch/kyber/v3"
 	"golang.org/x/xerrors"
 )

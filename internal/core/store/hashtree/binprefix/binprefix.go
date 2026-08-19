@@ -34,10 +34,10 @@ package binprefix
 import (
 	"sync"
 
-	"github.com/c4dt/d-voting/dela/core/store"
-	"github.com/c4dt/d-voting/dela/core/store/hashtree"
-	"github.com/c4dt/d-voting/dela/core/store/kv"
-	"github.com/c4dt/d-voting/dela/crypto"
+	"github.com/c4dt/d-voting/internal/core/store"
+	"github.com/c4dt/d-voting/internal/core/store/hashtree"
+	"github.com/c4dt/d-voting/internal/core/store/kv"
+	"github.com/c4dt/d-voting/internal/crypto"
 	"golang.org/x/xerrors"
 )
 

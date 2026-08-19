@@ -3,8 +3,8 @@ package fake
 import (
 	"hash"
 
-	"github.com/c4dt/d-voting/dela/crypto"
-	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/internal/crypto"
+	"github.com/c4dt/d-voting/internal/serde"
 	"go.dedis.ch/kyber/v3"
 )
 

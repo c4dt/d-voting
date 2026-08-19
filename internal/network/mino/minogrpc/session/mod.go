@@ -23,12 +23,12 @@ import (
 	"os"
 	"sync"
 
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/internal/traffic"
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/dela/mino/minogrpc/ptypes"
-	"github.com/c4dt/d-voting/dela/mino/router"
-	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/network/mino/minogrpc/ptypes"
+	"github.com/c4dt/d-voting/internal/network/mino/router"
+	"github.com/c4dt/d-voting/internal/observability"
+	"github.com/c4dt/d-voting/internal/observability/traffic"
+	"github.com/c4dt/d-voting/internal/serde"
 	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
 	"google.golang.org/grpc"
@@ -137,7 +137,7 @@ func NewSession(
 	connMgr ConnectionManager,
 ) Session {
 	sess := &session{
-		log:     dela.Logger.With().Str("addr", me.String()).Logger(),
+		log:     observability.Logger.With().Str("addr", me.String()).Logger(),
 		md:      md,
 		me:      me,
 		errs:    make(chan error, 1),

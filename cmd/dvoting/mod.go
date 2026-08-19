@@ -30,23 +30,23 @@ import (
 	"io"
 	"os"
 
-	dkg "github.com/c4dt/d-voting/services/dkg/pedersen/controller"
-	"github.com/c4dt/d-voting/services/dkg/pedersen/json"
-	shuffle "github.com/c4dt/d-voting/services/shuffle/neff/controller"
+	dkg "github.com/c4dt/d-voting/internal/services/dkg/pedersen/controller"
+	"github.com/c4dt/d-voting/internal/services/dkg/pedersen/json"
+	shuffle "github.com/c4dt/d-voting/internal/services/shuffle/neff/controller"
 
-	cosipbft "github.com/c4dt/d-voting/cli/cosipbftcontroller"
-	"github.com/c4dt/d-voting/cli/postinstall"
-	evoting "github.com/c4dt/d-voting/contracts/evoting/controller"
-	"github.com/c4dt/d-voting/dela/cli/node"
-	access "github.com/c4dt/d-voting/dela/contracts/access/controller"
-	db "github.com/c4dt/d-voting/dela/core/store/kv/controller"
-	pool "github.com/c4dt/d-voting/dela/core/txn/pool/controller"
-	signed "github.com/c4dt/d-voting/dela/core/txn/signed/controller"
-	mino "github.com/c4dt/d-voting/dela/mino/minogrpc/controller"
-	proxy "github.com/c4dt/d-voting/dela/mino/proxy/http/controller"
-	metrics "github.com/c4dt/d-voting/metrics/controller"
+	"github.com/c4dt/d-voting/internal/cli/node"
+	"github.com/c4dt/d-voting/internal/cli/postinstall"
+	access "github.com/c4dt/d-voting/internal/contracts/access/controller"
+	evoting "github.com/c4dt/d-voting/internal/contracts/evoting/controller"
+	cosipbft "github.com/c4dt/d-voting/internal/core/ordering/cosipbft/controller"
+	db "github.com/c4dt/d-voting/internal/core/store/kv/controller"
+	pool "github.com/c4dt/d-voting/internal/core/txn/pool/controller"
+	signed "github.com/c4dt/d-voting/internal/core/txn/signed/controller"
+	mino "github.com/c4dt/d-voting/internal/network/mino/minogrpc/controller"
+	proxy "github.com/c4dt/d-voting/internal/network/mino/proxy/http/controller"
+	metrics "github.com/c4dt/d-voting/internal/observability/metrics/controller"
 
-	_ "github.com/c4dt/d-voting/services/shuffle/neff/json"
+	_ "github.com/c4dt/d-voting/internal/services/shuffle/neff/json"
 )
 
 func main() {

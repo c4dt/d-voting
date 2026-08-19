@@ -12,10 +12,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/core"
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/dela/mino/router"
+	"github.com/c4dt/d-voting/internal/core"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/network/mino/router"
+	"github.com/c4dt/d-voting/internal/observability"
 	"golang.org/x/xerrors"
 	"google.golang.org/grpc/metadata"
 )
@@ -442,7 +442,7 @@ func (o observer) NotifyCallback(event interface{}) {
 	select {
 	case o.ch <- event.(Event):
 	default:
-		dela.Logger.Warn().Msg("event channel full, dropping")
+		observability.Logger.Warn().Msg("event channel full, dropping")
 	}
 }
 

@@ -17,17 +17,17 @@ import (
 	"context"
 	"sync"
 
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/core"
-	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/authority"
-	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/blockstore"
-	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/types"
-	"github.com/c4dt/d-voting/dela/core/store"
-	"github.com/c4dt/d-voting/dela/core/store/hashtree"
-	"github.com/c4dt/d-voting/dela/core/store/kv"
-	"github.com/c4dt/d-voting/dela/core/validation"
-	"github.com/c4dt/d-voting/dela/crypto"
-	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/internal/core"
+	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/authority"
+	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/blockstore"
+	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/types"
+	"github.com/c4dt/d-voting/internal/core/store"
+	"github.com/c4dt/d-voting/internal/core/store/hashtree"
+	"github.com/c4dt/d-voting/internal/core/store/kv"
+	"github.com/c4dt/d-voting/internal/core/validation"
+	"github.com/c4dt/d-voting/internal/crypto"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
@@ -101,7 +101,7 @@ const (
 )
 
 func init() {
-	dela.PromCollectors = append(dela.PromCollectors, promBlocks, promTxs,
+	observability.PromCollectors = append(observability.PromCollectors, promBlocks, promTxs,
 		promRejectedTxs, promLeader)
 }
 
@@ -595,7 +595,7 @@ func (m *pbftsm) CatchUp(link types.BlockLink) error {
 
 	if link.GetTo() == m.round.tentativeRound {
 		m.round.leader = m.round.tentativeLeader
-		dela.Logger.Info().Msgf("accepting to set leader to: %d", m.round.leader)
+		observability.Logger.Info().Msgf("accepting to set leader to: %d", m.round.leader)
 	}
 
 	m.round.views = nil

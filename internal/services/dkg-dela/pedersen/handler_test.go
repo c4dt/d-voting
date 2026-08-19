@@ -7,11 +7,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/c4dt/d-voting/internal/testing/dela/fake"
 	"github.com/rs/zerolog"
 
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/serde"
 	"github.com/stretchr/testify/require"
 )
 

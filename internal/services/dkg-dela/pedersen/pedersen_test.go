@@ -4,20 +4,20 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/c4dt/d-voting/dela/mino/minoch"
-	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/c4dt/d-voting/internal/network/mino/minoch"
+	"github.com/c4dt/d-voting/internal/testing/dela/fake"
 	"go.dedis.ch/kyber/v3/suites"
 	"go.dedis.ch/kyber/v3/util/key"
 	"golang.org/x/xerrors"
 
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/crypto"
-	"github.com/c4dt/d-voting/dela/crypto/ed25519"
-	"github.com/c4dt/d-voting/dela/dkg"
-	"github.com/c4dt/d-voting/dela/dkg/pedersen/types"
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/dela/mino/minogrpc"
-	"github.com/c4dt/d-voting/dela/mino/router/tree"
+	"github.com/c4dt/d-voting/internal/crypto"
+	"github.com/c4dt/d-voting/internal/crypto/ed25519"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/network/mino/minogrpc"
+	"github.com/c4dt/d-voting/internal/network/mino/router/tree"
+	"github.com/c4dt/d-voting/internal/observability"
+	"github.com/c4dt/d-voting/internal/services/dkg-dela"
+	"github.com/c4dt/d-voting/internal/services/dkg-dela/pedersen/types"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
@@ -173,12 +173,12 @@ func TestPedersen_Scenario(t *testing.T) {
 	// 	traffic.SaveEvents("events.dot")
 	// }()
 
-	oldLog := dela.Logger
+	oldLog := observability.Logger
 	defer func() {
-		dela.Logger = oldLog
+		observability.Logger = oldLog
 	}()
 
-	dela.Logger = dela.Logger.Level(zerolog.WarnLevel)
+	observability.Logger = observability.Logger.Level(zerolog.WarnLevel)
 
 	n := 32
 
@@ -255,12 +255,12 @@ func TestPedersen_ReencryptScenario(t *testing.T) {
 	// 	traffic.SaveEvents("events.dot")
 	// }()
 
-	oldLog := dela.Logger
+	oldLog := observability.Logger
 	defer func() {
-		dela.Logger = oldLog
+		observability.Logger = oldLog
 	}()
 
-	dela.Logger = dela.Logger.Level(zerolog.WarnLevel)
+	observability.Logger = observability.Logger.Level(zerolog.WarnLevel)
 
 	nbNodes := 7
 
@@ -499,38 +499,38 @@ func decryptReencrypted(
 	Sk kyber.Scalar,
 ) (msg []byte, err error) {
 
-	dela.Logger.Debug().Msgf("XhatEnc:%v", XhatEnc)
-	dela.Logger.Debug().Msgf("DKG pubK:%v", dkgPk)
-	dela.Logger.Debug().Msgf("Sk:%v", Sk)
+	observability.Logger.Debug().Msgf("XhatEnc:%v", XhatEnc)
+	observability.Logger.Debug().Msgf("DKG pubK:%v", dkgPk)
+	observability.Logger.Debug().Msgf("Sk:%v", Sk)
 
 	xcInv := suite.Scalar().Neg(Sk)
-	dela.Logger.Debug().Msgf("xcInv:%v", xcInv)
+	observability.Logger.Debug().Msgf("xcInv:%v", xcInv)
 
 	sum := suite.Scalar().Add(Sk, xcInv)
-	dela.Logger.Debug().Msgf("xc + xcInv: %v", sum)
+	observability.Logger.Debug().Msgf("xc + xcInv: %v", sum)
 
 	XhatDec := suite.Point().Mul(xcInv, dkgPk)
-	dela.Logger.Debug().Msgf("XhatDec:%v", XhatDec)
+	observability.Logger.Debug().Msgf("XhatDec:%v", XhatDec)
 
 	Xhat := suite.Point().Add(XhatEnc, XhatDec)
-	dela.Logger.Debug().Msgf("Xhat:%v", Xhat)
+	observability.Logger.Debug().Msgf("Xhat:%v", Xhat)
 
 	XhatInv := suite.Point().Neg(Xhat)
-	dela.Logger.Debug().Msgf("XhatInv:%v", XhatInv)
+	observability.Logger.Debug().Msgf("XhatInv:%v", XhatInv)
 
 	// Decrypt Cs to keyPointHat
 	for _, C := range Cs {
-		dela.Logger.Debug().Msgf("C:%v", C)
+		observability.Logger.Debug().Msgf("C:%v", C)
 
 		keyPointHat := suite.Point().Add(C, XhatInv)
-		dela.Logger.Debug().Msgf("keyPointHat:%v", keyPointHat)
+		observability.Logger.Debug().Msgf("keyPointHat:%v", keyPointHat)
 
 		keyPart, err := keyPointHat.Data()
-		dela.Logger.Debug().Msgf("keyPart:%v", keyPart)
+		observability.Logger.Debug().Msgf("keyPart:%v", keyPart)
 
 		if err != nil {
 			e := xerrors.Errorf("Error while decrypting Cs: %v", err)
-			dela.Logger.Error().Msg(e.Error())
+			observability.Logger.Error().Msg(e.Error())
 			return nil, e
 		}
 		msg = append(msg, keyPart...)

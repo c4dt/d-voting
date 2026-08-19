@@ -2,15 +2,15 @@ package evoting
 
 import (
 	dvoting "github.com/c4dt/d-voting"
-	"github.com/c4dt/d-voting/contracts/evoting/types"
-	"github.com/c4dt/d-voting/dela/core/access"
-	"github.com/c4dt/d-voting/dela/core/execution"
-	"github.com/c4dt/d-voting/dela/core/execution/native"
-	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/authority"
-	"github.com/c4dt/d-voting/dela/core/store"
-	"github.com/c4dt/d-voting/dela/serde"
-	"github.com/c4dt/d-voting/dela/serde/json"
-	"github.com/c4dt/d-voting/services/dkg"
+	"github.com/c4dt/d-voting/internal/contracts/evoting/types"
+	"github.com/c4dt/d-voting/internal/core/access"
+	"github.com/c4dt/d-voting/internal/core/execution"
+	"github.com/c4dt/d-voting/internal/core/execution/native"
+	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/authority"
+	"github.com/c4dt/d-voting/internal/core/store"
+	"github.com/c4dt/d-voting/internal/serde"
+	"github.com/c4dt/d-voting/internal/serde/json"
+	"github.com/c4dt/d-voting/internal/services/dkg"
 	"github.com/prometheus/client_golang/prometheus"
 
 	"go.dedis.ch/kyber/v3/proof"
@@ -18,7 +18,7 @@ import (
 	"golang.org/x/xerrors"
 
 	// Register the JSON format for the form
-	_ "github.com/c4dt/d-voting/contracts/evoting/json"
+	_ "github.com/c4dt/d-voting/internal/contracts/evoting/json"
 )
 
 var (

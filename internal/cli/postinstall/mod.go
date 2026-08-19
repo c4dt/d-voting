@@ -5,15 +5,15 @@ import (
 	"path/filepath"
 	"time"
 
-	evoting "github.com/c4dt/d-voting/contracts/evoting/controller"
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/cli"
-	"github.com/c4dt/d-voting/dela/cli/node"
-	"github.com/c4dt/d-voting/dela/mino/proxy"
-	"github.com/c4dt/d-voting/dela/mino/proxy/http"
-	prom "github.com/c4dt/d-voting/metrics/controller"
-	dkg "github.com/c4dt/d-voting/services/dkg/pedersen/controller"
-	neff "github.com/c4dt/d-voting/services/shuffle/neff/controller"
+	"github.com/c4dt/d-voting/internal/cli"
+	"github.com/c4dt/d-voting/internal/cli/node"
+	evoting "github.com/c4dt/d-voting/internal/contracts/evoting/controller"
+	"github.com/c4dt/d-voting/internal/network/mino/proxy"
+	"github.com/c4dt/d-voting/internal/network/mino/proxy/http"
+	"github.com/c4dt/d-voting/internal/observability"
+	prom "github.com/c4dt/d-voting/internal/observability/metrics/controller"
+	dkg "github.com/c4dt/d-voting/internal/services/dkg/pedersen/controller"
+	neff "github.com/c4dt/d-voting/internal/services/shuffle/neff/controller"
 	"golang.org/x/xerrors"
 )
 
@@ -64,11 +64,11 @@ func (m controller) SetCommands(builder node.Builder) {
 // OnStart implements node.Initializer. It creates and registers a pedersen DKG.
 func (m controller) OnStart(ctx cli.Flags, inj node.Injector) error {
 	if !ctx.Bool("postinstall") {
-		dela.Logger.Info().Msg("not using postinstall")
+		observability.Logger.Info().Msg("not using postinstall")
 		return nil
 	}
 
-	dela.Logger.Info().Msg("using postinstalls")
+	observability.Logger.Info().Msg("using postinstalls")
 
 	//
 	// Init the shuffle
@@ -110,7 +110,7 @@ func (m controller) OnStart(ctx cli.Flags, inj node.Injector) error {
 
 	// We assume the listen worked proprely, however it might not be the case.
 	// The log should inform the user about that.
-	dela.Logger.Info().Msgf("started proxy server on %s", proxyhttp.GetAddr().String())
+	observability.Logger.Info().Msgf("started proxy server on %s", proxyhttp.GetAddr().String())
 
 	//
 	// Register the d-voting proxy handlers

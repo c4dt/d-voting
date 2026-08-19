@@ -4,11 +4,11 @@ import (
 	"context"
 	"io"
 
-	"github.com/c4dt/d-voting/dela/core/access"
-	"github.com/c4dt/d-voting/dela/core/txn"
-	"github.com/c4dt/d-voting/dela/core/txn/pool"
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/internal/core/access"
+	"github.com/c4dt/d-voting/internal/core/txn"
+	"github.com/c4dt/d-voting/internal/core/txn/pool"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/serde"
 )
 
 // Transaction is a fake implementation of Transaction.

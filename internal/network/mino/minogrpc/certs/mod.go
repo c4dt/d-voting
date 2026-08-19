@@ -8,7 +8,7 @@
 package certs
 
 import (
-	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/internal/network/mino"
 )
 
 // CertChain represents a list of x509 certificates formatted as ASN.1 DER data.

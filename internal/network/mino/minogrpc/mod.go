@@ -21,15 +21,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/internal/traffic"
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/dela/mino/minogrpc/certs"
-	"github.com/c4dt/d-voting/dela/mino/minogrpc/ptypes"
-	"github.com/c4dt/d-voting/dela/mino/minogrpc/session"
-	"github.com/c4dt/d-voting/dela/mino/router"
-	"github.com/c4dt/d-voting/dela/serde"
-	"github.com/c4dt/d-voting/internal/tracing"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/network/mino/minogrpc/certs"
+	"github.com/c4dt/d-voting/internal/network/mino/minogrpc/ptypes"
+	"github.com/c4dt/d-voting/internal/network/mino/minogrpc/session"
+	"github.com/c4dt/d-voting/internal/network/mino/router"
+	"github.com/c4dt/d-voting/internal/observability"
+	"github.com/c4dt/d-voting/internal/observability/tracing"
+	"github.com/c4dt/d-voting/internal/observability/traffic"
+	"github.com/c4dt/d-voting/internal/serde"
 	otgrpc "github.com/opentracing-contrib/go-grpc"
 	opentracing "github.com/opentracing/opentracing-go"
 	"golang.org/x/xerrors"
@@ -150,7 +150,7 @@ func (m *minoTemplate) makeCertificate() error {
 		dnsNames = []string{hostname}
 	}
 
-	dela.Logger.Info().Str("hostname", hostname).
+	observability.Logger.Info().Str("hostname", hostname).
 		Strs("dnsNames", dnsNames).
 		Msgf("creating certificate: ips: %v", ips)
 
@@ -243,7 +243,7 @@ func NewMinogrpc(listen net.Addr, public *url.URL, router router.Router, opts ..
 		}
 	}
 
-	dela.Logger.Info().Msgf("public URL is: %s", public.String())
+	observability.Logger.Info().Msgf("public URL is: %s", public.String())
 
 	myAddr, err := session.NewAddressFromURL(*public)
 	if err != nil {
@@ -285,7 +285,7 @@ func NewMinogrpc(listen net.Addr, public *url.URL, router router.Router, opts ..
 	}
 
 	if !tmpl.serveTLS {
-		dela.Logger.Warn().Msg("⚠️ running in insecure mode and no TLS endpoint, you should not " +
+		observability.Logger.Warn().Msg("⚠️ running in insecure mode and no TLS endpoint, you should not " +
 			"publicly expose the node's socket without TLS")
 	} else {
 		chainBuf := o.GetCertificateChain()
@@ -333,7 +333,7 @@ func NewMinogrpc(listen net.Addr, public *url.URL, router router.Router, opts ..
 		endpoints: m.endpoints,
 	})
 
-	dela.Logger.Info().Msgf("listening on: %s", socket.Addr().String())
+	observability.Logger.Info().Msgf("listening on: %s", socket.Addr().String())
 
 	m.listen(socket)
 

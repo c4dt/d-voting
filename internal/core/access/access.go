@@ -6,8 +6,8 @@ package access
 import (
 	"encoding"
 
-	"github.com/c4dt/d-voting/dela/core/store"
-	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/internal/core/store"
+	"github.com/c4dt/d-voting/internal/serde"
 )
 
 // Identity is an abstraction to uniquely identify a signer.

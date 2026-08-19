@@ -12,16 +12,16 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/cli/node"
-	"github.com/c4dt/d-voting/dela/core/ordering"
-	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/authority"
-	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/contracts/viewchange"
-	"github.com/c4dt/d-voting/dela/core/txn"
-	"github.com/c4dt/d-voting/dela/core/txn/pool"
-	"github.com/c4dt/d-voting/dela/cosi"
-	"github.com/c4dt/d-voting/dela/crypto"
-	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/internal/cli/node"
+	"github.com/c4dt/d-voting/internal/core/ordering"
+	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/authority"
+	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/contracts/viewchange"
+	"github.com/c4dt/d-voting/internal/core/txn"
+	"github.com/c4dt/d-voting/internal/core/txn/pool"
+	"github.com/c4dt/d-voting/internal/crypto"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/observability"
+	"github.com/c4dt/d-voting/internal/protocols/cosi"
 	"golang.org/x/xerrors"
 )
 
@@ -168,7 +168,7 @@ func (rosterAddAction) Execute(ctx node.Context) error {
 	}
 
 	if wait > 0 {
-		dela.Logger.Debug().
+		observability.Logger.Debug().
 			Hex("id", tx.GetID()).
 			Msg("wait for the transaction to be included")
 
@@ -178,7 +178,7 @@ func (rosterAddAction) Execute(ctx node.Context) error {
 					continue
 				}
 
-				dela.Logger.Debug().
+				observability.Logger.Debug().
 					Hex("id", tx.GetID()).
 					Msg("transaction included in the block")
 

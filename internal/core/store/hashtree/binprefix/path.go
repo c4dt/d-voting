@@ -7,7 +7,7 @@ package binprefix
 import (
 	"math/big"
 
-	"github.com/c4dt/d-voting/dela/crypto"
+	"github.com/c4dt/d-voting/internal/crypto"
 	"golang.org/x/xerrors"
 )
 

@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/cli/node"
-	"github.com/c4dt/d-voting/dela/mino/proxy"
-	"github.com/c4dt/d-voting/dela/mino/proxy/http"
+	"github.com/c4dt/d-voting/internal/cli/node"
+	"github.com/c4dt/d-voting/internal/network/mino/proxy"
+	"github.com/c4dt/d-voting/internal/network/mino/proxy/http"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"golang.org/x/xerrors"
@@ -58,7 +58,7 @@ func (a promAction) Execute(ctx node.Context) error {
 
 	path := ctx.Flags.String("path")
 
-	for _, c := range dela.PromCollectors {
+	for _, c := range observability.PromCollectors {
 		err = prometheus.DefaultRegisterer.Register(c)
 		if err != nil {
 			fmt.Fprintf(ctx.Out, "ERROR: failed to register: %v", err)

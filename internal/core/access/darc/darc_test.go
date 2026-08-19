@@ -3,14 +3,14 @@ package darc
 import (
 	"testing"
 
-	contract "github.com/c4dt/d-voting/dela/contracts/access"
-	"github.com/c4dt/d-voting/dela/core/access"
-	"github.com/c4dt/d-voting/dela/core/access/darc/types"
-	"github.com/c4dt/d-voting/dela/core/store/prefixed"
-	"github.com/c4dt/d-voting/dela/crypto/bls"
-	"github.com/c4dt/d-voting/dela/serde"
-	"github.com/c4dt/d-voting/dela/serde/json"
-	"github.com/c4dt/d-voting/dela/testing/fake"
+	contract "github.com/c4dt/d-voting/internal/contracts/access"
+	"github.com/c4dt/d-voting/internal/core/access"
+	"github.com/c4dt/d-voting/internal/core/access/darc/types"
+	"github.com/c4dt/d-voting/internal/core/store/prefixed"
+	"github.com/c4dt/d-voting/internal/crypto/bls"
+	"github.com/c4dt/d-voting/internal/serde"
+	"github.com/c4dt/d-voting/internal/serde/json"
+	"github.com/c4dt/d-voting/internal/testing/dela/fake"
 	"github.com/stretchr/testify/require"
 )
 

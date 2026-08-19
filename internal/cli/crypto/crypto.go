@@ -7,9 +7,9 @@ import (
 	"io"
 	"os"
 
-	"github.com/c4dt/d-voting/dela/cli"
-	"github.com/c4dt/d-voting/dela/cli/ucli"
-	bls "github.com/c4dt/d-voting/dela/crypto/bls/command"
+	"github.com/c4dt/d-voting/internal/cli"
+	"github.com/c4dt/d-voting/internal/cli/ucli"
+	bls "github.com/c4dt/d-voting/internal/crypto/bls/command"
 )
 
 var builder cli.Builder = ucli.NewBuilder("crypto", nil)

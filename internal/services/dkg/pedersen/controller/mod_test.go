@@ -6,15 +6,15 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/c4dt/d-voting/dela/core/txn/signed"
-	"github.com/c4dt/d-voting/dela/core/validation/simple"
-	"github.com/c4dt/d-voting/dela/crypto/bls"
+	"github.com/c4dt/d-voting/internal/core/txn/signed"
+	"github.com/c4dt/d-voting/internal/core/validation/simple"
+	"github.com/c4dt/d-voting/internal/crypto/bls"
 
-	"github.com/c4dt/d-voting/dela/cli/node"
-	"github.com/c4dt/d-voting/dela/core/access/darc"
-	"github.com/c4dt/d-voting/dela/core/execution/native"
-	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft"
-	"github.com/c4dt/d-voting/dela/cosi/threshold"
+	"github.com/c4dt/d-voting/internal/cli/node"
+	"github.com/c4dt/d-voting/internal/core/access/darc"
+	"github.com/c4dt/d-voting/internal/core/execution/native"
+	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft"
+	"github.com/c4dt/d-voting/internal/protocols/cosi/threshold"
 	"github.com/c4dt/d-voting/internal/testing/fake"
 	"github.com/stretchr/testify/require"
 )

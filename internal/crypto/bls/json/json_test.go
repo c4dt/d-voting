@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/c4dt/d-voting/dela/crypto/bls"
-	"github.com/c4dt/d-voting/dela/serde"
-	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/c4dt/d-voting/internal/crypto/bls"
+	"github.com/c4dt/d-voting/internal/serde"
+	"github.com/c4dt/d-voting/internal/testing/dela/fake"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 )

@@ -3,8 +3,8 @@ package tree
 import (
 	"fmt"
 
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/dela/mino/minogrpc/session"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/network/mino/minogrpc/session"
 )
 
 func ExampleRouter_New() {

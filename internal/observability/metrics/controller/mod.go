@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"github.com/c4dt/d-voting/dela/cli"
-	"github.com/c4dt/d-voting/dela/cli/node"
+	"github.com/c4dt/d-voting/internal/cli"
+	"github.com/c4dt/d-voting/internal/cli/node"
 )
 
 // NewController returns a new controller initializer

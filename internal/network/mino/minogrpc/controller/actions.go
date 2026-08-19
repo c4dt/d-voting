@@ -13,10 +13,10 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/c4dt/d-voting/dela/cli/node"
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/dela/mino/minogrpc"
-	"github.com/c4dt/d-voting/dela/mino/minogrpc/certs"
+	"github.com/c4dt/d-voting/internal/cli/node"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/network/mino/minogrpc"
+	"github.com/c4dt/d-voting/internal/network/mino/minogrpc/certs"
 	"golang.org/x/xerrors"
 )
 
