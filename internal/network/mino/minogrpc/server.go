@@ -22,13 +22,13 @@ import (
 	"github.com/opentracing/opentracing-go"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino"
 	"github.com/c4dt/d-voting/internal/network/mino/minogrpc/certs"
 	"github.com/c4dt/d-voting/internal/network/mino/minogrpc/ptypes"
 	"github.com/c4dt/d-voting/internal/network/mino/minogrpc/session"
 	"github.com/c4dt/d-voting/internal/network/mino/minogrpc/tokens"
 	"github.com/c4dt/d-voting/internal/network/mino/router"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/c4dt/d-voting/internal/observability/tracing"
 	"github.com/c4dt/d-voting/internal/serde"
 	"github.com/c4dt/d-voting/internal/serde/json"
@@ -76,7 +76,7 @@ func (o overlayServer) Join(ctx context.Context, req *ptypes.JoinRequest) (
 		return nil, xerrors.Errorf("token '%s' is invalid", req.Token)
 	}
 
-	dela.Logger.Debug().
+	observability.Logger.Debug().
 		Str("from", string(req.GetChain().GetAddress())).
 		Msg("valid token received")
 
@@ -368,7 +368,7 @@ func (o *overlayServer) cleanStream(endpoint *Endpoint, id string) {
 
 	sess.Close()
 
-	dela.Logger.Trace().
+	observability.Logger.Trace().
 		Str("id", id).
 		Msg("stream has been cleaned")
 }
@@ -771,7 +771,7 @@ func (mgr *connManager) Release(to mino.Address) {
 			delete(mgr.conns, to)
 
 			err := conn.Close()
-			dela.Logger.Trace().
+			observability.Logger.Trace().
 				Err(err).
 				Stringer("to", to).
 				Stringer("from", mgr.myAddr).

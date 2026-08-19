@@ -3,8 +3,8 @@ package controller
 import (
 	"github.com/c4dt/d-voting/internal/cli"
 	"github.com/c4dt/d-voting/internal/cli/node"
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/c4dt/d-voting/internal/services/dkg-dela/pedersen"
 	"golang.org/x/xerrors"
 )
@@ -144,7 +144,7 @@ func (m minimal) OnStart(ctx cli.Flags, inj node.Injector) error {
 		return xerrors.Errorf("failed to encode pubkey: %v", err)
 	}
 
-	dela.Logger.Info().
+	observability.Logger.Info().
 		Hex("public key", pubkeyBuf).
 		Msg("perdersen public key")
 

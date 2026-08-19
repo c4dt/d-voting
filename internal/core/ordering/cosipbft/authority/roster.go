@@ -9,8 +9,8 @@ import (
 	"io"
 
 	"github.com/c4dt/d-voting/internal/crypto"
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/c4dt/d-voting/internal/serde"
 	"github.com/c4dt/d-voting/internal/serde/registry"
 	"golang.org/x/xerrors"
@@ -155,7 +155,7 @@ func (r Roster) Take(updaters ...mino.FilterUpdater) mino.Players {
 func (r Roster) Apply(in ChangeSet) Authority {
 	changeset, ok := in.(*RosterChangeSet)
 	if !ok {
-		dela.Logger.Warn().Msgf("Change set '%T' is not supported. Ignoring.", in)
+		observability.Logger.Warn().Msgf("Change set '%T' is not supported. Ignoring.", in)
 		return r
 	}
 

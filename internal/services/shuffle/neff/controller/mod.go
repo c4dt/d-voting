@@ -14,8 +14,8 @@ import (
 	"github.com/c4dt/d-voting/internal/crypto"
 	"github.com/c4dt/d-voting/internal/crypto/bls"
 	"github.com/c4dt/d-voting/internal/crypto/loader"
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/c4dt/d-voting/internal/services/shuffle/neff"
 	"golang.org/x/xerrors"
 )
@@ -107,7 +107,7 @@ func (controller) OnStop(node.Injector) error {
 func getSigner(filePath string) (crypto.Signer, error) {
 	l := loader.NewFileLoader(filePath)
 
-	dela.Logger.Info().Msgf("loading private key from %q", filePath)
+	observability.Logger.Info().Msgf("loading private key from %q", filePath)
 
 	signerData, err := l.Load()
 	if err != nil {

@@ -9,7 +9,7 @@ import (
 
 	dvoting "github.com/c4dt/d-voting"
 	"github.com/c4dt/d-voting/internal/cli/node"
-	"github.com/c4dt/d-voting/internal/dela"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"golang.org/x/xerrors"
@@ -35,7 +35,7 @@ func (a StartAction) Execute(ctx node.Context) error {
 	reg := prometheus.DefaultRegisterer
 
 	// Register Dela collectors
-	for _, c := range dela.PromCollectors {
+	for _, c := range observability.PromCollectors {
 		err := reg.Register(c)
 		if err != nil {
 			fmt.Fprintf(ctx.Out, "ERROR: failed to register: %v\n", err)
@@ -76,7 +76,7 @@ func (a StartAction) Execute(ctx node.Context) error {
 		return xerrors.Errorf("failed to start metric server")
 	}
 
-	dela.Logger.Info().Msgf("prometheus server started at %s", srvAddr)
+	observability.Logger.Info().Msgf("prometheus server started at %s", srvAddr)
 
 	// inject the server so we can stop it later
 	ctx.Injector.Inject(&srv)

@@ -23,10 +23,10 @@ import (
 	"os"
 	"sync"
 
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino"
 	"github.com/c4dt/d-voting/internal/network/mino/minogrpc/ptypes"
 	"github.com/c4dt/d-voting/internal/network/mino/router"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/c4dt/d-voting/internal/observability/traffic"
 	"github.com/c4dt/d-voting/internal/serde"
 	"github.com/rs/zerolog"
@@ -137,7 +137,7 @@ func NewSession(
 	connMgr ConnectionManager,
 ) Session {
 	sess := &session{
-		log:     dela.Logger.With().Str("addr", me.String()).Logger(),
+		log:     observability.Logger.With().Str("addr", me.String()).Logger(),
 		md:      md,
 		me:      me,
 		errs:    make(chan error, 1),

@@ -25,13 +25,13 @@ import (
 	"github.com/c4dt/d-voting/internal/cli/node"
 	"github.com/c4dt/d-voting/internal/core/store/kv"
 	"github.com/c4dt/d-voting/internal/crypto/loader"
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino"
 	"github.com/c4dt/d-voting/internal/network/mino/minogrpc"
 	"github.com/c4dt/d-voting/internal/network/mino/minogrpc/certs"
 	"github.com/c4dt/d-voting/internal/network/mino/minogrpc/session"
 	"github.com/c4dt/d-voting/internal/network/mino/router"
 	"github.com/c4dt/d-voting/internal/network/mino/router/tree"
+	"github.com/c4dt/d-voting/internal/observability"
 	"golang.org/x/xerrors"
 )
 
@@ -191,7 +191,7 @@ func (m miniController) OnStart(ctx cli.Flags, inj node.Injector) error {
 
 	inj.Inject(o)
 
-	dela.Logger.Info().Msgf("%v is running", o)
+	observability.Logger.Info().Msgf("%v is running", o)
 
 	return nil
 }

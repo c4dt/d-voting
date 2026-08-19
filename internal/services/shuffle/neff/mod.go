@@ -11,8 +11,8 @@ import (
 	"github.com/c4dt/d-voting/internal/core/txn"
 	"github.com/c4dt/d-voting/internal/core/txn/pool"
 	"github.com/c4dt/d-voting/internal/crypto"
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/c4dt/d-voting/internal/serde"
 	"github.com/c4dt/d-voting/internal/services/shuffle"
 	"github.com/c4dt/d-voting/internal/services/shuffle/neff/types"
@@ -131,14 +131,14 @@ func (a *Actor) Shuffle(formID []byte, userID string) error {
 		}
 	}
 
-	dela.Logger.Info().Msgf("sending start shuffle to: %v", addrs)
+	observability.Logger.Info().Msgf("sending start shuffle to: %v", addrs)
 
 	message := types.NewStartShuffle(formIDHex, userID, addrs)
 
 	errs := sender.Send(message, addrs...)
 	err = <-errs
 	if err != nil {
-		dela.Logger.Warn().Msgf("failed to start shuffle: %v", err)
+		observability.Logger.Warn().Msgf("failed to start shuffle: %v", err)
 		//return xerrors.Errorf("failed to start shuffle: %v", err)
 	}
 
@@ -164,21 +164,21 @@ func (a *Actor) waitAndCheckShuffling(formID string, rosterLen int) error {
 		}
 
 		round := len(form.ShuffleInstances)
-		dela.Logger.Info().Msgf("SHUFFLE / ROUND : %d", round)
+		observability.Logger.Info().Msgf("SHUFFLE / ROUND : %d", round)
 
 		// if the threshold is reached that means we have enough shuffling.
 		if round >= form.ShuffleThreshold {
-			dela.Logger.Info().Msgf("shuffle done with round n°%d", round)
+			observability.Logger.Info().Msgf("shuffle done with round n°%d", round)
 			return nil
 		}
 
-		dela.Logger.Info().Msgf("waiting a while before checking form: %d", i)
+		observability.Logger.Info().Msgf("waiting a while before checking form: %d", i)
 		sleepTime := rosterLen / 2
 		time.Sleep(time.Duration(sleepTime) * time.Second)
 		if i >= form.ShuffleThreshold*((int)(form.BallotCount)/16+1) {
 			break
 		}
-		dela.Logger.Info().Msgf("WaitingRounds is : %d", form.ShuffleThreshold*((int)(form.BallotCount)/10+1))
+		observability.Logger.Info().Msgf("WaitingRounds is : %d", form.ShuffleThreshold*((int)(form.BallotCount)/10+1))
 	}
 
 	return xerrors.Errorf("threshold of shuffling not reached: %d < %d",

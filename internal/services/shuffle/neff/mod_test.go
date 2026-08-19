@@ -8,8 +8,8 @@ import (
 
 	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/authority"
 	"github.com/c4dt/d-voting/internal/crypto"
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/c4dt/d-voting/internal/serde"
 	"github.com/c4dt/d-voting/internal/serde/json"
 
@@ -80,13 +80,13 @@ func TestNeffShuffle_Shuffle(t *testing.T) {
 	rpc := fake.NewStreamRPC(fake.NewReceiver(), fake.NewBadSender())
 	actor.rpc = rpc
 
-	oldLog := dela.Logger
+	oldLog := observability.Logger
 	defer func() {
-		dela.Logger = oldLog
+		observability.Logger = oldLog
 	}()
 
 	out := new(bytes.Buffer)
-	dela.Logger = zerolog.New(out)
+	observability.Logger = zerolog.New(out)
 
 	// should only output a warning
 	err = actor.Shuffle(formIDBuf, "123456")

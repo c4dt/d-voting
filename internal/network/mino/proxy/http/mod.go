@@ -8,8 +8,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino/proxy"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/rs/zerolog"
 )
 
@@ -41,7 +41,7 @@ func setLogLevel() {
 
 // NewHTTP creates a new proxy http
 func NewHTTP(listenAddr string) proxy.Proxy {
-	logger := dela.Logger.With().Timestamp().Str("role", "http proxy").Logger().
+	logger := observability.Logger.With().Timestamp().Str("role", "http proxy").Logger().
 		Level(defaultLevel)
 
 	nextRequestID := func() string {

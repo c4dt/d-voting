@@ -52,8 +52,8 @@ import (
 	"github.com/c4dt/d-voting/internal/core/txn/pool"
 	"github.com/c4dt/d-voting/internal/core/validation"
 	"github.com/c4dt/d-voting/internal/crypto"
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/c4dt/d-voting/internal/protocols/cosi"
 	"github.com/c4dt/d-voting/internal/protocols/cosi/threshold"
 	"golang.org/x/xerrors"
@@ -201,7 +201,7 @@ func NewServiceStruct(param ServiceParam, opts ...ServiceOption) (*Service, erro
 		param.Cosi.GetPublicKeyFactory())
 	proc.tree = blockstore.NewTreeCache(param.Tree)
 	proc.access = param.Access
-	proc.logger = dela.Logger.With().Str("addr", param.Mino.GetAddress().String()).Logger()
+	proc.logger = observability.Logger.With().Str("addr", param.Mino.GetAddress().String()).Logger()
 
 	pcparam := pbft.StateMachineParam{
 		Logger:          proc.logger,

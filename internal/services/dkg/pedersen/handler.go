@@ -23,8 +23,8 @@ import (
 
 	etypes "github.com/c4dt/d-voting/internal/contracts/evoting/types"
 	"github.com/c4dt/d-voting/internal/core/ordering"
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/c4dt/d-voting/internal/protocols/cosi/threshold"
 	"github.com/c4dt/d-voting/internal/serde"
 	"github.com/c4dt/d-voting/internal/services/dkg"
@@ -87,7 +87,7 @@ func NewHandler(me mino.Address, service ordering.Service, pool pool.Pool,
 	startRes := handlerData.StartRes
 	privShare := handlerData.PrivShare
 
-	log := dela.Logger.With().Str("role", "DKG").Str("address", me.String()).Logger()
+	log := observability.Logger.With().Str("role", "DKG").Str("address", me.String()).Logger()
 
 	return &Handler{
 		me:              me,
@@ -274,7 +274,7 @@ func (h *Handler) doDKG(deals, resps *list.List, out mino.Sender, from mino.Addr
 	*h.status = dkg.Status{Status: dkg.Certifying}
 	err := h.certify(resps, out)
 	if err != nil {
-		dela.Logger.Error().Msgf("failed to certify: %v", err)
+		observability.Logger.Error().Msgf("failed to certify: %v", err)
 		return
 	}
 
@@ -284,7 +284,7 @@ func (h *Handler) doDKG(deals, resps *list.List, out mino.Sender, from mino.Addr
 	// Send back the public DKG key
 	distKey, err := h.dkg.DistKeyShare()
 	if err != nil {
-		dela.Logger.Error().Msgf("failed to get distr key: %v", err)
+		observability.Logger.Error().Msgf("failed to get distr key: %v", err)
 		return
 	}
 
@@ -299,7 +299,7 @@ func (h *Handler) doDKG(deals, resps *list.List, out mino.Sender, from mino.Addr
 	done := types.NewStartDone(distKey.Public())
 	err = <-out.Send(done, from)
 	if err != nil {
-		dela.Logger.Error().Msgf("got an error while sending pub key: %v", err)
+		observability.Logger.Error().Msgf("got an error while sending pub key: %v", err)
 		return
 	}
 	h.saveState(h)
@@ -480,7 +480,7 @@ func (h *Handler) handleDecryptRequest(formID string) error {
 		nbrSubmissions := len(form.PubsharesUnits.Pubshares)
 
 		if nbrSubmissions >= form.ShuffleThreshold {
-			dela.Logger.Info().Msgf("decryption possible with shares from %d nodes",
+			observability.Logger.Info().Msgf("decryption possible with shares from %d nodes",
 				nbrSubmissions)
 			return nil
 		}
@@ -507,7 +507,7 @@ func (h *Handler) handleDecryptRequest(formID string) error {
 		accepted, msg := watchTx(events, tx.GetID())
 
 		if accepted {
-			dela.Logger.Info().Msgf("pubShares accepted on the chain (index: %d)", h.privShare.I)
+			observability.Logger.Info().Msgf("pubShares accepted on the chain (index: %d)", h.privShare.I)
 			return nil
 		}
 
@@ -516,7 +516,7 @@ func (h *Handler) handleDecryptRequest(formID string) error {
 			return xerrors.Errorf("failed to sync manager: %v", err)
 		}
 
-		dela.Logger.Info().Msgf("submission of pubShares denied: %s", msg)
+		observability.Logger.Info().Msgf("submission of pubShares denied: %s", msg)
 
 		cancel()
 	}
@@ -814,7 +814,7 @@ func watchTx(events <-chan ordering.Event, txID []byte) (bool, string) {
 				continue
 			}
 
-			dela.Logger.Info().Hex("id", txID).Msg("transaction included in the block")
+			observability.Logger.Info().Hex("id", txID).Msg("transaction included in the block")
 
 			accepted, msg := res.GetStatus()
 			if accepted {

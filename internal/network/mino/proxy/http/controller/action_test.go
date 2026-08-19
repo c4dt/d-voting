@@ -8,9 +8,9 @@ import (
 	"testing"
 
 	"github.com/c4dt/d-voting/internal/cli/node"
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino/proxy"
 	"github.com/c4dt/d-voting/internal/network/mino/proxy/http"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stretchr/testify/require"
 )
@@ -132,7 +132,7 @@ func TestPromAction_ErrorCollector(t *testing.T) {
 		Out:      out,
 	}
 
-	dela.PromCollectors = []prometheus.Collector{fakeCollector{}, fakeCollector{}}
+	observability.PromCollectors = []prometheus.Collector{fakeCollector{}, fakeCollector{}}
 
 	action := promAction{}
 	err := action.Execute(ctx)

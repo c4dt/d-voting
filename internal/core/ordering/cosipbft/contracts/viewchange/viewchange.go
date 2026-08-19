@@ -11,7 +11,7 @@ import (
 	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/authority"
 	"github.com/c4dt/d-voting/internal/core/store"
 	"github.com/c4dt/d-voting/internal/core/txn"
-	"github.com/c4dt/d-voting/internal/dela"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/c4dt/d-voting/internal/serde"
 	"github.com/c4dt/d-voting/internal/serde/json"
 	"golang.org/x/xerrors"
@@ -191,7 +191,7 @@ func (c Contract) UID() string {
 // reportErr prints a log with the actual error while the transaction will
 // contain a simplified explanation.
 func reportErr(tx txn.Transaction, err error) {
-	dela.Logger.Warn().
+	observability.Logger.Warn().
 		Hex("ID", tx.GetID()).
 		Err(err).
 		Msg("transaction refused")

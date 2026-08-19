@@ -16,8 +16,8 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/c4dt/d-voting/internal/serde"
 	"github.com/c4dt/d-voting/internal/serde/json"
 	"golang.org/x/xerrors"
@@ -57,7 +57,7 @@ func NewMinoch(manager *Manager, identifier string) (*Minoch, error) {
 		return nil, xerrors.Errorf("manager refused: %v", err.Error())
 	}
 
-	dela.Logger.Trace().Msgf("New instance with identifier %s", identifier)
+	observability.Logger.Trace().Msgf("New instance with identifier %s", identifier)
 
 	return inst, nil
 }

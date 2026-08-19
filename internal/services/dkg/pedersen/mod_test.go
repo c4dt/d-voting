@@ -14,8 +14,8 @@ import (
 	"github.com/c4dt/d-voting/internal/core/ordering"
 	"github.com/c4dt/d-voting/internal/core/txn/signed"
 	"github.com/c4dt/d-voting/internal/core/validation"
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino/minogrpc/session"
+	"github.com/c4dt/d-voting/internal/observability"
 	"golang.org/x/xerrors"
 
 	"github.com/c4dt/d-voting/internal/contracts/evoting"
@@ -654,13 +654,13 @@ func TestPedersen_ComputePubshares_SenderFailed(t *testing.T) {
 		rpc: fake.NewStreamRPC(nil, fake.NewBadSender()),
 	}
 
-	oldLog := dela.Logger
+	oldLog := observability.Logger
 	defer func() {
-		dela.Logger = oldLog
+		observability.Logger = oldLog
 	}()
 
 	out := new(bytes.Buffer)
-	dela.Logger = zerolog.New(out)
+	observability.Logger = zerolog.New(out)
 
 	// should only output a warning
 	err := a.ComputePubshares()

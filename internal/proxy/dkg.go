@@ -8,7 +8,7 @@ import (
 	"net/http"
 
 	"github.com/c4dt/d-voting/internal/core/txn"
-	"github.com/c4dt/d-voting/internal/dela"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/c4dt/d-voting/internal/proxy/types"
 	dkgSrv "github.com/c4dt/d-voting/internal/services/dkg"
 	"github.com/gorilla/mux"
@@ -189,7 +189,7 @@ func (d dkg) EditDKGActor(w http.ResponseWriter, r *http.Request) {
 		go func() {
 			_, err := a.Setup()
 			if err != nil {
-				dela.Logger.Err(err).Msg("failed to setup")
+				observability.Logger.Err(err).Msg("failed to setup")
 			}
 		}()
 	// begin the decryption

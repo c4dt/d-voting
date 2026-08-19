@@ -9,8 +9,8 @@ import (
 	"github.com/c4dt/d-voting/internal/core/ordering"
 	"github.com/c4dt/d-voting/internal/core/txn/signed"
 	"github.com/c4dt/d-voting/internal/core/validation"
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino/proxy"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/c4dt/d-voting/internal/services/shuffle"
 	"github.com/gorilla/mux"
 	"go.dedis.ch/kyber/v3/suites"
@@ -56,7 +56,7 @@ func (a *InitAction) Execute(ctx node.Context) error {
 	}
 
 	ctx.Injector.Inject(actor)
-	dela.Logger.Info().Msg("The shuffle protocol has been initialized successfully")
+	observability.Logger.Info().Msg("The shuffle protocol has been initialized successfully")
 
 	return nil
 }
@@ -107,7 +107,7 @@ func (a *RegisterHandlersAction) Execute(ctx node.Context) error {
 
 	proxy.RegisterHandler("/evoting/services/shuffle/", router.ServeHTTP)
 
-	dela.Logger.Info().Msg("DKG handler registered")
+	observability.Logger.Info().Msg("DKG handler registered")
 
 	return nil
 }

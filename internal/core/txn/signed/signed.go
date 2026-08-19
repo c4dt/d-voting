@@ -16,7 +16,7 @@ import (
 	"github.com/c4dt/d-voting/internal/core/txn"
 	"github.com/c4dt/d-voting/internal/crypto"
 	"github.com/c4dt/d-voting/internal/crypto/common"
-	"github.com/c4dt/d-voting/internal/dela"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/c4dt/d-voting/internal/serde"
 	"github.com/c4dt/d-voting/internal/serde/registry"
 	"golang.org/x/xerrors"
@@ -308,7 +308,7 @@ func (mgr *TransactionManager) Make(args ...txn.Arg) (txn.Transaction, error) {
 
 	nonce, err := mgr.client.GetNonce(mgr.signer.GetPublicKey())
 	if err != nil {
-		dela.Logger.Err(err).Msg("Couldn't update nonce")
+		observability.Logger.Err(err).Msg("Couldn't update nonce")
 	}
 	// Only update our nonce if the stored nonce is bigger than ours.
 	// This allows to have transactions in the pool which are not yet accepted,
@@ -342,7 +342,7 @@ func (mgr *TransactionManager) Sync() error {
 
 	mgr.nonce = nonce
 
-	dela.Logger.Debug().Uint64("nonce", nonce).Msg("manager synchronized")
+	observability.Logger.Debug().Uint64("nonce", nonce).Msg("manager synchronized")
 
 	return nil
 }

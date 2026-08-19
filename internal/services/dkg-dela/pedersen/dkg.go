@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/c4dt/d-voting/internal/serde"
 	"github.com/c4dt/d-voting/internal/services/dkg-dela/pedersen/types"
 	"github.com/rs/zerolog"
@@ -525,7 +525,7 @@ func (s *instance) finalizeReshare(
 		s.log.Warn().Msgf("context done (this might be expected): %v", ctx.Err())
 	}
 
-	dela.Logger.Info().Msgf("%s announced the DKG public key", s.me)
+	observability.Logger.Info().Msgf("%s announced the DKG public key", s.me)
 
 	return nil
 }

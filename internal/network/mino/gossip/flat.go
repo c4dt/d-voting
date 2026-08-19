@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/c4dt/d-voting/internal/serde"
 	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
@@ -46,7 +46,7 @@ func (flat *Flat) Listen() (Actor, error) {
 	h := handler{Flat: flat}
 
 	actor := &flatActor{
-		logger: dela.Logger.With().Str("addr", flat.mino.GetAddress().String()).Logger(),
+		logger: observability.Logger.With().Str("addr", flat.mino.GetAddress().String()).Logger(),
 		rpc:    mino.MustCreateRPC(flat.mino, "flatgossip", h, flat.rumorFactory),
 	}
 

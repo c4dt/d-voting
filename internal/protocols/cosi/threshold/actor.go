@@ -11,8 +11,8 @@ import (
 	"context"
 
 	"github.com/c4dt/d-voting/internal/crypto"
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/c4dt/d-voting/internal/observability/tracing"
 	"github.com/c4dt/d-voting/internal/protocols/cosi"
 	"github.com/c4dt/d-voting/internal/protocols/cosi/threshold/types"
@@ -100,7 +100,7 @@ func (a thresholdActor) waitResp(errs <-chan error, maxErrs int, cancel func()) 
 		errCount++
 
 		if errCount > maxErrs {
-			dela.Logger.Warn().Msg("aborting collective signing due to too many errors")
+			observability.Logger.Warn().Msg("aborting collective signing due to too many errors")
 			cancel()
 			return
 		}

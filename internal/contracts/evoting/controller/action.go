@@ -29,9 +29,9 @@ import (
 	"github.com/c4dt/d-voting/internal/crypto"
 	"github.com/c4dt/d-voting/internal/crypto/bls"
 	"github.com/c4dt/d-voting/internal/crypto/loader"
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino"
 	"github.com/c4dt/d-voting/internal/network/mino/proxy"
+	"github.com/c4dt/d-voting/internal/observability"
 	eproxy "github.com/c4dt/d-voting/internal/proxy"
 	"github.com/c4dt/d-voting/internal/proxy/txnmanager"
 	ptypes "github.com/c4dt/d-voting/internal/proxy/types"
@@ -208,7 +208,7 @@ func (a *RegisterAction) Execute(ctx node.Context) error {
 	proxy.RegisterHandler(FormPathSlash, router.ServeHTTP)
 	proxy.RegisterHandler(transactionSlash, router.ServeHTTP)
 
-	dela.Logger.Info().Msg("d-voting proxy handlers registered")
+	observability.Logger.Info().Msg("d-voting proxy handlers registered")
 
 	return nil
 }
@@ -325,7 +325,7 @@ func (a *scenarioTestAction) Execute(ctx node.Context) error {
 	}
 
 	logFormStatus(form)
-	dela.Logger.Info().Msgf("Pubkey of the form : %x", form.Pubkey)
+	observability.Logger.Info().Msgf("Pubkey of the form : %x", form.Pubkey)
 
 	// ############################# ATTEMPT TO CLOSE FORM #################
 
@@ -384,7 +384,7 @@ func (a *scenarioTestAction) Execute(ctx node.Context) error {
 		return xerrors.Errorf(castFailed, err)
 	}
 
-	dela.Logger.Info().Msg(responseBody + respBody)
+	observability.Logger.Info().Msg(responseBody + respBody)
 
 	// Ballot 2
 	ballot2, err := marshallBallot(b2, dkgActor, form.ChunksPerBallot())
@@ -409,7 +409,7 @@ func (a *scenarioTestAction) Execute(ctx node.Context) error {
 		return xerrors.Errorf(castFailed, err)
 	}
 
-	dela.Logger.Info().Msg(responseBody + respBody)
+	observability.Logger.Info().Msg(responseBody + respBody)
 
 	// Ballot 3
 	ballot3, err := marshallBallot(b3, dkgActor, form.ChunksPerBallot())
@@ -434,7 +434,7 @@ func (a *scenarioTestAction) Execute(ctx node.Context) error {
 		return xerrors.Errorf(castFailed, err)
 	}
 
-	dela.Logger.Info().Msg(responseBody + respBody)
+	observability.Logger.Info().Msg(responseBody + respBody)
 
 	form, err = types.FormFromStore(serdecontext, formFac, formID, service.GetStore())
 	if err != nil {
@@ -446,10 +446,10 @@ func (a *scenarioTestAction) Execute(ctx node.Context) error {
 		return xerrors.Errorf(getFormErr, err)
 	}
 	encryptedBallots := suff.Ciphervotes
-	dela.Logger.Info().Msg("Length encrypted ballots: " + strconv.Itoa(len(encryptedBallots)))
-	dela.Logger.Info().Msgf("Ballot of user1: %s", encryptedBallots[0])
-	dela.Logger.Info().Msgf("Ballot of user2: %s", encryptedBallots[1])
-	dela.Logger.Info().Msgf("Ballot of user3: %s", encryptedBallots[2])
+	observability.Logger.Info().Msg("Length encrypted ballots: " + strconv.Itoa(len(encryptedBallots)))
+	observability.Logger.Info().Msgf("Ballot of user1: %s", encryptedBallots[0])
+	observability.Logger.Info().Msgf("Ballot of user2: %s", encryptedBallots[1])
+	observability.Logger.Info().Msgf("Ballot of user3: %s", encryptedBallots[2])
 
 	// ############################# CLOSE FORM FOR REAL ###################
 
@@ -465,8 +465,8 @@ func (a *scenarioTestAction) Execute(ctx node.Context) error {
 		return xerrors.Errorf(getFormErr, err)
 	}
 
-	dela.Logger.Info().Msg("Title of the form: " + form.Configuration.Title.En)
-	dela.Logger.Info().Msg("Status of the form: " + strconv.Itoa(int(form.Status)))
+	observability.Logger.Info().Msg("Title of the form: " + form.Configuration.Title.En)
+	observability.Logger.Info().Msg("Status of the form: " + strconv.Itoa(int(form.Status)))
 
 	// ###################################### SHUFFLE BALLOTS ##################
 
@@ -504,12 +504,12 @@ func (a *scenarioTestAction) Execute(ctx node.Context) error {
 	}
 
 	logFormStatus(form)
-	dela.Logger.Info().Msg("Number of shuffled ballots : " + strconv.Itoa(len(form.ShuffleInstances)))
+	observability.Logger.Info().Msg("Number of shuffled ballots : " + strconv.Itoa(len(form.ShuffleInstances)))
 	suff, err = form.Suffragia(serdecontext, service.GetStore())
 	if err != nil {
 		return xerrors.Errorf(getFormErr, err)
 	}
-	dela.Logger.Info().Msg("Number of encrypted ballots : " + strconv.Itoa(len(suff.Ciphervotes)))
+	observability.Logger.Info().Msg("Number of encrypted ballots : " + strconv.Itoa(len(suff.Ciphervotes)))
 
 	// ###################################### REQUEST PUBLIC SHARES ############
 
@@ -530,7 +530,7 @@ func (a *scenarioTestAction) Execute(ctx node.Context) error {
 	validSubmissions := len(form.PubsharesUnits.Pubshares)
 
 	logFormStatus(form)
-	dela.Logger.Info().Msg("Number of Pubshare units submitted: " + strconv.Itoa(validSubmissions))
+	observability.Logger.Info().Msg("Number of Pubshare units submitted: " + strconv.Itoa(validSubmissions))
 
 	// ###################################### DECRYPT BALLOTS ##################
 
@@ -546,11 +546,11 @@ func (a *scenarioTestAction) Execute(ctx node.Context) error {
 		return xerrors.Errorf(getFormErr, err)
 	}
 
-	// dela.Logger.Info().Msg("----------------------- Form : " +
+	// observability.Logger.Info().Msg("----------------------- Form : " +
 	// string(proof.GetValue()))
 
 	logFormStatus(form)
-	dela.Logger.Info().Msg("Number of decrypted ballots : " + strconv.Itoa(len(form.DecryptedBallots)))
+	observability.Logger.Info().Msg("Number of decrypted ballots : " + strconv.Itoa(len(form.DecryptedBallots)))
 
 	// ###################################### GET FORM RESULT ##############
 
@@ -562,15 +562,15 @@ func (a *scenarioTestAction) Execute(ctx node.Context) error {
 	}
 
 	logFormStatus(form)
-	dela.Logger.Info().Msg("Number of decrypted ballots : " + strconv.Itoa(len(form.DecryptedBallots)))
+	observability.Logger.Info().Msg("Number of decrypted ballots : " + strconv.Itoa(len(form.DecryptedBallots)))
 
 	if len(form.DecryptedBallots) != 3 {
 		return xerrors.Errorf("unexpected number of decrypted ballot: %d != 3", len(form.DecryptedBallots))
 	}
 
-	// dela.Logger.Info().Msg(form.DecryptedBallots[0].Vote)
-	// dela.Logger.Info().Msg(form.DecryptedBallots[1].Vote)
-	// dela.Logger.Info().Msg(form.DecryptedBallots[2].Vote)
+	// observability.Logger.Info().Msg(form.DecryptedBallots[0].Vote)
+	// observability.Logger.Info().Msg(form.DecryptedBallots[1].Vote)
+	// observability.Logger.Info().Msg(form.DecryptedBallots[2].Vote)
 
 	// ###################################### GET ALL FORM ##############
 
@@ -589,7 +589,7 @@ func (a *scenarioTestAction) Execute(ctx node.Context) error {
 		return xerrors.Errorf("failed to decode getAllForms: %v", err)
 	}
 
-	dela.Logger.Info().Msgf("All forms: %v", allForms)
+	observability.Logger.Info().Msgf("All forms: %v", allForms)
 
 	if len(allForms.Forms) != 1 && allForms.Forms[0].FormID != formID {
 		return xerrors.Errorf("unexpected allForms: %v", allForms)
@@ -674,9 +674,9 @@ func setupSimpleForm(ctx node.Context, secret kyber.Scalar, proxyAddr1 string,
 }
 
 func logFormStatus(form types.Form) {
-	dela.Logger.Info().Msg("Title of the form : " + form.Configuration.Title.En)
-	dela.Logger.Info().Msg("ID of the form : " + form.FormID)
-	dela.Logger.Info().Msg("Status of the form : " + strconv.Itoa(int(form.Status)))
+	observability.Logger.Info().Msg("Title of the form : " + form.Configuration.Title.En)
+	observability.Logger.Info().Msg("ID of the form : " + form.FormID)
+	observability.Logger.Info().Msg("Status of the form : " + strconv.Itoa(int(form.Status)))
 }
 
 func encodeID(ID string) types.ID {

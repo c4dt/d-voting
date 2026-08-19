@@ -15,7 +15,7 @@ import (
 	"github.com/c4dt/d-voting/internal/core/txn"
 	"github.com/c4dt/d-voting/internal/core/txn/signed"
 	"github.com/c4dt/d-voting/internal/crypto"
-	"github.com/c4dt/d-voting/internal/dela"
+	"github.com/c4dt/d-voting/internal/observability"
 	"golang.org/x/xerrors"
 )
 
@@ -45,7 +45,7 @@ type txManager struct {
 // For integrationTest
 func (m txManager) addAndWait(args ...txn.Arg) ([]byte, error) {
 	for i := 0; i < m.retry; i++ {
-		dela.Logger.Info().Msgf("Adding and waiting for tx to succeed: %d", i)
+		observability.Logger.Info().Msgf("Adding and waiting for tx to succeed: %d", i)
 		sentTxn, err := m.m.Make(args...)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to Make: %v", err)

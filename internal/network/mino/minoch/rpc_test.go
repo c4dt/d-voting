@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/c4dt/d-voting/internal/serde"
 	"github.com/c4dt/d-voting/internal/testing/dela/fake"
 	"github.com/rs/zerolog"
@@ -191,13 +191,13 @@ func TestRPC_Failures_Stream(t *testing.T) {
 func TestRPC_Full_Stream(t *testing.T) {
 	bufSize = 0
 
-	oldLogger := dela.Logger
+	oldLogger := observability.Logger
 	defer func() {
-		dela.Logger = oldLogger
+		observability.Logger = oldLogger
 	}()
 
 	buf := new(bytes.Buffer)
-	dela.Logger = zerolog.New(buf)
+	observability.Logger = zerolog.New(buf)
 
 	manager := NewManager()
 

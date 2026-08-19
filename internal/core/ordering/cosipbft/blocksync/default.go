@@ -15,8 +15,8 @@ import (
 	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/pbft"
 	otypes "github.com/c4dt/d-voting/internal/core/ordering/cosipbft/types"
 	"github.com/c4dt/d-voting/internal/crypto"
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/c4dt/d-voting/internal/observability/tracing"
 	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
@@ -59,7 +59,7 @@ type SyncParam struct {
 func NewSynchronizer(param SyncParam) Synchronizer {
 	latest := param.Blocks.Len()
 
-	logger := dela.Logger.With().Str("addr", param.Mino.GetAddress().String()).Logger()
+	logger := observability.Logger.With().Str("addr", param.Mino.GetAddress().String()).Logger()
 
 	h := &handler{
 		latest:      &latest,

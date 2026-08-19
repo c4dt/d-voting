@@ -11,8 +11,8 @@ import (
 	"sync/atomic"
 
 	"github.com/c4dt/d-voting/internal/crypto"
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/c4dt/d-voting/internal/protocols/cosi"
 	"github.com/c4dt/d-voting/internal/protocols/cosi/threshold/types"
 	"github.com/rs/zerolog"
@@ -63,7 +63,7 @@ type Threshold struct {
 // NewThreshold returns a new instance of a threshold collective signature.
 func NewThreshold(m mino.Mino, signer crypto.AggregateSigner) *Threshold {
 	c := &Threshold{
-		logger: dela.Logger.With().Str("addr", m.GetAddress().String()).Logger(),
+		logger: observability.Logger.With().Str("addr", m.GetAddress().String()).Logger(),
 		mino:   m,
 		signer: signer,
 	}

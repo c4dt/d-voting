@@ -12,7 +12,7 @@ import (
 	"strings"
 
 	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/contracts/viewchange"
-	"github.com/c4dt/d-voting/internal/dela"
+	"github.com/c4dt/d-voting/internal/observability"
 	"go.dedis.ch/kyber/v3/share"
 
 	"github.com/c4dt/d-voting/internal/contracts/evoting/types"
@@ -755,7 +755,7 @@ func (e evotingCommand) combineShares(snap store.Snapshot, step execution.Step) 
 		err = ballot.Unmarshal(marshalledBallot.String(), form)
 
 		if err != nil {
-			dela.Logger.Warn().Msgf("Failed to unmarshal a ballot: %v", err)
+			observability.Logger.Warn().Msgf("Failed to unmarshal a ballot: %v", err)
 		}
 
 		decryptedBallots[i] = ballot

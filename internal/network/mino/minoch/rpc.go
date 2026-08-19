@@ -11,8 +11,8 @@ import (
 	"math"
 	"sync"
 
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/c4dt/d-voting/internal/serde"
 	"golang.org/x/xerrors"
 )
@@ -218,7 +218,7 @@ func (c RPC) Stream(ctx context.Context, memship mino.Players) (mino.Sender, min
 					select {
 					case output <- env:
 					default:
-						dela.Logger.Warn().Str("to", to.String()).
+						observability.Logger.Warn().Str("to", to.String()).
 							Str("from", env.from.String()).Msg("full")
 						output <- env
 					}

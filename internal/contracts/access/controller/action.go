@@ -13,7 +13,7 @@ import (
 	"github.com/c4dt/d-voting/internal/core/access"
 	"github.com/c4dt/d-voting/internal/core/execution/native"
 	"github.com/c4dt/d-voting/internal/crypto/bls"
-	"github.com/c4dt/d-voting/internal/dela"
+	"github.com/c4dt/d-voting/internal/observability"
 	"golang.org/x/xerrors"
 )
 
@@ -54,7 +54,7 @@ func (a addAction) Execute(ctx node.Context) error {
 		return xerrors.Errorf("failed to grant: %v", err)
 	}
 
-	dela.Logger.Info().Msgf("access granted to %v", identities)
+	observability.Logger.Info().Msgf("access granted to %v", identities)
 
 	return nil
 }

@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/c4dt/d-voting/internal/dela"
+	"github.com/c4dt/d-voting/internal/observability"
 
 	"github.com/c4dt/d-voting/internal/crypto/ed25519"
 	"github.com/c4dt/d-voting/internal/services/dkg-dela"
@@ -184,7 +184,7 @@ func (a *Actor) Setup(coAuth crypto.CollectiveAuthority, threshold int) (kyber.P
 				"go the following: %T", msg)
 		}
 
-		dela.Logger.Info().Msgf("node %q done", addr.String())
+		observability.Logger.Info().Msgf("node %q done", addr.String())
 
 		dkgPubKeys[i] = doneMsg.GetPublicKey()
 
@@ -219,33 +219,33 @@ func (a *Actor) Encrypt(msg []byte) (kyber.Point, []kyber.Point, error) {
 
 	pubK, err := a.GetPublicKey()
 	if err != nil {
-		dela.Logger.Error().Msgf("Cannot encrypt: %v", err.Error())
+		observability.Logger.Error().Msgf("Cannot encrypt: %v", err.Error())
 	}
 
 	// ElGamal-encrypt the point to produce ciphertext (K,C).
 	r := suite.Scalar().Pick(suite.RandomStream())
 
 	K := suite.Point().Mul(r, nil)
-	dela.Logger.Debug().Msgf("K: %v", K.String())
+	observability.Logger.Debug().Msgf("K: %v", K.String())
 
 	C := suite.Point().Mul(r, pubK)
-	dela.Logger.Debug().Msgf("C: %v", C)
+	observability.Logger.Debug().Msgf("C: %v", C)
 
 	// S: ephemeral DH shared secret
 	S := suite.Point().Mul(r, pubK)
-	dela.Logger.Debug().Msgf("S: %v", S.String())
+	observability.Logger.Debug().Msgf("S: %v", S.String())
 
 	Cs := make([]kyber.Point, 0, 16)
 	for len(msg) > 0 {
 		kp := suite.Point().Embed(msg, suite.RandomStream())
-		dela.Logger.Debug().Msgf("kp: %v", kp.String())
+		observability.Logger.Debug().Msgf("kp: %v", kp.String())
 
 		// message blinded with secret
 		c := suite.Point().Add(C, kp)
-		dela.Logger.Debug().Msgf("c: %v", c)
+		observability.Logger.Debug().Msgf("c: %v", c)
 
 		Cs = append(Cs, c)
-		dela.Logger.Debug().Msgf("Cs: %v", Cs)
+		observability.Logger.Debug().Msgf("Cs: %v", Cs)
 
 		msg = msg[min(len(msg), kp.EmbedLen()):]
 	}
@@ -297,7 +297,7 @@ func (a *Actor) Decrypt(K kyber.Point, Cs []kyber.Point) ([]byte, error) {
 				return []byte{}, xerrors.Errorf(unexpectedStreamStop, err)
 			}
 
-			dela.Logger.Debug().Msgf("Received a decryption reply from %v", src)
+			observability.Logger.Debug().Msgf("Received a decryption reply from %v", src)
 
 			decryptReply, ok := message.(types.DecryptReply)
 			if !ok {
@@ -322,7 +322,7 @@ func (a *Actor) Decrypt(K kyber.Point, Cs []kyber.Point) ([]byte, error) {
 
 		decryptedMessage = append(decryptedMessage, decrypted...)
 	}
-	dela.Logger.Info().Msgf("Decrypted message: %v", decryptedMessage)
+	observability.Logger.Info().Msgf("Decrypted message: %v", decryptedMessage)
 
 	return decryptedMessage, nil
 }
@@ -432,7 +432,7 @@ func (a *Actor) VerifiableDecrypt(ciphertexts []types.Ciphertext) ([][]byte, err
 			return nil, xerrors.Errorf(unexpectedStreamStop, err)
 		}
 
-		dela.Logger.Debug().Msgf("received share from %v\n", from)
+		observability.Logger.Debug().Msgf("received share from %v\n", from)
 
 		shareAndProof, ok := message.(types.VerifiableDecryptReply)
 		if !ok {
@@ -470,7 +470,7 @@ func (a *Actor) VerifiableDecrypt(ciphertexts []types.Ciphertext) ([][]byte, err
 			for j := range jobChan {
 				err := worker.work(j)
 				if err != nil {
-					dela.Logger.Err(err).Msgf("error in a worker")
+					observability.Logger.Err(err).Msgf("error in a worker")
 				}
 			}
 		}()
@@ -569,7 +569,7 @@ func (a *Actor) Reshare(coAuth crypto.CollectiveAuthority, thresholdNew int) err
 
 	ctx = context.WithValue(ctx, tracing.ProtocolKey, protocolNameResharing)
 
-	dela.Logger.Info().Msgf("resharing with the following participants: %v", addrsAll)
+	observability.Logger.Info().Msgf("resharing with the following participants: %v", addrsAll)
 
 	sender, receiver, err := a.rpc.Stream(ctx, players)
 	if err != nil {
@@ -583,7 +583,7 @@ func (a *Actor) Reshare(coAuth crypto.CollectiveAuthority, thresholdNew int) err
 	// common nodes
 	reshare := types.NewStartResharing(thresholdNew, 0, addrsNew, nil, pubkeysNew, nil)
 
-	dela.Logger.Info().Msgf("resharing to old participants: %v",
+	observability.Logger.Info().Msgf("resharing to old participants: %v",
 		a.startRes.getParticipants())
 
 	// Send the resharing request to the old and common nodes
@@ -601,7 +601,7 @@ func (a *Actor) Reshare(coAuth crypto.CollectiveAuthority, thresholdNew int) err
 	reshare = types.NewStartResharing(thresholdNew, thresholdOld, addrsNew,
 		a.startRes.getParticipants(), pubkeysNew, pubkeysOld)
 
-	dela.Logger.Info().Msgf("resharing to new participants: %v", newParticipants)
+	observability.Logger.Info().Msgf("resharing to new participants: %v", newParticipants)
 
 	// Send the resharing request to the new but not common nodes
 	err = <-sender.Send(reshare, newParticipants...)
@@ -626,7 +626,7 @@ func (a *Actor) Reshare(coAuth crypto.CollectiveAuthority, thresholdNew int) err
 
 		dkgPubKeys[i] = doneMsg.GetPublicKey()
 
-		dela.Logger.Debug().Str("from", src.String()).Msgf("received a done reply")
+		observability.Logger.Debug().Str("from", src.String()).Msgf("received a done reply")
 
 		// This is a simple check that every node sends back the same DKG pub
 		// key.
@@ -636,7 +636,7 @@ func (a *Actor) Reshare(coAuth crypto.CollectiveAuthority, thresholdNew int) err
 		}
 	}
 
-	dela.Logger.Info().Msgf("resharing done")
+	observability.Logger.Info().Msgf("resharing done")
 
 	return nil
 }

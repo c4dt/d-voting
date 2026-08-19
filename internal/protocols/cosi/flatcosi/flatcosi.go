@@ -9,8 +9,8 @@ import (
 	"context"
 
 	"github.com/c4dt/d-voting/internal/crypto"
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/c4dt/d-voting/internal/protocols/cosi"
 	"github.com/c4dt/d-voting/internal/serde"
 	"github.com/rs/zerolog"
@@ -72,7 +72,7 @@ func (flat *Flat) SetThreshold(fn cosi.Threshold) {}
 // to sign a message.
 func (flat *Flat) Listen(r cosi.Reactor) (cosi.Actor, error) {
 	actor := flatActor{
-		logger:  dela.Logger,
+		logger:  observability.Logger,
 		me:      flat.mino.GetAddress(),
 		signer:  flat.signer,
 		reactor: r,

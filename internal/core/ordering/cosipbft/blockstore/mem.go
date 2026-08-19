@@ -12,7 +12,7 @@ import (
 	"github.com/c4dt/d-voting/internal/core"
 	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/types"
 	"github.com/c4dt/d-voting/internal/core/store"
-	"github.com/c4dt/d-voting/internal/dela"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
 )
@@ -192,7 +192,7 @@ func newObserver(ctx context.Context, watcher core.Observable) *observer {
 	ch := make(chan types.BlockLink, 1)
 
 	obs := &observer{
-		logger: dela.Logger,
+		logger: observability.Logger,
 		ch:     ch,
 	}
 

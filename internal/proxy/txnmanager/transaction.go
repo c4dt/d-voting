@@ -19,7 +19,7 @@ import (
 	"github.com/c4dt/d-voting/internal/core/txn"
 	"github.com/c4dt/d-voting/internal/core/txn/pool"
 	"github.com/c4dt/d-voting/internal/crypto"
-	"github.com/c4dt/d-voting/internal/dela"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/c4dt/d-voting/internal/serde"
 	"github.com/gorilla/mux"
 	"github.com/rs/zerolog"
@@ -35,7 +35,7 @@ const (
 func NewTransactionManager(mngr txn.Manager, p pool.Pool,
 	ctx serde.Context, pk kyber.Point, blocks blockstore.BlockStore, signer crypto.Signer, val validation.Service) Manager {
 
-	logger := dela.Logger.With().Timestamp().Str("role", "proxy-txmanager").Logger()
+	logger := observability.Logger.With().Timestamp().Str("role", "proxy-txmanager").Logger()
 
 	return &manager{
 		logger:  logger,

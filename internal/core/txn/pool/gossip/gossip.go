@@ -7,9 +7,9 @@ import (
 
 	"github.com/c4dt/d-voting/internal/core/txn"
 	"github.com/c4dt/d-voting/internal/core/txn/pool"
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino"
 	"github.com/c4dt/d-voting/internal/network/mino/gossip"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
 )
@@ -33,7 +33,7 @@ func NewPool(gossiper gossip.Gossiper) (*Pool, error) {
 	}
 
 	p := &Pool{
-		logger:   dela.Logger,
+		logger:   observability.Logger,
 		actor:    actor,
 		gatherer: pool.NewSimpleGatherer(),
 		closing:  make(chan struct{}),

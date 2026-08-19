@@ -12,8 +12,8 @@ import (
 	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/pbft"
 	otypes "github.com/c4dt/d-voting/internal/core/ordering/cosipbft/types"
 	"github.com/c4dt/d-voting/internal/crypto"
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/c4dt/d-voting/internal/observability/tracing"
 	"github.com/c4dt/d-voting/internal/serde/json"
 	"github.com/rs/zerolog"
@@ -46,7 +46,7 @@ type fastSync struct {
 func NewSynchronizer(param blocksync.SyncParam) Synchronizer {
 	latest := param.Blocks.Len()
 
-	logger := dela.Logger.With().Str("addr", param.Mino.GetAddress().String()).Logger()
+	logger := observability.Logger.With().Str("addr", param.Mino.GetAddress().String()).Logger()
 
 	h := &handler{
 		latest:      &latest,

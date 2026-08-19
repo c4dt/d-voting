@@ -22,7 +22,7 @@ import (
 	"github.com/c4dt/d-voting/internal/core/execution/native"
 	"github.com/c4dt/d-voting/internal/core/store"
 	"github.com/c4dt/d-voting/internal/crypto/bls"
-	"github.com/c4dt/d-voting/internal/dela"
+	"github.com/c4dt/d-voting/internal/observability"
 	"golang.org/x/xerrors"
 )
 
@@ -178,7 +178,7 @@ func (c Contract) grant(snap store.Snapshot, step execution.Step) error {
 		return xerrors.Errorf("failed to grant: %v", err)
 	}
 
-	dela.Logger.Info().Str("contract", "access").Msgf("granted %x-%s-%s to %s",
+	observability.Logger.Info().Str("contract", "access").Msgf("granted %x-%s-%s to %s",
 		id, contractName, commandName, identities)
 
 	return nil

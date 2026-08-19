@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/c4dt/d-voting/internal/dela"
 	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
 	"golang.org/x/xerrors"
@@ -32,7 +32,7 @@ type Handler struct {
 
 // NewHandler creates a new handler
 func NewHandler(privKey kyber.Scalar, me mino.Address) *Handler {
-	log := dela.Logger.With().Str("role", "DKG handler").Str("addr", me.String()).Logger()
+	log := observability.Logger.With().Str("role", "DKG handler").Str("addr", me.String()).Logger()
 
 	return &Handler{
 		log: log,

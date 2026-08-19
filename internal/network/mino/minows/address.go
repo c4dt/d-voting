@@ -3,7 +3,7 @@ package minows
 import (
 	"strings"
 
-	"github.com/c4dt/d-voting/internal/dela"
+	"github.com/c4dt/d-voting/internal/observability"
 
 	"github.com/c4dt/d-voting/internal/network/mino"
 	"github.com/c4dt/d-voting/internal/serde"
@@ -141,13 +141,13 @@ func (f addressFactory) FromText(text []byte) mino.Address {
 
 	location, err := ma.NewMultiaddr(parts[0])
 	if err != nil {
-		dela.Logger.Error().Err(err).
+		observability.Logger.Error().Err(err).
 			Msgf("could not parse multiaddress %q", parts[0])
 		return nil
 	}
 	identity, err := peer.Decode(parts[1])
 	if err != nil {
-		dela.Logger.Error().Err(err).
+		observability.Logger.Error().Err(err).
 			Msgf("could not decode peer ID %q", parts[1])
 		return nil
 	}
@@ -159,7 +159,7 @@ func (f addressFactory) FromText(text []byte) mino.Address {
 		addr, err = newOrchestratorAddr(location, identity)
 	}
 	if err != nil {
-		dela.Logger.Error().Err(err).Msgf("could not create address")
+		observability.Logger.Error().Err(err).Msgf("could not create address")
 		return nil
 	}
 	return addr

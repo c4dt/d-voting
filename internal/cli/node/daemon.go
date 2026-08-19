@@ -18,7 +18,7 @@ import (
 	"time"
 
 	"github.com/c4dt/d-voting/internal/cli"
-	"github.com/c4dt/d-voting/internal/dela"
+	"github.com/c4dt/d-voting/internal/observability"
 	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
 )
@@ -130,7 +130,7 @@ func (d *socketDaemon) Listen() error {
 				select {
 				case <-d.closing:
 				default:
-					dela.Logger.Err(err).Msg("daemon closed unexpectedly")
+					observability.Logger.Err(err).Msg("daemon closed unexpectedly")
 				}
 				return
 			}
@@ -275,7 +275,7 @@ func (f socketFactory) DaemonFromContext(ctx cli.Flags) (Daemon, error) {
 	socketpath := f.getSocketPath(ctx)
 
 	daemon := &socketDaemon{
-		logger:      dela.Logger.With().Str("daemon", socketpath).Logger(),
+		logger:      observability.Logger.With().Str("daemon", socketpath).Logger(),
 		socketpath:  socketpath,
 		injector:    f.injector,
 		actions:     f.actions,
