@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/c4dt/d-voting/internal/proxy/types"
+	"github.com/c4dt/d-voting/internal/api/types"
 	shuffleSrv "github.com/c4dt/d-voting/internal/services/shuffle"
 	"github.com/gorilla/mux"
 	"go.dedis.ch/kyber/v3"
