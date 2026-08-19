@@ -79,7 +79,7 @@ function is_dev_login() {
 
 function add_single_proxy() {
   echo "adding first proxy";
-      curl -sk "$FRONT_END_URL/api/proxies/" -X POST -H 'Content-Type: application/json' -b cookies.txt --data "{\"NodeAddr\":\"grpc://dela-worker-0:$NODEPORT\",\"Proxy\":\"http://172.19.44.254:$PROXYPORT\"}";
+      curl -sk "$FRONT_END_URL/api/proxies/" -X POST -H 'Content-Type: application/json' -b cookies.txt --data "{\"NodeAddr\":\"grpc://dela-worker-0:$NODEPORT\",\"Proxy\":\"$DELA_PROXY_URL\"}";
 }
 
 # Adds the default admin to the dela blockchain. This is needed to add more proxies.
@@ -93,7 +93,7 @@ function add_admin() {
 function add_remaining_proxies() {
   for node in $(seq 1 3); do
     echo "adding proxy for node dela-worker-$node";
-    curl -sk "$FRONT_END_URL/api/proxies/" -X POST -H 'Content-Type: application/json' -b cookies.txt --data "{\"NodeAddr\":\"grpc://dela-worker-$node:$NODEPORT\",\"Proxy\":\"http://172.19.44.$((254 - node)):$PROXYPORT\"}";
+    curl -sk "$FRONT_END_URL/api/proxies/" -X POST -H 'Content-Type: application/json' -b cookies.txt --data "{\"NodeAddr\":\"grpc://dela-worker-$node:$NODEPORT\",\"Proxy\":\"$DELA_PROXY_URL\"}";
   done
 }
 
