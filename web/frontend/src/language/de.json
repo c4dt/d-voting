@@ -302,6 +302,7 @@
     "manageOwnersLoading": "Fortschreibung der LeiterInnen...",
     "sciperNaN": "'{{sciperStr}}' ist keine Zahl; ",
     "sciperOutOfRange": "{{sciper}} ist nicht in dem erlaubten Bereich (100000-999999); ",
-    "invalidScipersFound": "Ungültige SCIPERs wurden gefunden. Es wurde keine Anfrage gesendet. Bitte korrigieren Sie folgende Fehler: {{sciperErrs}}"
+    "invalidScipersFound": "Ungültige SCIPERs wurden gefunden. Es wurde keine Anfrage gesendet. Bitte korrigieren Sie folgende Fehler: {{sciperErrs}}",
+    "sciperInvalidInput": "'{{sciperStr}}' ist kein gültiger SCIPER; verwenden Sie 1–6 Ziffern ohne führende Null."
   }
 }

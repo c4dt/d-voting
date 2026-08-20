@@ -303,6 +303,7 @@
     "manageOwnersLoading": "Mise à jour des responsables...",
     "sciperNaN": "'{{sciperStr}}' n'est pas un nombre; ",
     "sciperOutOfRange": "{{sciper}} n'est pas dans les valeurs acceptées (100000-999999); ",
-    "invalidScipersFound": "Des SCIPERs invalides ont été trouvés. Aucune requête n'a été envoyée. Veuillez corriger les erreurs suivants: {{sciperErrs}}"
+    "invalidScipersFound": "Des SCIPERs invalides ont été trouvés. Aucune requête n'a été envoyée. Veuillez corriger les erreurs suivants: {{sciperErrs}}",
+    "sciperInvalidInput": "'{{sciperStr}}' n'est pas un SCIPER valide ; utilisez 1 à 6 chiffres sans zéro initial."
   }
 }
