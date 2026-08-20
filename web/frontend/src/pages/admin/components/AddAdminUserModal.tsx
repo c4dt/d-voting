@@ -45,10 +45,13 @@ const AddAdminUserModal: FC<AddAdminUserModalProps> = ({ open, setOpen, handleAd
     const value = e.target.value;
 
     // Allow an empty value so the user can clear the field.
-    // Otherwise, accept only 1–6 digits and reject leading zeros.
-    if (/^(?:[1-9]\d{0,5})?$/.test(value)) {
-      setSciperValue(value);
+    // Otherwise, reject input that is not 1–6 digits or starts with zero.
+    if (!/^(?:[1-9]\d{0,5})?$/.test(value)) {
+      fctx.addMessage(t('sciperInvalidInput', { sciperStr: value }), FlashLevel.Error);
+      return;
     }
+
+    setSciperValue(value);
   };
   const userToAdd = { TargetUserID: sciperValue.trim() };
   const saveMapping = async () => {
