@@ -93,7 +93,7 @@ function add_admin() {
 function add_remaining_proxies() {
   for node in $(seq 1 3); do
     echo "adding proxy for node dela-worker-$node";
-    curl -sk "$FRONT_END_URL/api/proxies/" -X POST -H 'Content-Type: application/json' -b cookies.txt --data "{\"NodeAddr\":\"grpc://dela-worker-$node:$NODEPORT\",\"Proxy\":\"$DELA_PROXY_URL\"}";
+    curl -sk "$FRONT_END_URL/api/proxies/" -X POST -H 'Content-Type: application/json' -b cookies.txt --data "{\"NodeAddr\":\"grpc://dela-worker-$node:$NODEPORT\",\"Proxy\":\"$DELA_PROXY_SUBNET.$((254 - node)):$PROXYPORT\"}";
   done
 }
 
