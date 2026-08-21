@@ -2,7 +2,6 @@ package pedersen
 
 import (
 	"encoding/hex"
-	"encoding/json"
 	"sync"
 	"time"
 
@@ -186,7 +185,8 @@ func (s *Pedersen) ReadActors(txmngr txn.Manager) error {
 		return bucket.ForEach(func(formIDBuf, handlerDataBuf []byte) error {
 
 			handlerData := HandlerData{}
-			err := json.Unmarshal(handlerDataBuf, &handlerData)
+			err := handlerData.UnmarshalJSON(
+				handlerDataBuf, s.mino.GetAddressFactory())
 			if err != nil {
 				return err
 			}

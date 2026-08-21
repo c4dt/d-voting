@@ -630,8 +630,10 @@ func (hd *HandlerData) MarshalJSON() ([]byte, error) {
 	return ret, err
 }
 
-// UnmarshalJSON fills a HandlerData with previously marshalled data.
-func (hd *HandlerData) UnmarshalJSON(data []byte) error {
+// UnmarshalJSON fills a HandlerData with previously marshalled data and uses
+// the provided factory to deserialize participant addresses.
+func (hd *HandlerData) UnmarshalJSON(data []byte,
+	addressFactory mino.AddressFactory) error {
 	aux := &struct {
 		StartRes  []byte `json:",omitempty"`
 		PrivShare []byte `json:",omitempty"`
@@ -645,7 +647,7 @@ func (hd *HandlerData) UnmarshalJSON(data []byte) error {
 
 	// Unmarshal StartRes
 	hd.StartRes = &state{}
-	err = hd.StartRes.UnmarshalJSON(aux.StartRes)
+	err = hd.StartRes.unmarshalJSON(aux.StartRes, addressFactory)
 	if err != nil {
 		return err
 	}
@@ -767,7 +769,8 @@ func (s *state) MarshalJSON() ([]byte, error) {
 	return ret, err
 }
 
-func (s *state) UnmarshalJSON(data []byte) error {
+func (s *state) unmarshalJSON(data []byte,
+	addressFactory mino.AddressFactory) error {
 	aux := &struct {
 		DistKey      []byte
 		Participants [][]byte
@@ -789,11 +792,16 @@ func (s *state) UnmarshalJSON(data []byte) error {
 	}
 
 	if aux.Participants != nil {
-		// TODO: use addressFactory here
-		f := session.AddressFactory{}
+		if addressFactory == nil {
+			return xerrors.New("address factory is required to deserialize participants")
+		}
+
 		var participants = make([]mino.Address, len(aux.Participants))
 		for i, partStr := range aux.Participants {
-			participants[i] = f.FromText(partStr)
+			participants[i] = addressFactory.FromText(partStr)
+			if participants[i] == nil {
+				return xerrors.Errorf("failed to deserialize participant %d", i)
+			}
 		}
 		s.SetParticipants(participants)
 	} else {
