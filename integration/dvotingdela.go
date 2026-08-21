@@ -46,10 +46,7 @@ import (
 	"go.dedis.ch/dela/crypto/loader"
 	"go.dedis.ch/dela/mino"
 	"go.dedis.ch/dela/mino/gossip"
-	"go.dedis.ch/dela/mino/minogrpc"
-	"go.dedis.ch/dela/mino/minogrpc/certs"
-	"go.dedis.ch/dela/mino/minogrpc/session"
-	"go.dedis.ch/dela/mino/router/tree"
+	"go.dedis.ch/dela/mino/minows"
 	"go.dedis.ch/dela/serde/json"
 	"golang.org/x/xerrors"
 )

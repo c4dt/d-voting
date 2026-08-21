@@ -18,7 +18,6 @@ import (
 	"go.dedis.ch/dela/core/txn"
 	"go.dedis.ch/dela/core/txn/pool"
 	"go.dedis.ch/dela/crypto"
-	"go.dedis.ch/dela/mino/minogrpc/session"
 	jsondela "go.dedis.ch/dela/serde/json"
 
 	etypes "github.com/c4dt/d-voting/contracts/evoting/types"
