@@ -43,7 +43,7 @@ import (
 	db "go.dedis.ch/dela/core/store/kv/controller"
 	pool "go.dedis.ch/dela/core/txn/pool/controller"
 	signed "go.dedis.ch/dela/core/txn/signed/controller"
-	mino "go.dedis.ch/dela/mino/minogrpc/controller"
+	mino "go.dedis.ch/dela/mino/minows"
 	proxy "go.dedis.ch/dela/mino/proxy/http/controller"
 
 	_ "github.com/c4dt/d-voting/services/shuffle/neff/json"
