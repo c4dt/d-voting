@@ -31,7 +31,6 @@ import (
 	"os"
 
 	dkg "github.com/c4dt/d-voting/services/dkg/pedersen/controller"
-	"github.com/c4dt/d-voting/services/dkg/pedersen/json"
 	shuffle "github.com/c4dt/d-voting/services/shuffle/neff/controller"
 
 	cosipbft "github.com/c4dt/d-voting/cli/cosipbftcontroller"
@@ -46,6 +45,7 @@ import (
 	mino "go.dedis.ch/dela/mino/minows"
 	proxy "go.dedis.ch/dela/mino/proxy/http/controller"
 
+	_ "github.com/c4dt/d-voting/services/dkg/pedersen/json"
 	_ "github.com/c4dt/d-voting/services/shuffle/neff/json"
 
 	gapi "go.dedis.ch/dela-apps/gapi/controller"
@@ -68,7 +68,7 @@ type config struct {
 }
 
 func runWithCfg(args []string, cfg config) error {
-	json.Register()
+	//json.Register()
 
 	builder := node.NewBuilderWithCfg(
 		cfg.Channel,
