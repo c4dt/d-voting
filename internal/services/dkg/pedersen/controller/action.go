@@ -1,0 +1,340 @@
+package controller
+
+import (
+	"encoding/base64"
+	"encoding/hex"
+	"encoding/json"
+	"fmt"
+	"net/http"
+
+	"github.com/c4dt/d-voting/internal/core/access"
+	"github.com/c4dt/d-voting/internal/core/ordering"
+	"github.com/c4dt/d-voting/internal/core/txn/signed"
+	"github.com/c4dt/d-voting/internal/core/validation"
+
+	"github.com/c4dt/d-voting/internal/cli/node"
+	"github.com/c4dt/d-voting/internal/core/store/kv"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/network/mino/proxy"
+	"github.com/c4dt/d-voting/internal/observability"
+	"github.com/c4dt/d-voting/internal/services/dkg"
+	"github.com/c4dt/d-voting/internal/services/dkg/pedersen"
+	"github.com/gorilla/mux"
+	"go.dedis.ch/kyber/v3/suites"
+	"golang.org/x/xerrors"
+
+	eproxy "github.com/c4dt/d-voting/internal/proxy"
+)
+
+var suite = suites.MustFind("Ed25519")
+
+// initAction is an action to initialize the DKG protocol
+//
+// - implements node.ActionTemplate
+type initAction struct {
+}
+
+// Execute implements node.ActionTemplate. It creates an actor from
+// the dkgPedersen instance and links it to a form.
+func (a *initAction) Execute(ctx node.Context) error {
+
+	formID := ctx.Flags.String("formID")
+
+	formIDBuf, err := hex.DecodeString(formID)
+	if err != nil {
+		return xerrors.Errorf("failed to decode formID: %v", err)
+	}
+
+	// Initialize the actor
+	var dkg dkg.DKG
+	err = ctx.Injector.Resolve(&dkg)
+	if err != nil {
+		return xerrors.Errorf("failed to resolve DKG: %v", err)
+	}
+
+	_, exists := dkg.GetActor(formIDBuf)
+	if exists {
+		return xerrors.Errorf("DKG was already initialized for formID %s", formID)
+	}
+
+	signer, err := getSigner(ctx.Flags)
+	if err != nil {
+		return xerrors.Errorf("failed to get signer: %v", err)
+	}
+
+	client, err := makeClient(ctx.Injector)
+	if err != nil {
+		return xerrors.Errorf("failed to make client: %v", err)
+	}
+
+	_, err = dkg.Listen(formIDBuf, signed.NewManager(signer, &client))
+	if err != nil {
+		return xerrors.Errorf("failed to start the RPC: %v", err)
+	}
+
+	observability.Logger.Info().Msgf("DKG was successfully linked to form %v", formIDBuf)
+
+	return nil
+}
+
+// setupAction is an action to setup the DKG protocol and generate a collective
+// public key
+//
+// - implements node.ActionTemplate
+type setupAction struct {
+}
+
+// Execute implements node.ActionTemplate. It reads the list of members and
+// request the setup.
+func (a *setupAction) Execute(ctx node.Context) error {
+
+	formIDBuf, err := hex.DecodeString(ctx.Flags.String("formID"))
+	if err != nil {
+		return xerrors.Errorf("failed to decode formID: %v", err)
+	}
+
+	var dkg dkg.DKG
+	err = ctx.Injector.Resolve(&dkg)
+	if err != nil {
+		return xerrors.Errorf("failed to resolve DKG: %v", err)
+	}
+
+	actor, exists := dkg.GetActor(formIDBuf)
+	if !exists {
+		return xerrors.Errorf("failed to get actor: %v", err)
+	}
+
+	pubkey, err := actor.Setup()
+	if err != nil {
+		return xerrors.Errorf("failed to setup DKG: %v", err)
+	}
+
+	pubkeyBuf, err := pubkey.MarshalBinary()
+	if err != nil {
+		return xerrors.Errorf("failed to encode pubkey: %v", err)
+	}
+
+	observability.Logger.Info().
+		Hex("DKG public key", pubkeyBuf).
+		Msg("DKG public key")
+
+	return nil
+}
+
+// exportInfoAction is an action to display a base64 string describing the node.
+// It can be used to transmit the identity of a node to another one.
+//
+// - implements node.ActionTemplate
+type exportInfoAction struct {
+}
+
+// Execute implements node.ActionTemplate. It looks for the node address and
+// public key and prints "$ADDR_BASE64:$PUBLIC_KEY_BASE64".
+func (a *exportInfoAction) Execute(ctx node.Context) error {
+	var m mino.Mino
+	err := ctx.Injector.Resolve(&m)
+	if err != nil {
+		return xerrors.Errorf("injector: %v", err)
+	}
+
+	addr, err := m.GetAddress().MarshalText()
+	if err != nil {
+		return xerrors.Errorf("failed to marshal address: %v", err)
+	}
+
+	desc := base64.StdEncoding.EncodeToString(addr)
+
+	// Print address
+	fmt.Fprint(ctx.Out, desc)
+
+	var db kv.DB
+	err = ctx.Injector.Resolve(&db)
+	if err != nil {
+		return xerrors.Errorf("injector: %v", err)
+	}
+
+	err = db.View(func(tx kv.ReadableTx) error {
+		bucket := tx.GetBucket([]byte(pedersen.BucketName))
+		if bucket == nil {
+			return nil
+		}
+
+		return bucket.ForEach(func(formIDBuf, handlerDataBuf []byte) error {
+
+			handlerData := pedersen.HandlerData{}
+			err = json.Unmarshal(handlerDataBuf, &handlerData)
+			if err != nil {
+				return err
+			}
+
+			// Print formID and actor data
+			fmt.Fprint(ctx.Out, hex.EncodeToString(formIDBuf))
+			fmt.Fprint(ctx.Out, handlerData)
+
+			return nil
+		})
+	})
+	if err != nil {
+		return xerrors.Errorf("database read failed: %v", err)
+	}
+
+	return nil
+}
+
+// Ciphertext wraps the ciphertext pairs
+type Ciphertext struct {
+	K []byte
+	C []byte
+}
+
+// getPublicKeyAction is an action that prints the collective public key
+//
+// - implements node.ActionTemplate
+type getPublicKeyAction struct {
+}
+
+// Execute implements node.ActionTemplate. It retrieves the collective
+// public key from the DKG service and prints it.
+func (a *getPublicKeyAction) Execute(ctx node.Context) error {
+	formIDBuf, err := hex.DecodeString(ctx.Flags.String("formID"))
+	if err != nil {
+		return xerrors.Errorf("failed to decode formID: %v", err)
+	}
+
+	var dkgPedersen dkg.DKG
+	err = ctx.Injector.Resolve(&dkgPedersen)
+	if err != nil {
+		return xerrors.Errorf("failed to resolve dkg: %v", err)
+	}
+
+	actor, exists := dkgPedersen.GetActor(formIDBuf)
+	if !exists {
+		return xerrors.Errorf("failed to get actor: %v", err)
+	}
+
+	pubkey, err := actor.GetPublicKey()
+	if err != nil {
+		return xerrors.Errorf("failed to retrieve the public key: %v", err)
+	}
+
+	pubkeyBuf, err := pubkey.MarshalBinary()
+	if err != nil {
+		return xerrors.Errorf("failed to encode pubkey: %v", err)
+	}
+
+	observability.Logger.Info().
+		Hex("DKG public key", pubkeyBuf).
+		Msg("DKG public key")
+
+	return nil
+}
+
+// RegisterHandlersAction is an action that registers the proxy handlers
+//
+// - implements node.ActionTemplate
+type RegisterHandlersAction struct {
+}
+
+// Execute implements node.ActionTemplate. It registers the proxy
+// handlers to set up forms
+func (a *RegisterHandlersAction) Execute(ctx node.Context) error {
+	var proxy proxy.Proxy
+	err := ctx.Injector.Resolve(&proxy)
+	if err != nil {
+		return xerrors.Errorf("failed to resolve proxy: %v", err)
+	}
+
+	var dkg dkg.DKG
+	err = ctx.Injector.Resolve(&dkg)
+	if err != nil {
+		return xerrors.Errorf("failed to resolve dkg.DKG: %v", err)
+	}
+
+	signer, err := getSigner(ctx.Flags)
+	if err != nil {
+		return xerrors.Errorf("failed to get signer for txmngr : %v", err)
+	}
+
+	client, err := makeClient(ctx.Injector)
+	if err != nil {
+		return xerrors.Errorf("failed to make client: %v", err)
+	}
+
+	mngr := signed.NewManager(signer, &client)
+
+	proxykeyHex := ctx.Flags.String("proxykey")
+
+	proxykeyBuf, err := hex.DecodeString(proxykeyHex)
+	if err != nil {
+		return xerrors.Errorf("failed to decode proxykeyHex: %v", err)
+	}
+
+	proxykey := suite.Point()
+
+	err = proxykey.UnmarshalBinary(proxykeyBuf)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal proxy key: %v", err)
+	}
+
+	router := mux.NewRouter()
+
+	ep := eproxy.NewDKG(mngr, dkg, proxykey)
+
+	// Link the request to the proxy
+	router.HandleFunc("/evoting/services/dkg/actors", ep.NewDKGActor).Methods("POST")
+	router.HandleFunc("/evoting/services/dkg/actors", eproxy.AllowCORS).Methods("OPTIONS")
+	router.HandleFunc("/evoting/services/dkg/actors/{formID}", ep.Actor).Methods("GET")
+	router.HandleFunc("/evoting/services/dkg/actors/{formID}", ep.EditDKGActor).Methods("PUT")
+	router.HandleFunc("/evoting/services/dkg/actors/{formID}", eproxy.AllowCORS).Methods("OPTIONS")
+
+	router.NotFoundHandler = http.HandlerFunc(eproxy.NotFoundHandler)
+	router.MethodNotAllowedHandler = http.HandlerFunc(eproxy.NotAllowedHandler)
+
+	proxy.RegisterHandler("/evoting/services/dkg/", router.ServeHTTP)
+
+	observability.Logger.Info().Msg("DKG handler registered")
+
+	return nil
+}
+
+func makeClient(inj node.Injector) (client, error) {
+	var service ordering.Service
+	err := inj.Resolve(&service)
+	if err != nil {
+		return client{}, xerrors.Errorf("failed to resolve ordering.Service: %v", err)
+	}
+
+	var vs validation.Service
+	err = inj.Resolve(&vs)
+	if err != nil {
+		return client{}, xerrors.Errorf("failed to resolve validation.Service: %v", err)
+	}
+
+	client := client{
+		srvc: service,
+		vs:   vs,
+	}
+
+	return client, nil
+}
+
+// client fetches the last nonce used by the client
+//
+// - implements signed.Client
+type client struct {
+	srvc ordering.Service
+	vs   validation.Service
+}
+
+// GetNonce implements signed.Client. It uses the validation service to get the
+// last nonce.
+func (c *client) GetNonce(id access.Identity) (uint64, error) {
+	store := c.srvc.GetStore()
+
+	nonce, err := c.vs.GetNonce(store, id)
+	if err != nil {
+		return 0, xerrors.Errorf("failed to get nonce from validation: %v", err)
+	}
+
+	return nonce, nil
+}

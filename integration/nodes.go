@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/c4dt/d-voting/contracts/evoting/types"
+	"github.com/c4dt/d-voting/internal/contracts/evoting/types"
 	"golang.org/x/xerrors"
 )
 
