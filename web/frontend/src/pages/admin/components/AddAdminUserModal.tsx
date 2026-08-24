@@ -42,16 +42,16 @@ const AddAdminUserModal: FC<AddAdminUserModalProps> = ({ open, setOpen, handleAd
     }
   }, [fctx, t, postError]);
   const handleUserInput = (e: any) => {
-    const sciper = parseInt(e.target.value.trim());
-    if (isNaN(sciper)) {
-      fctx.addMessage(t('sciperNaN', { sciperStr: e.target.value.trim() }), FlashLevel.Error);
-    } else if (sciper < 100000 || sciper > 999999) {
-      fctx.addMessage(t('sciperOutOfRange', { sciper: sciper }), FlashLevel.Error);
-    } else {
-      // The value is not trimmed to not restrict the user input
-      // The user could think there is a problem if he can't input a space in the field
-      setSciperValue(e.target.value);
+    const value = e.target.value;
+
+    // Allow an empty value so the user can clear the field.
+    // Otherwise, reject input that is not 1–6 digits or starts with zero.
+    if (!/^(?:[1-9]\d{0,5})?$/.test(value)) {
+      fctx.addMessage(t('sciperInvalidInput', { sciperStr: value }), FlashLevel.Error);
+      return;
     }
+
+    setSciperValue(value);
   };
   const userToAdd = { TargetUserID: sciperValue.trim() };
   const saveMapping = async () => {
@@ -64,7 +64,13 @@ const AddAdminUserModal: FC<AddAdminUserModalProps> = ({ open, setOpen, handleAd
   };
   const handleAddUser = async () => {
     setLoading(true);
+
     if (sciperValue !== '') {
+      if (sciperValue.length !== 6) {
+        fctx.addMessage(t('sciperOutOfRange', { sciper: sciperValue }), FlashLevel.Error);
+        setLoading(false);
+        return;
+      }
       try {
         const res = await saveMapping();
         if (res) {

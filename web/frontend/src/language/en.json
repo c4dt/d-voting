@@ -303,6 +303,7 @@
     "manageOwnersLoading": "Updating owners...",
     "sciperNaN": "'{{sciperStr}}' is not a number; ",
     "sciperOutOfRange": "{{sciper}} is out of range (100000-999999); ",
-    "invalidScipersFound": "Invalid SCIPER numbers found. No request has been send. Please fix the following errors: {{sciperErrs}}"
+    "invalidScipersFound": "Invalid SCIPER numbers found. No request has been send. Please fix the following errors: {{sciperErrs}}",
+    "sciperInvalidInput": "'{{sciperStr}}' is not a valid SCIPER; use 1–6 digits with no leading zero."
   }
 }
