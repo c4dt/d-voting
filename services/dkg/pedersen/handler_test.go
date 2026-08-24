@@ -276,7 +276,7 @@ func TestState_MarshalJSON(t *testing.T) {
 	require.NoError(t, err)
 
 	s2 := &state{}
-	err = s2.unmarshalJSON(data, fake.AddressFactory{})
+	err = s2.UnmarshalJSON(data, fake.AddressFactory{})
 	require.NoError(t, err)
 
 	requireStatesEqual(t, s1, s2)
@@ -292,7 +292,7 @@ func TestState_MarshalJSON(t *testing.T) {
 	require.NoError(t, err)
 
 	s2 = &state{}
-	err = s2.unmarshalJSON(data, fake.AddressFactory{})
+	err = s2.UnmarshalJSON(data, fake.AddressFactory{})
 	require.NoError(t, err)
 
 	requireStatesEqual(t, s1, s2)

@@ -3,13 +3,13 @@ package pedersen
 import (
 	"bytes"
 	"encoding/hex"
-	"net/url"
 	"strconv"
 	"strings"
 	"testing"
-	"time"
 
 	"go.dedis.ch/dela"
+	"go.dedis.ch/dela/cli"
+	"go.dedis.ch/dela/cli/node"
 	"go.dedis.ch/dela/core/access"
 	"go.dedis.ch/dela/core/ordering"
 	"go.dedis.ch/dela/core/txn/signed"
@@ -28,8 +28,7 @@ import (
 	"go.dedis.ch/dela/core/ordering/cosipbft/authority"
 	"go.dedis.ch/dela/core/store/kv"
 	"go.dedis.ch/dela/mino"
-	"go.dedis.ch/dela/mino/minogrpc"
-	"go.dedis.ch/dela/mino/router/tree"
+	"go.dedis.ch/dela/mino/minows"
 	"go.dedis.ch/dela/serde"
 	sjson "go.dedis.ch/dela/serde/json"
 	"go.dedis.ch/kyber/v3"
@@ -474,37 +473,20 @@ func TestPedersen_Scenario(t *testing.T) {
 	require.NoError(t, err)
 
 	for i := 0; i < n; i++ {
-		addr := minogrpc.ParseAddress("127.0.0.1", 0)
+		controller := minows.NewController()
+		injector := node.NewInjector()
+		injector.Inject(fake.NewInMemoryDB())
 
-		minogrpc, err := minogrpc.NewMinogrpc(addr, nil, tree.NewRouter(minogrpc.NewAddressFactory()))
+		err := controller.OnStart(minowsFlags{}, injector)
 		require.NoError(t, err)
 
-		defer minogrpc.GracefulStop()
+		t.Cleanup(func() {
+			require.NoError(t, controller.OnStop(injector))
+		})
 
-		minos[i] = minogrpc
-		addrs[i] = minogrpc.GetAddress()
-	}
-
-	for _, mino := range minos {
-		// share the certificates
-		joinable, ok := mino.(minogrpc.Joinable)
-		require.True(t, ok)
-
-		addrURL, err := url.Parse(mino.GetAddress().String())
-		require.NoError(t, err, addrURL)
-
-		token := joinable.GenerateToken(time.Hour)
-
-		certHash, err := joinable.GetCertificateStore().Hash(joinable.GetCertificateChain())
+		err = injector.Resolve(&minos[i])
 		require.NoError(t, err)
-
-		for _, n := range minos {
-			otherJoinable, ok := n.(minogrpc.Joinable)
-			require.True(t, ok)
-
-			err = otherJoinable.Join(addrURL, token, certHash)
-			require.NoError(t, err)
-		}
+		addrs[i] = minos[i].GetAddress()
 	}
 
 	roster := authority.FromAuthority(fake.NewAuthorityFromMino(fake.NewSigner, minos...))
@@ -572,6 +554,18 @@ func TestPedersen_Scenario(t *testing.T) {
 	//	err := actor.ComputePubshares()
 	//	require.NoError(t, err.)
 	//}
+}
+
+type minowsFlags struct {
+	cli.Flags
+}
+
+func (minowsFlags) String(name string) string {
+	if name == "listen" {
+		return "/ip4/127.0.0.1/tcp/0/ws"
+	}
+
+	return ""
 }
 
 func TestPedersen_Encrypt_NotStarted(t *testing.T) {

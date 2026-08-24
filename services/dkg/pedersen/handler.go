@@ -647,7 +647,7 @@ func (hd *HandlerData) UnmarshalJSON(data []byte,
 
 	// Unmarshal StartRes
 	hd.StartRes = &state{}
-	err = hd.StartRes.unmarshalJSON(aux.StartRes, addressFactory)
+	err = hd.StartRes.UnmarshalJSON(aux.StartRes, addressFactory)
 	if err != nil {
 		return err
 	}
@@ -769,7 +769,7 @@ func (s *state) MarshalJSON() ([]byte, error) {
 	return ret, err
 }
 
-func (s *state) unmarshalJSON(data []byte,
+func (s *state) UnmarshalJSON(data []byte,
 	addressFactory mino.AddressFactory) error {
 	aux := &struct {
 		DistKey      []byte
