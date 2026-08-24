@@ -135,7 +135,8 @@ func (s *reencryptStatus) processReencryptReply(reply *types.ReencryptReply) (er
 				}
 				else
 				{
-					observability.Logger.Warn().Msgf("Received invalid share from node: %v", r.Ui.I)
+					observability.Logger.Warn().Msgf(
+				"Received invalid share from node: %v", r.Ui.I)
 					s.nbfailures++
 				}
 			*/
