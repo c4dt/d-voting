@@ -8,7 +8,7 @@
 package registry
 
 import (
-	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/internal/serde"
 )
 
 // Registry is an interface to register and get format engines for a specific

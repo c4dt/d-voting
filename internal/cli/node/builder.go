@@ -13,9 +13,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/cli"
-	"github.com/c4dt/d-voting/dela/cli/ucli"
+	"github.com/c4dt/d-voting/internal/cli"
+	"github.com/c4dt/d-voting/internal/cli/ucli"
+	"github.com/c4dt/d-voting/internal/observability"
 	urfave "github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 )
@@ -223,7 +223,7 @@ func (b *CLIBuilder) start(flags cli.Flags) error {
 		}
 	}
 
-	dela.Logger.Trace().Msg("daemon has been stopped")
+	observability.Logger.Trace().Msg("daemon has been stopped")
 
 	return nil
 }

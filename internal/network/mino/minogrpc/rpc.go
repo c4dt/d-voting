@@ -9,12 +9,12 @@ import (
 	context "context"
 	"sync"
 
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/dela/mino/minogrpc/ptypes"
-	"github.com/c4dt/d-voting/dela/mino/minogrpc/session"
-	"github.com/c4dt/d-voting/dela/serde"
-	"github.com/c4dt/d-voting/internal/tracing"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/network/mino/minogrpc/ptypes"
+	"github.com/c4dt/d-voting/internal/network/mino/minogrpc/session"
+	"github.com/c4dt/d-voting/internal/observability"
+	"github.com/c4dt/d-voting/internal/observability/tracing"
+	"github.com/c4dt/d-voting/internal/serde"
 	"github.com/rs/xid"
 	"golang.org/x/xerrors"
 	"google.golang.org/grpc"
@@ -233,7 +233,7 @@ func (rpc RPC) Stream(ctx context.Context, players mino.Players) (
 			p, err := stream.Recv()
 			if err != nil {
 				if status.Code(err) == codes.Unknown {
-					dela.Logger.Err(err).Msg("stream to root failed")
+					observability.Logger.Err(err).Msg("stream to root failed")
 				}
 
 				return

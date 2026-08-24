@@ -6,16 +6,16 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/authority"
-	"github.com/c4dt/d-voting/dela/crypto"
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/dela/serde"
-	"github.com/c4dt/d-voting/dela/serde/json"
+	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/authority"
+	"github.com/c4dt/d-voting/internal/crypto"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/observability"
+	"github.com/c4dt/d-voting/internal/serde"
+	"github.com/c4dt/d-voting/internal/serde/json"
 
-	etypes "github.com/c4dt/d-voting/contracts/evoting/types"
+	etypes "github.com/c4dt/d-voting/internal/contracts/evoting/types"
+	"github.com/c4dt/d-voting/internal/services/shuffle/neff/types"
 	"github.com/c4dt/d-voting/internal/testing/fake"
-	"github.com/c4dt/d-voting/services/shuffle/neff/types"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 )
@@ -80,13 +80,13 @@ func TestNeffShuffle_Shuffle(t *testing.T) {
 	rpc := fake.NewStreamRPC(fake.NewReceiver(), fake.NewBadSender())
 	actor.rpc = rpc
 
-	oldLog := dela.Logger
+	oldLog := observability.Logger
 	defer func() {
-		dela.Logger = oldLog
+		observability.Logger = oldLog
 	}()
 
 	out := new(bytes.Buffer)
-	dela.Logger = zerolog.New(out)
+	observability.Logger = zerolog.New(out)
 
 	// should only output a warning
 	err = actor.Shuffle(formIDBuf, "123456")

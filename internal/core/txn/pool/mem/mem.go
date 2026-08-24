@@ -3,9 +3,9 @@ package mem
 import (
 	"context"
 
-	"github.com/c4dt/d-voting/dela/core/txn"
-	"github.com/c4dt/d-voting/dela/core/txn/pool"
-	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/internal/core/txn"
+	"github.com/c4dt/d-voting/internal/core/txn/pool"
+	"github.com/c4dt/d-voting/internal/network/mino"
 	"golang.org/x/xerrors"
 )
 

@@ -10,26 +10,26 @@ import (
 	"testing"
 	"time"
 
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/core/access"
-	"github.com/c4dt/d-voting/dela/core/ordering"
-	"github.com/c4dt/d-voting/dela/core/txn/signed"
-	"github.com/c4dt/d-voting/dela/core/validation"
-	"github.com/c4dt/d-voting/dela/mino/minogrpc/session"
+	"github.com/c4dt/d-voting/internal/core/access"
+	"github.com/c4dt/d-voting/internal/core/ordering"
+	"github.com/c4dt/d-voting/internal/core/txn/signed"
+	"github.com/c4dt/d-voting/internal/core/validation"
+	"github.com/c4dt/d-voting/internal/network/mino/minogrpc/session"
+	"github.com/c4dt/d-voting/internal/observability"
 	"golang.org/x/xerrors"
 
-	"github.com/c4dt/d-voting/contracts/evoting"
-	etypes "github.com/c4dt/d-voting/contracts/evoting/types"
-	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/authority"
-	"github.com/c4dt/d-voting/dela/core/store/kv"
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/dela/mino/minogrpc"
-	"github.com/c4dt/d-voting/dela/mino/router/tree"
-	"github.com/c4dt/d-voting/dela/serde"
-	sjson "github.com/c4dt/d-voting/dela/serde/json"
+	"github.com/c4dt/d-voting/internal/contracts/evoting"
+	etypes "github.com/c4dt/d-voting/internal/contracts/evoting/types"
+	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/authority"
+	"github.com/c4dt/d-voting/internal/core/store/kv"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/network/mino/minogrpc"
+	"github.com/c4dt/d-voting/internal/network/mino/router/tree"
+	"github.com/c4dt/d-voting/internal/serde"
+	sjson "github.com/c4dt/d-voting/internal/serde/json"
+	"github.com/c4dt/d-voting/internal/services/dkg"
+	"github.com/c4dt/d-voting/internal/services/dkg/pedersen/types"
 	"github.com/c4dt/d-voting/internal/testing/fake"
-	"github.com/c4dt/d-voting/services/dkg"
-	"github.com/c4dt/d-voting/services/dkg/pedersen/types"
 	"github.com/prometheus/client_golang/prometheus/testutil"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
@@ -654,13 +654,13 @@ func TestPedersen_ComputePubshares_SenderFailed(t *testing.T) {
 		rpc: fake.NewStreamRPC(nil, fake.NewBadSender()),
 	}
 
-	oldLog := dela.Logger
+	oldLog := observability.Logger
 	defer func() {
-		dela.Logger = oldLog
+		observability.Logger = oldLog
 	}()
 
 	out := new(bytes.Buffer)
-	dela.Logger = zerolog.New(out)
+	observability.Logger = zerolog.New(out)
 
 	// should only output a warning
 	err := a.ComputePubshares()

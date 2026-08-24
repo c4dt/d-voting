@@ -6,27 +6,27 @@ import (
 	"sync"
 	"time"
 
-	"github.com/c4dt/d-voting/dela/core/store/kv"
-	"github.com/c4dt/d-voting/dela/core/txn"
-	"github.com/c4dt/d-voting/dela/core/txn/pool"
-	"github.com/c4dt/d-voting/dela/crypto"
+	"github.com/c4dt/d-voting/internal/core/store/kv"
+	"github.com/c4dt/d-voting/internal/core/txn"
+	"github.com/c4dt/d-voting/internal/core/txn/pool"
+	"github.com/c4dt/d-voting/internal/crypto"
 
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/core/ordering"
+	"github.com/c4dt/d-voting/internal/core/ordering"
+	"github.com/c4dt/d-voting/internal/observability"
 
-	"github.com/c4dt/d-voting/contracts/evoting"
-	etypes "github.com/c4dt/d-voting/contracts/evoting/types"
+	"github.com/c4dt/d-voting/internal/contracts/evoting"
+	etypes "github.com/c4dt/d-voting/internal/contracts/evoting/types"
 	"github.com/rs/zerolog"
 
-	"github.com/c4dt/d-voting/internal/tracing"
-	"github.com/c4dt/d-voting/services/dkg"
+	"github.com/c4dt/d-voting/internal/observability/tracing"
+	"github.com/c4dt/d-voting/internal/services/dkg"
 
 	// Register the JSON types for Pedersen
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/dela/serde"
-	jsonserde "github.com/c4dt/d-voting/dela/serde/json"
-	_ "github.com/c4dt/d-voting/services/dkg/pedersen/json"
-	"github.com/c4dt/d-voting/services/dkg/pedersen/types"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/serde"
+	jsonserde "github.com/c4dt/d-voting/internal/serde/json"
+	_ "github.com/c4dt/d-voting/internal/services/dkg/pedersen/json"
+	"github.com/c4dt/d-voting/internal/services/dkg/pedersen/types"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/suites"
 	"go.dedis.ch/kyber/v3/util/random"
@@ -34,7 +34,7 @@ import (
 	"golang.org/x/xerrors"
 
 	// Register the JSON format for the form
-	_ "github.com/c4dt/d-voting/contracts/evoting/json"
+	_ "github.com/c4dt/d-voting/internal/contracts/evoting/json"
 )
 
 // BucketName is the name of the bucket in the database.
@@ -136,14 +136,14 @@ func (s *Pedersen) NewActor(formIDBuf []byte, pool pool.Pool, txmngr txn.Manager
 		handlerData, ctx, s.formFac, status, func(h *Handler) {
 			err := storeHandler(formID, s.db, h)
 			if err != nil {
-				dela.Logger.Err(err).Msg("While storing the dkg handler")
+				observability.Logger.Err(err).Msg("While storing the dkg handler")
 			}
 		})
 
 	no := s.mino.WithSegment(formID)
 	rpc := mino.MustCreateRPC(no, RPC, h, s.factory)
 
-	log := dela.Logger.With().Str("role", "DKG actor").Logger()
+	log := observability.Logger.With().Str("role", "DKG actor").Logger()
 
 	a := &Actor{
 		rpc:     rpc,
@@ -303,7 +303,7 @@ func (a *Actor) Setup() (kyber.Point, error) {
 			return nil, err
 		}
 
-		dela.Logger.Info().Msgf("received a response from %v", from)
+		observability.Logger.Info().Msgf("received a response from %v", from)
 
 		resp, ok := msg.(types.GetPeerPubKeyResp)
 		if !ok {
@@ -315,7 +315,7 @@ func (a *Actor) Setup() (kyber.Point, error) {
 		dkgPeerPubkeys = append(dkgPeerPubkeys, resp.GetPublicKey())
 		associatedAddrs = append(associatedAddrs, from)
 
-		dela.Logger.Info().Msgf("Public key: %s", resp.GetPublicKey().String())
+		observability.Logger.Info().Msgf("Public key: %s", resp.GetPublicKey().String())
 	}
 
 	message := types.NewStart(associatedAddrs, dkgPeerPubkeys)
@@ -461,7 +461,7 @@ func (a *Actor) ComputePubshares() error {
 
 	err = <-sender.Send(message, addrs...)
 	if err != nil {
-		dela.Logger.Warn().Msgf("failed to send decrypt request: %v", err)
+		observability.Logger.Warn().Msgf("failed to send decrypt request: %v", err)
 		//return xerrors.Errorf("failed to send decrypt request: %v", err)
 	}
 

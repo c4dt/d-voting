@@ -11,11 +11,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/c4dt/d-voting/proxy/types"
-	dkgSrv "github.com/c4dt/d-voting/services/dkg"
+	"github.com/c4dt/d-voting/internal/proxy/types"
+	dkgSrv "github.com/c4dt/d-voting/internal/services/dkg"
 
-	"github.com/c4dt/d-voting/dela/cli/node"
-	"github.com/c4dt/d-voting/dela/core/txn"
+	"github.com/c4dt/d-voting/internal/cli/node"
+	"github.com/c4dt/d-voting/internal/core/txn"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"

@@ -1,14 +1,14 @@
 package minows
 
 import (
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/serde/json"
+	"github.com/c4dt/d-voting/internal/observability"
+	"github.com/c4dt/d-voting/internal/serde/json"
 	"github.com/rs/zerolog"
 	"regexp"
 	"strings"
 
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/serde"
 	"github.com/libp2p/go-libp2p"
 	"github.com/libp2p/go-libp2p/core/crypto"
 	"github.com/libp2p/go-libp2p/core/host"
@@ -55,7 +55,7 @@ func NewMinows(listen, public ma.Multiaddr, key crypto.PrivKey) (mino.Mino,
 	}
 
 	return &minows{
-		logger:   dela.Logger.With().Str("mino", myAddr.String()).Logger(),
+		logger:   observability.Logger.With().Str("mino", myAddr.String()).Logger(),
 		myAddr:   myAddr,
 		segments: nil,
 		host:     h,

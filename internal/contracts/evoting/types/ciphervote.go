@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/c4dt/d-voting/dela/serde"
-	"github.com/c4dt/d-voting/dela/serde/registry"
+	"github.com/c4dt/d-voting/internal/serde"
+	"github.com/c4dt/d-voting/internal/serde/registry"
 	"go.dedis.ch/kyber/v3"
 	"golang.org/x/xerrors"
 )

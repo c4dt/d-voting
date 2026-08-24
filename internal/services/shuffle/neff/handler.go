@@ -8,17 +8,17 @@ import (
 
 	"go.dedis.ch/kyber/v3"
 
-	"github.com/c4dt/d-voting/contracts/evoting"
-	etypes "github.com/c4dt/d-voting/contracts/evoting/types"
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/core/execution/native"
-	"github.com/c4dt/d-voting/dela/core/ordering"
-	"github.com/c4dt/d-voting/dela/core/txn"
-	"github.com/c4dt/d-voting/dela/core/txn/pool"
-	"github.com/c4dt/d-voting/dela/crypto"
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/dela/serde"
-	"github.com/c4dt/d-voting/services/shuffle/neff/types"
+	"github.com/c4dt/d-voting/internal/contracts/evoting"
+	etypes "github.com/c4dt/d-voting/internal/contracts/evoting/types"
+	"github.com/c4dt/d-voting/internal/core/execution/native"
+	"github.com/c4dt/d-voting/internal/core/ordering"
+	"github.com/c4dt/d-voting/internal/core/txn"
+	"github.com/c4dt/d-voting/internal/core/txn/pool"
+	"github.com/c4dt/d-voting/internal/crypto"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/observability"
+	"github.com/c4dt/d-voting/internal/serde"
+	"github.com/c4dt/d-voting/internal/services/shuffle/neff/types"
 	"go.dedis.ch/kyber/v3/proof"
 	shuffleKyber "go.dedis.ch/kyber/v3/shuffle"
 	"go.dedis.ch/kyber/v3/suites"
@@ -66,7 +66,7 @@ func (h *Handler) Stream(out mino.Sender, in mino.Receiver) error {
 		return xerrors.Errorf("failed to receive: %v", err)
 	}
 
-	dela.Logger.Trace().Msgf("message received from: %v", from)
+	observability.Logger.Trace().Msgf("message received from: %v", from)
 
 	switch msg := msg.(type) {
 	case types.StartShuffle:
@@ -82,7 +82,7 @@ func (h *Handler) Stream(out mino.Sender, in mino.Receiver) error {
 }
 
 func (h *Handler) handleStartShuffle(formID string, userID string) error {
-	dela.Logger.Info().Msg("Starting the neff shuffle protocol ...")
+	observability.Logger.Info().Msg("Starting the neff shuffle protocol ...")
 
 	err := h.txmngr.Sync()
 	if err != nil {
@@ -100,7 +100,7 @@ func (h *Handler) handleStartShuffle(formID string, userID string) error {
 
 		// check if the threshold is reached
 		if round >= form.ShuffleThreshold {
-			dela.Logger.Info().Msgf("shuffle done with round n°%d", round)
+			observability.Logger.Info().Msgf("shuffle done with round n°%d", round)
 			return nil
 		}
 
@@ -124,7 +124,7 @@ func (h *Handler) handleStartShuffle(formID string, userID string) error {
 			// synced. In that case we sync and retry.
 			err = h.txmngr.Sync()
 			if err != nil {
-				dela.Logger.Warn().Err(err).Msgf("failed to add tx, syncing nonce")
+				observability.Logger.Warn().Err(err).Msgf("failed to add tx, syncing nonce")
 				return xerrors.Errorf("failed to sync manager: %v", err.Error())
 			}
 		}
@@ -132,7 +132,7 @@ func (h *Handler) handleStartShuffle(formID string, userID string) error {
 		accepted, msg := watchTx(events, tx.GetID())
 
 		if accepted {
-			dela.Logger.Info().Msg("our shuffling contribution has " +
+			observability.Logger.Info().Msg("our shuffling contribution has " +
 				"been accepted, we are exiting the process")
 
 			return nil
@@ -143,7 +143,7 @@ func (h *Handler) handleStartShuffle(formID string, userID string) error {
 			return xerrors.Errorf("failed to sync manager: %v", err.Error())
 		}
 
-		dela.Logger.Info().Msg("shuffling contribution denied : " + msg)
+		observability.Logger.Info().Msg("shuffling contribution denied : " + msg)
 
 		cancel()
 	}
@@ -305,7 +305,7 @@ func watchTx(events <-chan ordering.Event, txID []byte) (bool, string) {
 				continue
 			}
 
-			dela.Logger.Info().Hex("id", txID).Msg("transaction included in the block")
+			observability.Logger.Info().Hex("id", txID).Msg("transaction included in the block")
 
 			accepted, msg := res.GetStatus()
 			if accepted {

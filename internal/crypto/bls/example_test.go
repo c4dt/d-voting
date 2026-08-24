@@ -3,7 +3,7 @@ package bls
 import (
 	"fmt"
 
-	"github.com/c4dt/d-voting/dela/crypto"
+	"github.com/c4dt/d-voting/internal/crypto"
 )
 
 func ExampleSigner_Sign() {

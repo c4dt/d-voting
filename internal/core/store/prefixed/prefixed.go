@@ -3,8 +3,8 @@ package prefixed
 import (
 	"encoding/binary"
 
-	"github.com/c4dt/d-voting/dela/core/store"
-	"github.com/c4dt/d-voting/dela/crypto"
+	"github.com/c4dt/d-voting/internal/core/store"
+	"github.com/c4dt/d-voting/internal/crypto"
 )
 
 type readable struct {

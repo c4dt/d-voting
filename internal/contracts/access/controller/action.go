@@ -8,12 +8,12 @@ package controller
 import (
 	"encoding/base64"
 
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/cli/node"
-	accessContract "github.com/c4dt/d-voting/dela/contracts/access"
-	"github.com/c4dt/d-voting/dela/core/access"
-	"github.com/c4dt/d-voting/dela/core/execution/native"
-	"github.com/c4dt/d-voting/dela/crypto/bls"
+	"github.com/c4dt/d-voting/internal/cli/node"
+	accessContract "github.com/c4dt/d-voting/internal/contracts/access"
+	"github.com/c4dt/d-voting/internal/core/access"
+	"github.com/c4dt/d-voting/internal/core/execution/native"
+	"github.com/c4dt/d-voting/internal/crypto/bls"
+	"github.com/c4dt/d-voting/internal/observability"
 	"golang.org/x/xerrors"
 )
 
@@ -54,7 +54,7 @@ func (a addAction) Execute(ctx node.Context) error {
 		return xerrors.Errorf("failed to grant: %v", err)
 	}
 
-	dela.Logger.Info().Msgf("access granted to %v", identities)
+	observability.Logger.Info().Msgf("access granted to %v", identities)
 
 	return nil
 }

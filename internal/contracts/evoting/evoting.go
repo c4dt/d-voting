@@ -11,19 +11,19 @@ import (
 	"math/rand"
 	"strings"
 
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/contracts/viewchange"
+	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/contracts/viewchange"
+	"github.com/c4dt/d-voting/internal/observability"
 	"go.dedis.ch/kyber/v3/share"
 
-	"github.com/c4dt/d-voting/contracts/evoting/types"
-	"github.com/c4dt/d-voting/dela/core/execution"
-	"github.com/c4dt/d-voting/dela/core/execution/native"
-	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/authority"
-	"github.com/c4dt/d-voting/dela/core/store"
-	"github.com/c4dt/d-voting/dela/core/txn"
-	"github.com/c4dt/d-voting/dela/cosi/threshold"
-	"github.com/c4dt/d-voting/dela/crypto/bls"
-	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/internal/contracts/evoting/types"
+	"github.com/c4dt/d-voting/internal/core/execution"
+	"github.com/c4dt/d-voting/internal/core/execution/native"
+	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/authority"
+	"github.com/c4dt/d-voting/internal/core/store"
+	"github.com/c4dt/d-voting/internal/core/txn"
+	"github.com/c4dt/d-voting/internal/crypto/bls"
+	"github.com/c4dt/d-voting/internal/protocols/cosi/threshold"
+	"github.com/c4dt/d-voting/internal/serde"
 	"go.dedis.ch/kyber/v3/proof"
 	"go.dedis.ch/kyber/v3/shuffle"
 	"golang.org/x/xerrors"
@@ -755,7 +755,7 @@ func (e evotingCommand) combineShares(snap store.Snapshot, step execution.Step) 
 		err = ballot.Unmarshal(marshalledBallot.String(), form)
 
 		if err != nil {
-			dela.Logger.Warn().Msgf("Failed to unmarshal a ballot: %v", err)
+			observability.Logger.Warn().Msgf("Failed to unmarshal a ballot: %v", err)
 		}
 
 		decryptedBallots[i] = ballot

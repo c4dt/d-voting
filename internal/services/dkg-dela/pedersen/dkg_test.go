@@ -6,11 +6,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/dkg/pedersen/types"
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/dela/serde"
-	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/observability"
+	"github.com/c4dt/d-voting/internal/serde"
+	"github.com/c4dt/d-voting/internal/services/dkg-dela/pedersen/types"
+	"github.com/c4dt/d-voting/internal/testing/dela/fake"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/debugtools/channel"
@@ -157,7 +157,7 @@ func TestDKGInstance_StartFailDeal(t *testing.T) {
 	s := instance{
 		startRes: &state{},
 		privKey:  privKey,
-		log:      dela.Logger,
+		log:      observability.Logger,
 	}
 	start := types.NewStart(0, []mino.Address{fake.NewAddress(0)}, []kyber.Point{})
 	from := fake.NewAddress(0)

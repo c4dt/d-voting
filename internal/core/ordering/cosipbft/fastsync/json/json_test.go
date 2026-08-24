@@ -3,10 +3,10 @@ package json
 import (
 	"testing"
 
-	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/fastsync/types"
-	otypes "github.com/c4dt/d-voting/dela/core/ordering/cosipbft/types"
-	"github.com/c4dt/d-voting/dela/serde"
-	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/fastsync/types"
+	otypes "github.com/c4dt/d-voting/internal/core/ordering/cosipbft/types"
+	"github.com/c4dt/d-voting/internal/serde"
+	"github.com/c4dt/d-voting/internal/testing/dela/fake"
 	"github.com/stretchr/testify/require"
 )
 

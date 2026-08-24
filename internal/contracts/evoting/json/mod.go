@@ -1,8 +1,8 @@
 package json
 
 import (
-	"github.com/c4dt/d-voting/contracts/evoting/types"
-	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/internal/contracts/evoting/types"
+	"github.com/c4dt/d-voting/internal/serde"
 )
 
 // Register the JSON formats for the form, ciphervote, and transaction

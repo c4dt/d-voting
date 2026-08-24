@@ -7,8 +7,8 @@
 package types
 
 import (
-	"github.com/c4dt/d-voting/dela/core/access"
-	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/internal/core/access"
+	"github.com/c4dt/d-voting/internal/serde"
 )
 
 // Permission is the interface of the underlying permissions used by the

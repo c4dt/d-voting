@@ -4,10 +4,10 @@ import (
 	"crypto/x509"
 	"fmt"
 
-	"github.com/c4dt/d-voting/dela/mino/minogrpc"
-	"github.com/c4dt/d-voting/dela/mino/minogrpc/certs"
-	"github.com/c4dt/d-voting/dela/mino/minogrpc/session"
-	"github.com/c4dt/d-voting/dela/mino/router/tree"
+	"github.com/c4dt/d-voting/internal/network/mino/minogrpc"
+	"github.com/c4dt/d-voting/internal/network/mino/minogrpc/certs"
+	"github.com/c4dt/d-voting/internal/network/mino/minogrpc/session"
+	"github.com/c4dt/d-voting/internal/network/mino/router/tree"
 )
 
 func ExampleStorage_Fetch() {

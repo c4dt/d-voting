@@ -8,20 +8,20 @@ import (
 
 	// Static registration of the JSON formats. By having them here, it ensures
 	// that an import of the JSON context engine will import the definitions.
-	_ "github.com/c4dt/d-voting/dela/core/access/darc/json"
-	_ "github.com/c4dt/d-voting/dela/core/ordering/cosipbft/authority/json"
-	_ "github.com/c4dt/d-voting/dela/core/ordering/cosipbft/blocksync/json"
-	_ "github.com/c4dt/d-voting/dela/core/ordering/cosipbft/fastsync/json"
-	_ "github.com/c4dt/d-voting/dela/core/ordering/cosipbft/json"
-	_ "github.com/c4dt/d-voting/dela/core/txn/signed/json"
-	_ "github.com/c4dt/d-voting/dela/core/validation/simple/json"
-	_ "github.com/c4dt/d-voting/dela/cosi/json"
-	_ "github.com/c4dt/d-voting/dela/cosi/threshold/json"
-	_ "github.com/c4dt/d-voting/dela/crypto/bls/json"
-	_ "github.com/c4dt/d-voting/dela/crypto/ed25519/json"
-	_ "github.com/c4dt/d-voting/dela/dkg/pedersen/json"
-	_ "github.com/c4dt/d-voting/dela/mino/router/tree/json"
-	"github.com/c4dt/d-voting/dela/serde"
+	_ "github.com/c4dt/d-voting/internal/core/access/darc/json"
+	_ "github.com/c4dt/d-voting/internal/core/ordering/cosipbft/authority/json"
+	_ "github.com/c4dt/d-voting/internal/core/ordering/cosipbft/blocksync/json"
+	_ "github.com/c4dt/d-voting/internal/core/ordering/cosipbft/fastsync/json"
+	_ "github.com/c4dt/d-voting/internal/core/ordering/cosipbft/json"
+	_ "github.com/c4dt/d-voting/internal/core/txn/signed/json"
+	_ "github.com/c4dt/d-voting/internal/core/validation/simple/json"
+	_ "github.com/c4dt/d-voting/internal/crypto/bls/json"
+	_ "github.com/c4dt/d-voting/internal/crypto/ed25519/json"
+	_ "github.com/c4dt/d-voting/internal/network/mino/router/tree/json"
+	_ "github.com/c4dt/d-voting/internal/protocols/cosi/json"
+	_ "github.com/c4dt/d-voting/internal/protocols/cosi/threshold/json"
+	"github.com/c4dt/d-voting/internal/serde"
+	_ "github.com/c4dt/d-voting/internal/services/dkg-dela/pedersen/json"
 )
 
 // JSONEngine is a context engine to marshal and unmarshal in JSON format.

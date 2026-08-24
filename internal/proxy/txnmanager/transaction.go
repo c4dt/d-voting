@@ -7,20 +7,20 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/c4dt/d-voting/dela/core/validation"
+	"github.com/c4dt/d-voting/internal/core/validation"
 	"net/http"
 	"strconv"
 	"sync"
 	"time"
 
-	"github.com/c4dt/d-voting/contracts/evoting"
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/core/execution/native"
-	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/blockstore"
-	"github.com/c4dt/d-voting/dela/core/txn"
-	"github.com/c4dt/d-voting/dela/core/txn/pool"
-	"github.com/c4dt/d-voting/dela/crypto"
-	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/internal/contracts/evoting"
+	"github.com/c4dt/d-voting/internal/core/execution/native"
+	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/blockstore"
+	"github.com/c4dt/d-voting/internal/core/txn"
+	"github.com/c4dt/d-voting/internal/core/txn/pool"
+	"github.com/c4dt/d-voting/internal/crypto"
+	"github.com/c4dt/d-voting/internal/observability"
+	"github.com/c4dt/d-voting/internal/serde"
 	"github.com/gorilla/mux"
 	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
@@ -35,7 +35,7 @@ const (
 func NewTransactionManager(mngr txn.Manager, p pool.Pool,
 	ctx serde.Context, pk kyber.Point, blocks blockstore.BlockStore, signer crypto.Signer, val validation.Service) Manager {
 
-	logger := dela.Logger.With().Timestamp().Str("role", "proxy-txmanager").Logger()
+	logger := observability.Logger.With().Timestamp().Str("role", "proxy-txmanager").Logger()
 
 	return &manager{
 		logger:  logger,

@@ -1,8 +1,8 @@
 package dkg
 
 import (
-	"github.com/c4dt/d-voting/dela/crypto"
-	"github.com/c4dt/d-voting/dela/dkg/pedersen/types"
+	"github.com/c4dt/d-voting/internal/crypto"
+	"github.com/c4dt/d-voting/internal/services/dkg-dela/pedersen/types"
 	"go.dedis.ch/kyber/v3"
 )
 

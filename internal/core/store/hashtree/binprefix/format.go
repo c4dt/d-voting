@@ -3,7 +3,7 @@ package binprefix
 import (
 	"math/big"
 
-	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/internal/serde"
 	"golang.org/x/xerrors"
 )
 

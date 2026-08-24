@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/c4dt/d-voting/dela/cli"
+	"github.com/c4dt/d-voting/internal/cli"
 	"github.com/stretchr/testify/require"
 	urfave "github.com/urfave/cli/v2"
 )

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/c4dt/d-voting/dela/core/access"
+	"github.com/c4dt/d-voting/internal/core/access"
 	"github.com/stretchr/testify/require"
 )
 

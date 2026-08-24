@@ -3,9 +3,9 @@ package evoting
 import (
 	"testing"
 
-	"github.com/c4dt/d-voting/contracts/evoting/types"
-	"github.com/c4dt/d-voting/dela/serde"
-	sjson "github.com/c4dt/d-voting/dela/serde/json"
+	"github.com/c4dt/d-voting/internal/contracts/evoting/types"
+	"github.com/c4dt/d-voting/internal/serde"
+	sjson "github.com/c4dt/d-voting/internal/serde/json"
 	"github.com/stretchr/testify/require"
 )
 

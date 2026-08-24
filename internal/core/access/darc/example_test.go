@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/c4dt/d-voting/dela/core/access"
-	"github.com/c4dt/d-voting/dela/crypto/bls"
-	"github.com/c4dt/d-voting/dela/serde/json"
+	"github.com/c4dt/d-voting/internal/core/access"
+	"github.com/c4dt/d-voting/internal/crypto/bls"
+	"github.com/c4dt/d-voting/internal/serde/json"
 )
 
 func ExampleService_Grant_alone() {

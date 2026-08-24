@@ -3,9 +3,9 @@ package json
 import (
 	"testing"
 
-	"github.com/c4dt/d-voting/dela/mino/router/tree/types"
-	"github.com/c4dt/d-voting/dela/serde"
-	"github.com/c4dt/d-voting/dela/testing/fake"
+	"github.com/c4dt/d-voting/internal/network/mino/router/tree/types"
+	"github.com/c4dt/d-voting/internal/serde"
+	"github.com/c4dt/d-voting/internal/testing/dela/fake"
 	"github.com/stretchr/testify/require"
 )
 

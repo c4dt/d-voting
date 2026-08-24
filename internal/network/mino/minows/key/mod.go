@@ -3,7 +3,7 @@ package key
 import (
 	"crypto/rand"
 
-	"github.com/c4dt/d-voting/dela/core/store/kv"
+	"github.com/c4dt/d-voting/internal/core/store/kv"
 	"github.com/libp2p/go-libp2p/core/crypto"
 	"golang.org/x/xerrors"
 )

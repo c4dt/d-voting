@@ -1,10 +1,10 @@
 package flatcosi
 
 import (
-	"github.com/c4dt/d-voting/dela/cosi"
-	"github.com/c4dt/d-voting/dela/crypto"
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/internal/crypto"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/protocols/cosi"
+	"github.com/c4dt/d-voting/internal/serde"
 	"golang.org/x/xerrors"
 )
 

@@ -35,27 +35,27 @@ import (
 	"math"
 	"time"
 
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/core/access"
-	"github.com/c4dt/d-voting/dela/core/execution/native"
-	"github.com/c4dt/d-voting/dela/core/ordering"
-	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/authority"
-	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/blockstore"
-	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/blocksync"
-	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/contracts/viewchange"
-	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/fastsync"
-	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/pbft"
-	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/types"
-	"github.com/c4dt/d-voting/dela/core/store"
-	"github.com/c4dt/d-voting/dela/core/store/hashtree"
-	"github.com/c4dt/d-voting/dela/core/store/kv"
-	"github.com/c4dt/d-voting/dela/core/txn"
-	"github.com/c4dt/d-voting/dela/core/txn/pool"
-	"github.com/c4dt/d-voting/dela/core/validation"
-	"github.com/c4dt/d-voting/dela/cosi"
-	"github.com/c4dt/d-voting/dela/cosi/threshold"
-	"github.com/c4dt/d-voting/dela/crypto"
-	"github.com/c4dt/d-voting/dela/mino"
+	"github.com/c4dt/d-voting/internal/core/access"
+	"github.com/c4dt/d-voting/internal/core/execution/native"
+	"github.com/c4dt/d-voting/internal/core/ordering"
+	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/authority"
+	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/blockstore"
+	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/blocksync"
+	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/contracts/viewchange"
+	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/fastsync"
+	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/pbft"
+	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/types"
+	"github.com/c4dt/d-voting/internal/core/store"
+	"github.com/c4dt/d-voting/internal/core/store/hashtree"
+	"github.com/c4dt/d-voting/internal/core/store/kv"
+	"github.com/c4dt/d-voting/internal/core/txn"
+	"github.com/c4dt/d-voting/internal/core/txn/pool"
+	"github.com/c4dt/d-voting/internal/core/validation"
+	"github.com/c4dt/d-voting/internal/crypto"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/observability"
+	"github.com/c4dt/d-voting/internal/protocols/cosi"
+	"github.com/c4dt/d-voting/internal/protocols/cosi/threshold"
 	"golang.org/x/xerrors"
 )
 
@@ -201,7 +201,7 @@ func NewServiceStruct(param ServiceParam, opts ...ServiceOption) (*Service, erro
 		param.Cosi.GetPublicKeyFactory())
 	proc.tree = blockstore.NewTreeCache(param.Tree)
 	proc.access = param.Access
-	proc.logger = dela.Logger.With().Str("addr", param.Mino.GetAddress().String()).Logger()
+	proc.logger = observability.Logger.With().Str("addr", param.Mino.GetAddress().String()).Logger()
 
 	pcparam := pbft.StateMachineParam{
 		Logger:          proc.logger,

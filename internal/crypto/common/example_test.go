@@ -3,10 +3,10 @@ package common_test
 import (
 	"fmt"
 
-	"github.com/c4dt/d-voting/dela/crypto/bls"
-	"github.com/c4dt/d-voting/dela/crypto/common"
-	"github.com/c4dt/d-voting/dela/crypto/ed25519"
-	"github.com/c4dt/d-voting/dela/serde/json"
+	"github.com/c4dt/d-voting/internal/crypto/bls"
+	"github.com/c4dt/d-voting/internal/crypto/common"
+	"github.com/c4dt/d-voting/internal/crypto/ed25519"
+	"github.com/c4dt/d-voting/internal/serde/json"
 )
 
 func ExamplePublicKeyFactory_PublicKeyOf_bls() {

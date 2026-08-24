@@ -5,7 +5,7 @@ package ucli
 import (
 	"fmt"
 
-	"github.com/c4dt/d-voting/dela/cli"
+	"github.com/c4dt/d-voting/internal/cli"
 	urfave "github.com/urfave/cli/v2"
 )
 

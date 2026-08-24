@@ -8,12 +8,12 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/core/access"
-	"github.com/c4dt/d-voting/dela/core/execution"
-	"github.com/c4dt/d-voting/dela/core/execution/native"
-	"github.com/c4dt/d-voting/dela/core/store"
-	"github.com/c4dt/d-voting/dela/core/store/prefixed"
+	"github.com/c4dt/d-voting/internal/core/access"
+	"github.com/c4dt/d-voting/internal/core/execution"
+	"github.com/c4dt/d-voting/internal/core/execution/native"
+	"github.com/c4dt/d-voting/internal/core/store"
+	"github.com/c4dt/d-voting/internal/core/store/prefixed"
+	"github.com/c4dt/d-voting/internal/observability"
 	"golang.org/x/xerrors"
 )
 
@@ -189,7 +189,7 @@ func (c valueCommand) write(snap store.Snapshot, step execution.Step) error {
 
 	c.index[string(key)] = struct{}{}
 
-	dela.Logger.Info().
+	observability.Logger.Info().
 		Str("contract", ContractName).
 		Msgf("setting value %x=%s", key, value)
 
@@ -227,7 +227,7 @@ func (c valueCommand) delete(snap store.Snapshot, step execution.Step) error {
 
 	delete(c.index, string(key))
 
-	dela.Logger.Info().
+	observability.Logger.Info().
 		Str("contract", ContractName).
 		Msgf("deleting value %x", key)
 
@@ -259,7 +259,7 @@ func (c valueCommand) list(snap store.Snapshot) error {
 type infoLog struct{}
 
 func (h infoLog) Write(p []byte) (int, error) {
-	dela.Logger.Info().Msg(string(p))
+	observability.Logger.Info().Msg(string(p))
 
 	return len(p), nil
 }

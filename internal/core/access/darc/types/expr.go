@@ -5,7 +5,7 @@
 package types
 
 import (
-	"github.com/c4dt/d-voting/dela/core/access"
+	"github.com/c4dt/d-voting/internal/core/access"
 	"golang.org/x/xerrors"
 )
 

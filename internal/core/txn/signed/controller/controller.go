@@ -5,13 +5,13 @@
 package controller
 
 import (
-	"github.com/c4dt/d-voting/dela/cli"
-	"github.com/c4dt/d-voting/dela/cli/node"
-	"github.com/c4dt/d-voting/dela/core/access"
-	"github.com/c4dt/d-voting/dela/core/ordering"
-	"github.com/c4dt/d-voting/dela/core/txn/signed"
-	"github.com/c4dt/d-voting/dela/core/validation"
-	"github.com/c4dt/d-voting/dela/cosi"
+	"github.com/c4dt/d-voting/internal/cli"
+	"github.com/c4dt/d-voting/internal/cli/node"
+	"github.com/c4dt/d-voting/internal/core/access"
+	"github.com/c4dt/d-voting/internal/core/ordering"
+	"github.com/c4dt/d-voting/internal/core/txn/signed"
+	"github.com/c4dt/d-voting/internal/core/validation"
+	"github.com/c4dt/d-voting/internal/protocols/cosi"
 )
 
 // MgrController is a CLI controller that will inject a transaction manager

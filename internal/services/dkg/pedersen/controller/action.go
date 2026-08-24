@@ -7,23 +7,23 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/c4dt/d-voting/dela/core/access"
-	"github.com/c4dt/d-voting/dela/core/ordering"
-	"github.com/c4dt/d-voting/dela/core/txn/signed"
-	"github.com/c4dt/d-voting/dela/core/validation"
+	"github.com/c4dt/d-voting/internal/core/access"
+	"github.com/c4dt/d-voting/internal/core/ordering"
+	"github.com/c4dt/d-voting/internal/core/txn/signed"
+	"github.com/c4dt/d-voting/internal/core/validation"
 
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/cli/node"
-	"github.com/c4dt/d-voting/dela/core/store/kv"
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/dela/mino/proxy"
-	"github.com/c4dt/d-voting/services/dkg"
-	"github.com/c4dt/d-voting/services/dkg/pedersen"
+	"github.com/c4dt/d-voting/internal/cli/node"
+	"github.com/c4dt/d-voting/internal/core/store/kv"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/network/mino/proxy"
+	"github.com/c4dt/d-voting/internal/observability"
+	"github.com/c4dt/d-voting/internal/services/dkg"
+	"github.com/c4dt/d-voting/internal/services/dkg/pedersen"
 	"github.com/gorilla/mux"
 	"go.dedis.ch/kyber/v3/suites"
 	"golang.org/x/xerrors"
 
-	eproxy "github.com/c4dt/d-voting/proxy"
+	eproxy "github.com/c4dt/d-voting/internal/proxy"
 )
 
 var suite = suites.MustFind("Ed25519")
@@ -72,7 +72,7 @@ func (a *initAction) Execute(ctx node.Context) error {
 		return xerrors.Errorf("failed to start the RPC: %v", err)
 	}
 
-	dela.Logger.Info().Msgf("DKG was successfully linked to form %v", formIDBuf)
+	observability.Logger.Info().Msgf("DKG was successfully linked to form %v", formIDBuf)
 
 	return nil
 }
@@ -114,7 +114,7 @@ func (a *setupAction) Execute(ctx node.Context) error {
 		return xerrors.Errorf("failed to encode pubkey: %v", err)
 	}
 
-	dela.Logger.Info().
+	observability.Logger.Info().
 		Hex("DKG public key", pubkeyBuf).
 		Msg("DKG public key")
 
@@ -222,7 +222,7 @@ func (a *getPublicKeyAction) Execute(ctx node.Context) error {
 		return xerrors.Errorf("failed to encode pubkey: %v", err)
 	}
 
-	dela.Logger.Info().
+	observability.Logger.Info().
 		Hex("DKG public key", pubkeyBuf).
 		Msg("DKG public key")
 
@@ -292,7 +292,7 @@ func (a *RegisterHandlersAction) Execute(ctx node.Context) error {
 
 	proxy.RegisterHandler("/evoting/services/dkg/", router.ServeHTTP)
 
-	dela.Logger.Info().Msg("DKG handler registered")
+	observability.Logger.Info().Msg("DKG handler registered")
 
 	return nil
 }

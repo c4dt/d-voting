@@ -3,9 +3,9 @@ package json
 import (
 	"encoding/json"
 
-	"github.com/c4dt/d-voting/dela/cosi"
-	"github.com/c4dt/d-voting/dela/crypto"
-	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/internal/crypto"
+	"github.com/c4dt/d-voting/internal/protocols/cosi"
+	"github.com/c4dt/d-voting/internal/serde"
 	"golang.org/x/xerrors"
 )
 

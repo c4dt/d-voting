@@ -6,8 +6,8 @@
 package native
 
 import (
-	"github.com/c4dt/d-voting/dela/core/execution"
-	"github.com/c4dt/d-voting/dela/core/store"
+	"github.com/c4dt/d-voting/internal/core/execution"
+	"github.com/c4dt/d-voting/internal/core/store"
 	"golang.org/x/xerrors"
 )
 

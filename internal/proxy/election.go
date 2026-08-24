@@ -9,14 +9,14 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/c4dt/d-voting/contracts/evoting"
-	"github.com/c4dt/d-voting/contracts/evoting/types"
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/core/ordering"
-	"github.com/c4dt/d-voting/dela/core/txn/pool"
-	"github.com/c4dt/d-voting/dela/serde"
-	"github.com/c4dt/d-voting/proxy/txnmanager"
-	ptypes "github.com/c4dt/d-voting/proxy/types"
+	"github.com/c4dt/d-voting/internal/contracts/evoting"
+	"github.com/c4dt/d-voting/internal/contracts/evoting/types"
+	"github.com/c4dt/d-voting/internal/core/ordering"
+	"github.com/c4dt/d-voting/internal/core/txn/pool"
+	"github.com/c4dt/d-voting/internal/observability"
+	"github.com/c4dt/d-voting/internal/proxy/txnmanager"
+	ptypes "github.com/c4dt/d-voting/internal/proxy/types"
+	"github.com/c4dt/d-voting/internal/serde"
 	"github.com/gorilla/mux"
 	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
@@ -36,7 +36,7 @@ func getSignedErr(err error) error {
 func NewForm(srv ordering.Service, p pool.Pool,
 	ctx serde.Context, fac serde.Factory, pk kyber.Point, txnManaxer txnmanager.Manager) Form {
 
-	logger := dela.Logger.With().Timestamp().Str("role", "evoting-proxy").Logger()
+	logger := observability.Logger.With().Timestamp().Str("role", "evoting-proxy").Logger()
 
 	// Compute the IDs of the admin and operator lists
 	// We need them to filter the send list of form

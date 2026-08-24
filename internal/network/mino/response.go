@@ -4,7 +4,7 @@
 
 package mino
 
-import "github.com/c4dt/d-voting/dela/serde"
+import "github.com/c4dt/d-voting/internal/serde"
 
 // SimpleResponse is a response that can either return a message, or an error if
 // the request has failed.

@@ -1,10 +1,10 @@
 package pedersen
 
 import (
-	"github.com/c4dt/d-voting/dela"
-	"github.com/c4dt/d-voting/dela/dkg/pedersen/types"
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/internal/tracing"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/observability"
+	"github.com/c4dt/d-voting/internal/observability/tracing"
+	"github.com/c4dt/d-voting/internal/services/dkg-dela/pedersen/types"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/share"
 	"go.dedis.ch/kyber/v3/suites"
@@ -68,7 +68,7 @@ func (a *Actor) Reencrypt(K kyber.Point, pubk kyber.Point) (XhatEnc kyber.Point,
 			return nil, xerrors.Errorf(unexpectedStreamStop, err)
 		}
 
-		dela.Logger.Debug().Msgf("Received a decryption reply from %v", src)
+		observability.Logger.Debug().Msgf("Received a decryption reply from %v", src)
 
 		reply, ok := rxMsg.(types.ReencryptReply)
 		if !ok {
@@ -77,7 +77,7 @@ func (a *Actor) Reencrypt(K kyber.Point, pubk kyber.Point) (XhatEnc kyber.Point,
 
 		err = status.processReencryptReply(&reply)
 		if err == nil {
-			dela.Logger.Debug().Msgf("Reencryption Uis: %v", status.Uis)
+			observability.Logger.Debug().Msgf("Reencryption Uis: %v", status.Uis)
 
 			XhatEnc, err := share.RecoverCommit(suites.MustFind("Ed25519"), status.Uis,
 				status.threshold, status.nbnodes)
@@ -96,11 +96,11 @@ func (a *Actor) Reencrypt(K kyber.Point, pubk kyber.Point) (XhatEnc kyber.Point,
 func (s *reencryptStatus) processReencryptReply(reply *types.ReencryptReply) (err error) {
 	if reply.Ui == nil {
 		err = xerrors.Errorf("Received empty reply")
-		dela.Logger.Warn().Msg("Empty reply received")
+		observability.Logger.Warn().Msg("Empty reply received")
 		s.nbfailures++
 		if s.nbfailures > s.nbnodes-s.threshold {
 			err = xerrors.Errorf("couldn't get enough shares")
-			dela.Logger.Warn().Msg(err.Error())
+			observability.Logger.Warn().Msg(err.Error())
 		}
 		return err
 	}
@@ -135,12 +135,12 @@ func (s *reencryptStatus) processReencryptReply(reply *types.ReencryptReply) (er
 				}
 				else
 				{
-					dela.Logger.Warn().Msgf("Received invalid share from node: %v", r.Ui.I)
+					observability.Logger.Warn().Msgf("Received invalid share from node: %v", r.Ui.I)
 					s.nbfailures++
 				}
 			*/
 		}
-		dela.Logger.Info().Msg("Reencryption completed")
+		observability.Logger.Info().Msg("Reencryption completed")
 		return nil
 	}
 
@@ -152,6 +152,6 @@ func (s *reencryptStatus) processReencryptReply(reply *types.ReencryptReply) (er
 	// and calls finish(false) in its callback function.
 
 	err = xerrors.Errorf("not enough replies")
-	dela.Logger.Debug().Msg(err.Error())
+	observability.Logger.Debug().Msg(err.Error())
 	return err
 }
