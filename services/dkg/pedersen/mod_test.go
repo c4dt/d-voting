@@ -3,7 +3,6 @@ package pedersen
 import (
 	"bytes"
 	"encoding/hex"
-	"encoding/json"
 	"net/url"
 	"strconv"
 	"strings"
@@ -69,7 +68,8 @@ func TestActor_MarshalJSON(t *testing.T) {
 
 	// Create a new actor with that data
 	handlerData := HandlerData{}
-	err = handlerData.UnmarshalJSON(actor1Buf)
+	err = handlerData.UnmarshalJSON(
+		actor1Buf, p.mino.GetAddressFactory())
 	require.NoError(t, err)
 
 	initMetrics()
@@ -97,8 +97,7 @@ func TestPedersen_InitNonEmptyMap(t *testing.T) {
 	hd := HandlerData{
 		StartRes: &state{
 			distKey:      distKey,
-			participants: []mino.Address{session.NewAddress("grpcs://0"), session.NewAddress("grpcs://1")},
-			//participants: []mino.Address{fake.NewAddress(0), fake.NewAddress(1)},
+			participants: []mino.Address{fake.NewAddress(0), fake.NewAddress(1)},
 		},
 		PrivShare: &share.PriShare{
 			I: 1,
@@ -150,7 +149,8 @@ func TestPedersen_InitNonEmptyMap(t *testing.T) {
 		return bucket.ForEach(func(formIDBuf, handlerDataBuf []byte) error {
 
 			handlerData := HandlerData{}
-			err = handlerData.UnmarshalJSON(handlerDataBuf)
+			err = handlerData.UnmarshalJSON(
+				handlerDataBuf, p.mino.GetAddressFactory())
 			if err != nil {
 				return err
 			}
@@ -270,7 +270,8 @@ func TestPedersen_SyncDB(t *testing.T) {
 		return bucket.ForEach(func(formIDBuf, handlerDataBuf []byte) error {
 
 			handlerData := HandlerData{}
-			err = json.Unmarshal(handlerDataBuf, &handlerData)
+			err = handlerData.UnmarshalJSON(
+				handlerDataBuf, q.mino.GetAddressFactory())
 			require.NoError(t, err)
 
 			_, err = q.NewActor(formIDBuf, &pool, manager, handlerData)
