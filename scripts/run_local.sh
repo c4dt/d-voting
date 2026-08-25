@@ -79,7 +79,7 @@ function init_nodes() {
     mkdir -p $NODEDIR
     rm -f $NODEDIR/node.log
     dvoting --config $NODEDIR start --postinstall --proxyaddr :$PROXYPORT --proxykey $PUBLIC_KEY \
-      --listen tcp://0.0.0.0:$NODEPORT --public grpc://localhost:$NODEPORT --routing tree --noTLS |
+      --listen /ip4/0.0.0.0/tcp/$NODEPORT/ws --public /ip4/127.0.0.1/tcp/$NODEPORT/ws |
       ts "Node-$n: " | tee $NODEDIR/node.log &
   done
 

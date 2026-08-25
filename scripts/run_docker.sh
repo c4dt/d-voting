@@ -77,9 +77,24 @@ function is_dev_login() {
   [[ "$REACT_APP_DEV_LOGIN" == "true" ]]
 }
 
+function get_node_address() {
+  local address
+  address=$(docker compose exec -T "$1" dvoting --config /data/node list address |
+    awk '/^\/.*\/p2p\// { address=$0 } END { sub(/\r$/, "", address); print address }')
+
+  if [[ -z "$address" ]]; then
+    echo "ERROR: could not read the MinoWS address for $1" >&2
+    return 1
+  fi
+
+  printf '%s' "$address"
+}
+
 function add_single_proxy() {
   echo "adding first proxy";
-      curl -sk "$FRONT_END_URL/api/proxies/" -X POST -H 'Content-Type: application/json' -b cookies.txt --data "{\"NodeAddr\":\"grpc://dela-worker-0:$NODEPORT\",\"Proxy\":\"$DELA_PROXY_URL\"}";
+      NODE_ADDR=$(get_node_address dela-worker-0);
+      BODY=$(jq -cn --arg node "$NODE_ADDR" --arg proxy "$DELA_PROXY_URL" '{NodeAddr:$node, Proxy:$proxy}');
+      curl -sk "$FRONT_END_URL/api/proxies/" -X POST -H 'Content-Type: application/json' -b cookies.txt --data "$BODY";
 }
 
 # Adds the default admin to the dela blockchain. This is needed to add more proxies.
@@ -93,7 +108,10 @@ function add_admin() {
 function add_remaining_proxies() {
   for node in $(seq 1 3); do
     echo "adding proxy for node dela-worker-$node";
-    curl -sk "$FRONT_END_URL/api/proxies/" -X POST -H 'Content-Type: application/json' -b cookies.txt --data "{\"NodeAddr\":\"grpc://dela-worker-$node:$NODEPORT\",\"Proxy\":\"http://$DELA_PROXY_SUBNET.$((254 - node)):$PROXYPORT\"}";
+    NODE_ADDR=$(get_node_address "dela-worker-$node");
+    PROXY_ADDR="http://$DELA_PROXY_SUBNET.$((254 - node)):$PROXYPORT";
+    BODY=$(jq -cn --arg node "$NODE_ADDR" --arg proxy "$PROXY_ADDR" '{NodeAddr:$node, Proxy:$proxy}');
+    curl -sk "$FRONT_END_URL/api/proxies/" -X POST -H 'Content-Type: application/json' -b cookies.txt --data "$BODY";
   done
 }
 
