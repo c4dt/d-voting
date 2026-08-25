@@ -7,9 +7,9 @@ import (
 
 	"net/http"
 
+	"github.com/c4dt/d-voting/internal/api/types"
 	"github.com/c4dt/d-voting/internal/core/txn"
 	"github.com/c4dt/d-voting/internal/observability"
-	"github.com/c4dt/d-voting/internal/proxy/types"
 	dkgSrv "github.com/c4dt/d-voting/internal/services/dkg"
 	"github.com/gorilla/mux"
 	"go.dedis.ch/kyber/v3"
