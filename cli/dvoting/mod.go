@@ -5,15 +5,9 @@
 //	# Expect GOPATH to be correctly set to have dvoting available.
 //	go install
 //
-//	dvoting --config /tmp/node1 start --port 2001 &
-//	dvoting --config /tmp/node2 start --port 2002 &
-//	dvoting --config /tmp/node3 start --port 2003 &
-//
-//	# Share the different certificates among the participants.
-//	dvoting --config /tmp/node2 minogrpc join --address 127.0.0.1:2001\
-//	  $(dvoting --config /tmp/node1 minogrpc token)
-//	dvoting --config /tmp/node3 minogrpc join --address 127.0.0.1:2001\
-//	  $(dvoting --config /tmp/node1 minogrpc token)
+//	dvoting --config /tmp/node1 start --listen /ip4/127.0.0.1/tcp/2001/ws &
+//	dvoting --config /tmp/node2 start --listen /ip4/127.0.0.1/tcp/2002/ws &
+//	dvoting --config /tmp/node3 start --listen /ip4/127.0.0.1/tcp/2003/ws &
 //
 //	# Create a chain with two members.
 //	dvoting --config /tmp/node1 ordering setup\
@@ -31,7 +25,6 @@ import (
 	"os"
 
 	dkg "github.com/c4dt/d-voting/services/dkg/pedersen/controller"
-	"github.com/c4dt/d-voting/services/dkg/pedersen/json"
 	shuffle "github.com/c4dt/d-voting/services/shuffle/neff/controller"
 
 	cosipbft "github.com/c4dt/d-voting/cli/cosipbftcontroller"
@@ -43,9 +36,10 @@ import (
 	db "go.dedis.ch/dela/core/store/kv/controller"
 	pool "go.dedis.ch/dela/core/txn/pool/controller"
 	signed "go.dedis.ch/dela/core/txn/signed/controller"
-	mino "go.dedis.ch/dela/mino/minogrpc/controller"
+	mino "go.dedis.ch/dela/mino/minows"
 	proxy "go.dedis.ch/dela/mino/proxy/http/controller"
 
+	_ "github.com/c4dt/d-voting/services/dkg/pedersen/json"
 	_ "github.com/c4dt/d-voting/services/shuffle/neff/json"
 
 	gapi "go.dedis.ch/dela-apps/gapi/controller"
@@ -68,8 +62,6 @@ type config struct {
 }
 
 func runWithCfg(args []string, cfg config) error {
-	json.Register()
-
 	builder := node.NewBuilderWithCfg(
 		cfg.Channel,
 		cfg.Writer,
