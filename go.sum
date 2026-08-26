@@ -1396,8 +1396,8 @@ github.com/btcsuite/snappy-go v1.0.0/go.mod h1:8woku9dyThutzjeg+3xrA5iCpBRH8XEEg
 github.com/btcsuite/websocket v0.0.0-20150119174127-31079b680792/go.mod h1:ghJtEyQwv5/p4Mg4C0fgbePVuGr935/5ddU9Z3TmDRY=
 github.com/btcsuite/winsvc v1.0.0/go.mod h1:jsenWakMcC0zFBFurPLEAyrnc/teJEM1O46fmI40EZs=
 github.com/buger/jsonparser v0.0.0-20181115193947-bf1c66bbce23/go.mod h1:bbYlZJ7hK1yFx9hf58LP0zeX7UjIGs20ufpu3evjr+s=
-github.com/c4dt/dela v0.0.0-20260825081431-08f5b05544f7 h1:PVGE7W93JIFPecvtWsjWklXMPc6KphzGLTmJ9ResUjg=
-github.com/c4dt/dela v0.0.0-20260825081431-08f5b05544f7/go.mod h1:6cuq8E9fE72jkAr5XOwsT1+n14JplnO++g8nS8vJkXo=
+github.com/c4dt/dela v0.0.0-20260826150420-954aa5aa9774 h1:/sc6wYhKXBjP8xgAF10GGdiDO39FbVa9jhAyeYrOhLA=
+github.com/c4dt/dela v0.0.0-20260826150420-954aa5aa9774/go.mod h1:6cuq8E9fE72jkAr5XOwsT1+n14JplnO++g8nS8vJkXo=
 github.com/c4dt/dela-apps v0.0.0-20231121155105-f3a8a6f4b3b8 h1:ELho4tnVG7lM3c2I42Q5IGNyuk/2FQCterA2zVQGvms=
 github.com/c4dt/dela-apps v0.0.0-20231121155105-f3a8a6f4b3b8/go.mod h1:Rky9YH7R02zSOirr2BhhdJs/9VH4+rxqkQxHU3UTQRA=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
