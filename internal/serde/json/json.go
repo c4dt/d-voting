@@ -21,7 +21,6 @@ import (
 	_ "github.com/c4dt/d-voting/internal/protocols/cosi/json"
 	_ "github.com/c4dt/d-voting/internal/protocols/cosi/threshold/json"
 	"github.com/c4dt/d-voting/internal/serde"
-	_ "github.com/c4dt/d-voting/internal/services/dkg-dela/pedersen/json"
 )
 
 // JSONEngine is a context engine to marshal and unmarshal in JSON format.
