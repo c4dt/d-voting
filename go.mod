@@ -18,7 +18,7 @@ require (
 )
 
 replace (
-	go.dedis.ch/dela => github.com/c4dt/dela v0.0.0-20260811121334-88cea802c7b9
+	go.dedis.ch/dela => github.com/c4dt/dela v0.0.0-20260827125918-beb3cbab76a0
 	go.dedis.ch/dela-apps => github.com/c4dt/dela-apps v0.0.0-20231121155105-f3a8a6f4b3b8
 )
 
@@ -42,6 +42,7 @@ require (
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
 	github.com/urfave/cli/v2 v2.27.6 // indirect
 	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
+	go.dedis.ch/debugtools v0.1.1 // indirect
 	go.dedis.ch/fixbuf v1.0.3 // indirect
 	go.dedis.ch/protobuf v1.0.11 // indirect
 	go.etcd.io/bbolt v1.4.0 // indirect
