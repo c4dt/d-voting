@@ -164,7 +164,7 @@ one if it is imported as shown below. *Note*: it is not necessary to import for
 new format.
 
 ```go
-import "go.dedis.ch/dela/serde/json"
+import "github.com/c4dt/d-voting/internal/serde/json"
 
 requestFormats.Register(serde.FormatJSON, myEngineImpl{})
 ```

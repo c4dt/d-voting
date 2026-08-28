@@ -1,6 +1,6 @@
 # API documentation
 
-_Documentation Last Review: 27.06.2024_
+_Documentation Last Review: 28.08.2026_
 
 ## Regular workflow:
 
