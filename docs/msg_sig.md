@@ -1,12 +1,12 @@
 # Message signature
 
-API messages must be signed by the proxy server, which every Dela node must
+API messages must be signed by the proxy server, which every blockchain node must
 trust. We assume the proxy server owns a key pair `secret_key`/`public_key`.
-Dela nodes have the `public_key`. We are using the common "[Magic
+Blockchain nodes have the `public_key`. We are using the common "[Magic
 signature](https://web.archive.org/web/20210418211626/https://www.abstractioneer.org/2010/01/magic-signatures-for-salmon.html)"
 scheme to sign messages.
 
-Let's say the proxy wants to send a message to one of the Dela node:
+Let's say the proxy wants to send a message to one of the blockchain nodes:
 
 ```json
 json := {
@@ -28,7 +28,7 @@ signature := sign(secret_key, sha256(encoded))
 ``` 
 
 Finally, a json message with the encoded original message and the signature can
-be sent to the Dela node:
+be sent to the blockchain node:
 
 ```json
 message := {
@@ -37,16 +37,16 @@ message := {
 }
 ```
 
-Upon receiving the message, a Dela node is going to verify the signature:
+Upon receiving the message, a blockchain node is going to verify the signature:
 
 ```
 ok := verify_signature(public_key, message.signature, sha256(message.payload))
 ```
 
-Lastly, the Dela node can decode the original json message, which has been
+Lastly, the blockchain node can decode the original json message, which has been
 authenticated, and process it:
 
-```
+```json
 json := base64url_decode(message.payload)
 => {
     "foof": "bar",
@@ -55,4 +55,4 @@ json := base64url_decode(message.payload)
 ```
 
 In order to prevent replay attack a secure channel such as TLS over HTTP must be
-used to exchange messages between the proxy and the Dela nodes.
+used to exchange messages between the proxy and the blockchain nodes.
