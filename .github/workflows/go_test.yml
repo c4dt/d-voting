@@ -18,11 +18,12 @@ jobs:
 
       - name: Check out code into the Go module directory
         uses: actions/checkout@v4
-        
-# TODO: https://github.com/c4dt/d-voting/issues/392
-#      - name: Run lint
-#        run: make lint
-#
+
+      # Legacy DELA used golangci-lint, but 70 files in d-voting fail it.
+      # TODO: re-enable golangci-lint once those issues are resolved.
+      - name: Run lint
+        run: make lint
+
       - name: Run vet
         run: make vet
 

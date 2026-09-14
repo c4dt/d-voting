@@ -3,9 +3,9 @@ package fake
 import (
 	"io"
 
-	"github.com/c4dt/d-voting/dela/core/ordering/cosipbft/authority"
-	"github.com/c4dt/d-voting/dela/mino"
-	"github.com/c4dt/d-voting/dela/serde"
+	"github.com/c4dt/d-voting/internal/core/ordering/cosipbft/authority"
+	"github.com/c4dt/d-voting/internal/network/mino"
+	"github.com/c4dt/d-voting/internal/serde"
 )
 
 // ChangeSet is a fake implementation of ordering.cosipbft.authority.ChangeSet.

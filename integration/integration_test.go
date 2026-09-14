@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/c4dt/d-voting/contracts/evoting/types"
-	delaPkg "github.com/c4dt/d-voting/dela"
-	_ "github.com/c4dt/d-voting/services/dkg/pedersen/json"
-	_ "github.com/c4dt/d-voting/services/shuffle/neff/json"
+	"github.com/c4dt/d-voting/internal/contracts/evoting/types"
+	"github.com/c4dt/d-voting/internal/observability"
+	_ "github.com/c4dt/d-voting/internal/services/dkg/pedersen/json"
+	_ "github.com/c4dt/d-voting/internal/services/shuffle/neff/json"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 )
@@ -39,7 +39,7 @@ func getIntegrationTest(numNodes, numVotes int) func(*testing.T) {
 
 		// ##### SETUP ENV #####
 
-		delaPkg.Logger = delaPkg.Logger.Level(zerolog.WarnLevel)
+		observability.Logger = observability.Logger.Level(zerolog.WarnLevel)
 
 		dirPath, err := os.MkdirTemp(os.TempDir(), "d-voting-three-votes")
 		require.NoError(t, err)
@@ -182,7 +182,7 @@ func getIntegrationTestCrash(numNodes, numVotes, failingNodes int) func(*testing
 
 		// ##### SETUP ENV #####
 
-		delaPkg.Logger = delaPkg.Logger.Level(zerolog.WarnLevel)
+		observability.Logger = observability.Logger.Level(zerolog.WarnLevel)
 
 		dirPath, err := os.MkdirTemp(os.TempDir(), "d-voting-three-votes")
 		require.NoError(t, err)
@@ -334,7 +334,7 @@ func getIntegrationBenchmark(numNodes, numVotes int) func(*testing.B) {
 
 		// ##### SETUP ENV #####
 
-		delaPkg.Logger = delaPkg.Logger.Level(zerolog.WarnLevel)
+		observability.Logger = observability.Logger.Level(zerolog.WarnLevel)
 
 		dirPath, err := os.MkdirTemp(os.TempDir(), "d-voting-three-votes")
 		require.NoError(b, err)
