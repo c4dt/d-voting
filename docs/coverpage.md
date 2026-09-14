@@ -1,6 +1,6 @@
 # D-Voting
 
-> E-Voting system on the <a href="https://dedis.github.io/dela" target="_blank">Dela</a> blockchain
+> E-Voting system on the blockchain
 
 <p style="text-align:center"><img width="100px" src="assets/logotype.png"/></p>
 

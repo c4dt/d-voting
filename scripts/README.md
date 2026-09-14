@@ -8,7 +8,7 @@ They should be called in this order:
   The script runs only the DB in a docker environment, all the rest is run directly on the machine.
   This allows for easier debugging and faster testing of the different parts, mainly the
   authentication-server, but also the frontend.
-  For debugging Dela, you still need to re-run everything.
+  For debugging the blockchain, you still need to re-run everything.
 - `local_proxies.sh` needs to be run once after the `run_local.sh` script
 - `local_forms.sh` creates a new form and prints its ID
 

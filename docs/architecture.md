@@ -1,7 +1,7 @@
 # Architecture
 
-Dela has been built with modularization and testability in mind. As such, the
-system is made of multiple interoperable modules based on a set of well-defined
+The blockchain has been built with modularization and testability in mind. As such,
+the system is made of multiple interoperable modules based on a set of well-defined
 abstractions.
 
 ## Stacks

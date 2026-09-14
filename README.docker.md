@@ -1,4 +1,4 @@
-# D-Voting/DELA setup w/ Docker Compose
+# D-Voting setup w/ Docker Compose
 
 ## Overview
 
@@ -25,10 +25,10 @@ To set up the environment:
 This will run the subcommands:
 
 - `setup` which will build the images and start the containers
-- `init_dela` which will initialize the DELA network
+- `init_dela` which will initialize the blockchain network
 - `local_admin` which will add local admin accounts for testing and debugging
 - `local_login` which will set a local cookie that allows for interacting w/ the API via command-line
-- `add_proxies` which will set up the DELA node proxies
+- `add_proxies` which will set up the node proxies
 
 Each of these subcommands can also be run by invoking the script w/ the subcommand:
 

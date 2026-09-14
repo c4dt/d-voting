@@ -1,11 +1,11 @@
 ![Infography](assets/infograph.png)
 
-# Dela
+# Blockchain
 
-Dela stands for DEDIS Ledger Architecture. It is both a set of abstractions and
-an implementation of a distributed ledger architecture.
+The blockchain is both a set of abstractions and an implementation of a
+distributed ledger architecture.
 
-Dela has 2 main purposes:
+It has 2 main purposes:
 
 - Provide a modular, global-purpose, and universal framework that describes a
   minimal and extended set of abstractions for a distributed ledger
@@ -13,12 +13,12 @@ Dela has 2 main purposes:
 - Provide multiple modules implementations that can be combined to run a
   distributed ledger.
 
-With Dela you can:
+With the blockchain you can:
 
 - Learn the architecture of a distributed ledger
 - Run your blockchain / distributed ledger
 - Implement and test your new idea that will revolutionize the blockchain world
-  by adding your new module's implementation to the Dela ecosystem
+  by adding your new module's implementation to the ecosystem
 
 ## Distributed ledger
 
@@ -46,7 +46,7 @@ crypto-currency.
 
 ## Architecture
 
-Dela has 6 core modules that you will find in `core/`:
+The blockchain has 6 core modules that you will find in `internal/core/`:
 
 - access
 - execution

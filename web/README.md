@@ -1,12 +1,12 @@
-# Front-end of the DELA evoting system
+# Front-end of the D-Voting system
 
 This folder contains a front-end for admin and user operations.
 
 ![screen](screenshot.png)
 
 It allows the user to create a new form, close/cancel it and also vote on
-on-going forms. All the forms and their operations are saved on smart
-contracts from dela.
+on-going forms. All the forms and their operations are saved on
+the blockchain via smart contracts.
 
 # Setup
 

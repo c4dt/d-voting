@@ -5,7 +5,7 @@ In the use cases we defined two smart contracts for each of the following purpos
 - storing the forms information
 - storing a ballot
 
-As (at least for the moment) in a dela there is no notion of “instance of a smart contract”, we have
+As (at least for the moment) in the blockchain there is no notion of “instance of a smart contract”, we
 to see the definition of a smart contract as a single entity that performs its read/write access on
 the storage with a predefined set of keys.
 

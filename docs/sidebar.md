@@ -8,3 +8,13 @@
 - [Front-end](frontend_doc.md)
 - **Smart contract**
 - [Data structure](state_of_smart_contract.md)
+- **Blockchain internals**
+- [Blockchain](blockchain.md)
+- [Architecture](architecture.md)
+- [Ledger](ledger.md)
+- [CoSiPBFT](cosipbft.md)
+- [Mino](mino.md)
+- [Serde](serde.md)
+- **Code**
+- [Guideline](guideline.md)
+- [Manual tests](manual_tests.md)

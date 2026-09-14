@@ -60,8 +60,8 @@
 
 # D-Voting
 
-**D-Voting** is an e-voting platform based on the
-[Dela](./dela) blockchain. It uses state-of-the-art
+**D-Voting** is an e-voting platform based on a
+blockchain. It uses state-of-the-art
 protocols that guarantee privacy of votes and a fully decentralized process.
 This project was born in early 2021 and has been iteratively implemented by EPFL
 students under the supervision of DEDIS members.
@@ -132,16 +132,16 @@ authorizations. Admins use the web-frontend to perform updates.
 
 **Blockchain node** - A blockchain node is the wide definition of the program
 that runs on a host and participate in the voting logic. The blockchain node
-is built on top of Dela with an additional d-voting smart contract, proxy, and
-two services: DKG and verifiable Shuffling. The blockchain node is more
-accurately a subsystem, as it wraps many other components. Blockchain nodes
-communicate through gRPC with the [minogrpc][minogrpc] network overlay. We
-sometimes refer to the blockchain node simply as a "node".
+is built on top of a distributed ledger with an additional d-voting smart
+contract, proxy, and two services: DKG and verifiable Shuffling. The blockchain
+node is more accurately a subsystem, as it wraps many other components.
+Blockchain nodes communicate through gRPC with the [minogrpc][minogrpc] network
+overlay. We sometimes refer to the blockchain node simply as a "node".
 
 The following component diagrams summarizes the interaction between those
 high-level components:
 
-[minogrpc]: ./dela/mino/minogrpc
+[minogrpc]: ./internal/network/mino/minogrpc
 
 ![Global component diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/c4dt/d-voting/main/docs/assets/component-global.puml)
 
@@ -267,26 +267,23 @@ results.
 ## 📁 Folders structure
 
 <pre>
-<code>
-.
-├── cli    
-│   ├── cosipbftcontroller  Custom initialization of the blockchain node
-│   ├── <b>dvoting</b>             Build the node CLI
-│   └── postinstall         Custom node CLI setup
-├── <b>contracts</b>           
-│   └── <b>evoting</b>             D-Voting smart contract
-│       └── controller      CLI commands for the smart contract
-├── docs                    Documentation 
+<code>.
+├── <b>cmd</b>
+│   └── <b>dvoting</b>             Build the node CLI
+├── <b>docs</b>                    Documentation
 ├── integration             Integration tests
-├── internal                Internal packages: testing, tooling, tracing
-├── metrics             
-│   └── controller          CLI commands for Prometheus
-├── proxy                   Defines and implements HTTP handlers for the REST API
-├── <b>services</b>
-│   ├── dkg  
-│   │   └── <b>pedersen</b>        Implementation of the DKG service
-│   └── shuffle   
-│       └── <b>neff</b>            Implementation of the shuffle service
+├── <b>internal</b>              Internal packages
+│   ├── cli                 Generic CLI framework, crypto helpers, node builder
+│   ├── contracts           Smart contracts (evoting, access, value)
+│   ├── core                Ledger core: access, execution, ordering, store, txn, validation
+│   ├── crypto              Cryptographic primitives (bls, ed25519, common, loader)
+│   ├── network/mino        Network overlay (minoch, minogrpc, minows, router)
+│   ├── observability       Logging, tracing, metrics, traffic
+│   ├── protocols/cosi      Collective signing (flatcosi, threshold)
+│   ├── proxy               Public API + HTTP server abstraction + transaction manager
+│   ├── serde               Serialization/deserialization abstraction
+│   ├── services            D-Voting services: dkg (pedersen), dkg-dela, shuffle (neff)
+│   └── testing             Test helpers, fakes, mcheck vet tool
 └── <b>web</b>
     ├── <b>backend</b>
     │   └── src             Sources of the web backend (express.js server)
@@ -380,10 +377,10 @@ results.
 
 1: Install [Go](https://go.dev/dl/) 1.25.
 
-2: Install the `crypto` utility from the DELA source included in this repository:
+2: Install the `crypto` utility from the source included in this repository:
 
 ```sh
-go install ./dela/cli/crypto
+go install ./internal/cli/crypto
 ```
 
 Go will install the binaries in `$GOPATH/bin`, so be sure this it is correctly
@@ -518,7 +515,7 @@ are stored on variables in the root `mod.go`. For example:
 versionFlag="github.com/c4dt/d-voting.Version=`git describe --tags`"
 timeFlag="github.com/c4dt/d-voting.BuildTime=`date +'%d/%m/%y_%H:%M'`"
 
-go build -ldflags="-X $versionFlag -X $timeFlag" ./cli/dvoting
+go build -ldflags="-X $versionFlag -X $timeFlag" ./cmd/dvoting
 ```
 
 Note that `make build` will do that for you.
@@ -559,7 +556,7 @@ I DISPLAYING I  <1s        I    5s        I
 
 ---
 
-<img width="200px" src="docs/unicore_logo.png"/>
+<img width="200px" src="docs/assets/unicore_logo.png"/>
 
 This project has received funding from the European Union's Horizon 2020 
 research and innovation programme under grant agreement No 825377.

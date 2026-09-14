@@ -2,10 +2,10 @@
 
 # General explanations
 
-In this section, it is explained how the epxressJS backend server of the web application works in order to authenticate the users AND to sign the requests that are sent to DELA nodes (this part is described in the section dedicated to it).
+In this section, it is explained how the epxressJS backend server of the web application works in order to authenticate the users AND to sign the requests that are sent to blockchain nodes (this part is described in the section dedicated to it).
 
 ## Proxying request
-In order to avoid with the CORS policy, all the requests that goes to the DELA nodes and the to the Express server are "reverse proxied" by the react server. To do so the React middleware `http-proxy-middleware` with the following rules :
+In order to avoid with the CORS policy, all the requests that goes to the blockchain nodes and the to the Express server are "reverse proxied" by the react server. To do so the React middleware `http-proxy-middleware` with the following rules :
 - All requests with an url beginning with `/evoting/*` are sent to the express server without url rewriting
 - All requests with an url beginning with `/api/*` are sent to the express server without url rewriting
 
