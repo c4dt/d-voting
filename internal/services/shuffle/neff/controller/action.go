@@ -16,7 +16,7 @@ import (
 	"go.dedis.ch/kyber/v3/suites"
 	"golang.org/x/xerrors"
 
-	eproxy "github.com/c4dt/d-voting/internal/proxy"
+	eproxy "github.com/c4dt/d-voting/internal/api"
 )
 
 var suite = suites.MustFind("ed25519")
