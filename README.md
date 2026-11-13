@@ -135,13 +135,13 @@ that runs on a host and participate in the voting logic. The blockchain node
 is built on top of Dela with an additional d-voting smart contract, proxy, and
 two services: DKG and verifiable Shuffling. The blockchain node is more
 accurately a subsystem, as it wraps many other components. Blockchain nodes
-communicate through gRPC with the [minogrpc][minogrpc] network overlay. We
+communicate through WebSocket with the [minows][minows] network overlay. We
 sometimes refer to the blockchain node simply as a "node".
 
 The following component diagrams summarizes the interaction between those
 high-level components:
 
-[minogrpc]: https://github.com/c4dt/dela/tree/master/mino/minogrpc
+[minows]: https://github.com/c4dt/dela/tree/master/mino/minows
 
 ![Global component diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/dedis/d-voting/main/docs/assets/component-global.puml)
 
@@ -440,13 +440,13 @@ In three different terminal sessions, from the root folder:
 pk=adbacd10fdb9822c71025d6d00092b8a4abb5ebcb673d28d863f7c7c5adaddf3
 
 LLVL=info dvoting --config /tmp/node1 start --postinstall \
-  --promaddr :9100 --proxyaddr :9080 --proxykey $pk --listen tcp://0.0.0.0:2001 --public //localhost:2001
+  --promaddr :9100 --proxyaddr :9080 --proxykey $pk --listen /ip4/0.0.0.0/tcp/2001/ws --public /ip4/127.0.0.1/tcp/2001/ws
 
 LLVL=info dvoting --config /tmp/node2 start --postinstall \
-  --promaddr :9101 --proxyaddr :9081 --proxykey $pk --listen tcp://0.0.0.0:2002 --public //localhost:2002
+  --promaddr :9101 --proxyaddr :9081 --proxykey $pk --listen /ip4/0.0.0.0/tcp/2002/ws --public /ip4/127.0.0.1/tcp/2002/ws
 
 LLVL=info dvoting --config /tmp/node3 start --postinstall \
-  --promaddr :9102 --proxyaddr :9082 --proxykey $pk --listen tcp://0.0.0.0:2003 --public //localhost:2003
+  --promaddr :9102 --proxyaddr :9082 --proxykey $pk --listen /ip4/0.0.0.0/tcp/2003/ws --public /ip4/127.0.0.1/tcp/2003/ws
 ```
 
 If you restart, do not forget to remove the old state:
