@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"bytes"
 	"encoding/hex"
 	"io"
 	"testing"
@@ -9,9 +10,12 @@ import (
 
 	"github.com/c4dt/d-voting/internal/testing/fake"
 	"github.com/c4dt/d-voting/services/dkg"
+	"github.com/c4dt/d-voting/services/dkg/pedersen"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/dela/cli"
 	"go.dedis.ch/dela/cli/node"
+	"go.dedis.ch/dela/core/store/kv"
+	"go.dedis.ch/dela/mino"
 )
 
 func TestInitAction_Execute(t *testing.T) {
@@ -121,6 +125,51 @@ func TestExportInfoAction_Execute(t *testing.T) {
 	ctx.Injector.Inject(db)
 	err = action.Execute(ctx)
 	require.NoError(t, err)
+
+	// With a stored handler data, the action should print the form ID and
+	// the handler data.
+	db = fake.NewInMemoryDB()
+	err = db.Update(func(tx kv.WritableTx) error {
+		bucket, err := tx.GetBucketOrCreate([]byte(pedersen.BucketName))
+		if err != nil {
+			return err
+		}
+
+		handlerData := pedersen.NewHandlerData()
+		handlerData.StartRes.SetParticipants([]mino.Address{fake.NewAddress(0)})
+
+		data, err := handlerData.MarshalJSON()
+		if err != nil {
+			return err
+		}
+
+		return bucket.Set([]byte("deadbeef"), data)
+	})
+	require.NoError(t, err)
+
+	buffer := new(bytes.Buffer)
+	ctx.Injector.Inject(db)
+	ctx.Out = buffer
+
+	err = action.Execute(ctx)
+	require.NoError(t, err)
+	require.Contains(t, buffer.String(), hex.EncodeToString([]byte("deadbeef")))
+
+	// A corrupted handler data should make the action fail.
+	db = fake.NewInMemoryDB()
+	err = db.Update(func(tx kv.WritableTx) error {
+		bucket, err := tx.GetBucketOrCreate([]byte(pedersen.BucketName))
+		if err != nil {
+			return err
+		}
+
+		return bucket.Set([]byte("deadbeef"), []byte("{}"))
+	})
+	require.NoError(t, err)
+
+	ctx.Injector.Inject(db)
+	err = action.Execute(ctx)
+	require.EqualError(t, err, "database read failed: unexpected end of JSON input")
 }
 
 // -----------------------------------------------------------------------------
