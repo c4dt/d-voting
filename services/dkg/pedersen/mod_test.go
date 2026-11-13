@@ -191,6 +191,100 @@ func TestPedersen_InitNonEmptyMap(t *testing.T) {
 	}
 }
 
+// When ReadActors is called on a database with previously stored handler
+// data, the actors map should contain one actor per entry.
+func TestPedersen_ReadActors(t *testing.T) {
+	initMetrics()
+
+	distKey := suite.Point().Mul(fake.NewScalar(), nil)
+	privKey := fake.NewScalar()
+
+	hd := HandlerData{
+		StartRes: &state{
+			distKey:      distKey,
+			participants: []mino.Address{fake.NewAddress(0), fake.NewAddress(1)},
+		},
+		PrivShare: &share.PriShare{
+			I: 1,
+			V: fake.NewScalar(),
+		},
+		PubKey:  suite.Point().Mul(privKey, nil),
+		PrivKey: privKey,
+	}
+
+	formActorMap := map[string]HandlerData{
+		"deadbeef51": hd,
+		"deadbeef52": NewHandlerData(),
+	}
+
+	db := fake.NewInMemoryDB()
+
+	err := db.Update(func(tx kv.WritableTx) error {
+		bucket, err := tx.GetBucketOrCreate([]byte(BucketName))
+		if err != nil {
+			return err
+		}
+
+		for formID, handlerData := range formActorMap {
+			formIDBuf, err := hex.DecodeString(formID)
+			if err != nil {
+				return err
+			}
+
+			handlerDataBuf, err := handlerData.MarshalJSON()
+			if err != nil {
+				return err
+			}
+
+			err = bucket.Set(formIDBuf, handlerDataBuf)
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+	require.NoError(t, err)
+
+	p := NewPedersen(fake.Mino{}, &fake.Service{}, db, &fake.Pool{},
+		fake.Factory{}, fake.Signer{})
+
+	err = p.ReadActors(fake.Manager{})
+	require.NoError(t, err)
+
+	require.Equal(t, len(formActorMap), len(p.actors))
+
+	for formID := range formActorMap {
+		formIDBuf, err := hex.DecodeString(formID)
+		require.NoError(t, err)
+
+		_, exists := p.GetActor(formIDBuf)
+		require.True(t, exists)
+	}
+}
+
+// ReadActors should return an error when the stored handler data cannot be
+// deserialized.
+func TestPedersen_ReadActors_BadData(t *testing.T) {
+	db := fake.NewInMemoryDB()
+
+	err := db.Update(func(tx kv.WritableTx) error {
+		bucket, err := tx.GetBucketOrCreate([]byte(BucketName))
+		if err != nil {
+			return err
+		}
+
+		return bucket.Set([]byte("deadbeef51"), []byte("{}"))
+	})
+	require.NoError(t, err)
+
+	p := NewPedersen(fake.Mino{}, &fake.Service{}, db, &fake.Pool{},
+		fake.Factory{}, fake.Signer{})
+
+	err = p.ReadActors(fake.Manager{})
+	require.EqualError(t, err, "unexpected end of JSON input")
+}
+
 // When a new actor is created, its information is safely stored in the dkgMap.
 func TestPedersen_SyncDB(t *testing.T) {
 	t.Skip("https://github.com/c4dt/d-voting/issues/91")
