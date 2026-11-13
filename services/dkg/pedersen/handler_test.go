@@ -268,6 +268,52 @@ func TestHandlerData_UnmarshalJSON(t *testing.T) {
 	requireStatesEqual(t, hd.StartRes, newHd.StartRes)
 }
 
+// When the participants are serialized, the unmarshalling requires a non-nil
+// address factory.
+func TestHandlerData_UnmarshalJSON_MissingFactory(t *testing.T) {
+	hd := NewHandlerData()
+	hd.StartRes.SetDistKey(suite.Point().Pick(suite.RandomStream()))
+	hd.StartRes.SetParticipants([]mino.Address{fake.NewAddress(1)})
+
+	data, err := hd.MarshalJSON()
+	require.NoError(t, err)
+
+	newHd := &HandlerData{}
+	err = newHd.UnmarshalJSON(data, nil)
+	require.EqualError(t, err,
+		"address factory is required to deserialize participants")
+}
+
+// The address factory should fail the unmarshalling when it cannot
+// deserialize a participant address.
+func TestState_UnmarshalJSON_Errors(t *testing.T) {
+	s1 := &state{}
+	s1.SetDistKey(suite.Point().Pick(suite.RandomStream()))
+	s1.SetParticipants([]mino.Address{fake.NewAddress(1)})
+
+	data, err := s1.MarshalJSON()
+	require.NoError(t, err)
+
+	err = (&state{}).UnmarshalJSON(data, nil)
+	require.EqualError(t, err,
+		"address factory is required to deserialize participants")
+
+	err = (&state{}).UnmarshalJSON(data, badAddressFactory{})
+	require.EqualError(t, err, "failed to deserialize participant 0")
+}
+
+// badAddressFactory is a factory that fails to deserialize addresses.
+//
+// - implements mino.AddressFactory
+type badAddressFactory struct {
+	mino.AddressFactory
+}
+
+// FromText implements mino.AddressFactory. It always returns a nil address.
+func (f badAddressFactory) FromText(text []byte) mino.Address {
+	return nil
+}
+
 func TestState_MarshalJSON(t *testing.T) {
 	s1 := &state{}
 
