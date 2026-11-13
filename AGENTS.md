@@ -56,7 +56,7 @@ Style:
 - keep the code `gofmt`-clean and free of staticcheck warnings,
 - `mcheck` enforces comment rules, so document exported symbols and keep
   comments reasonable in length,
-- errors are wrapped with `github.com/golang.org/x/xerrors`, follow the
+- errors are wrapped with `golang.org/x/xerrors`, follow the
   existing pattern.
 
 ## Web frontend (`web/frontend/`)
