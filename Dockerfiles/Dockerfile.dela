@@ -15,5 +15,5 @@ FROM golang:1.25.0-bookworm AS build
 WORKDIR /usr/local/bin
 COPY --from=base /go/bin/crypto .
 COPY --from=base /go/bin/dvoting .
-ENTRYPOINT ["/bin/bash", "-c", "dvoting --config /data/node start --postinstall --proxyaddr :$PROXYPORT --proxykey $PROXYKEY --listen tcp://0.0.0.0:2000 --public $PUBLIC_URL --routing tree --noTLS"]
+ENTRYPOINT ["/bin/bash", "-c", "dvoting --config /data/node start --postinstall --proxyaddr :$PROXYPORT --proxykey $PROXYKEY --listen /ip4/0.0.0.0/tcp/2000/ws --public $PUBLIC_URL"]
 CMD []

@@ -10,7 +10,6 @@ import (
 	formTypes "github.com/c4dt/d-voting/contracts/evoting/types"
 	"go.dedis.ch/dela/core/access"
 	"go.dedis.ch/dela/core/txn/signed"
-	"go.dedis.ch/dela/mino/minogrpc/session"
 	"go.dedis.ch/dela/serde/json"
 
 	"github.com/c4dt/d-voting/internal/testing/fake"
@@ -243,13 +242,76 @@ func TestHandlerData_MarshalJSON(t *testing.T) {
 	require.NoError(t, err)
 
 	newHd := &HandlerData{}
-	err = newHd.UnmarshalJSON(data)
+	err = newHd.UnmarshalJSON(data, fake.AddressFactory{})
 	require.NoError(t, err)
 
 	require.True(t, newHd.PrivKey.Equal(hd.PrivKey))
 	require.True(t, newHd.PubKey.Equal(hd.PubKey))
 	requireStatesEqual(t, newHd.StartRes, hd.StartRes)
 	require.Equal(t, newHd.PrivShare, hd.PrivShare)
+}
+
+func TestHandlerData_UnmarshalJSON(t *testing.T) {
+	hd := NewHandlerData()
+	hd.StartRes.SetDistKey(suite.Point().Pick(suite.RandomStream()))
+	hd.StartRes.SetParticipants([]mino.Address{
+		fake.NewAddress(1),
+		fake.NewAddress(2),
+	})
+
+	data, err := hd.MarshalJSON()
+	require.NoError(t, err)
+
+	newHd := &HandlerData{}
+	err = newHd.UnmarshalJSON(data, fake.AddressFactory{})
+	require.NoError(t, err)
+	requireStatesEqual(t, hd.StartRes, newHd.StartRes)
+}
+
+// When the participants are serialized, the unmarshalling requires a non-nil
+// address factory.
+func TestHandlerData_UnmarshalJSON_MissingFactory(t *testing.T) {
+	hd := NewHandlerData()
+	hd.StartRes.SetDistKey(suite.Point().Pick(suite.RandomStream()))
+	hd.StartRes.SetParticipants([]mino.Address{fake.NewAddress(1)})
+
+	data, err := hd.MarshalJSON()
+	require.NoError(t, err)
+
+	newHd := &HandlerData{}
+	err = newHd.UnmarshalJSON(data, nil)
+	require.EqualError(t, err,
+		"address factory is required to deserialize participants")
+}
+
+// The address factory should fail the unmarshalling when it cannot
+// deserialize a participant address.
+func TestState_UnmarshalJSON_Errors(t *testing.T) {
+	s1 := &state{}
+	s1.SetDistKey(suite.Point().Pick(suite.RandomStream()))
+	s1.SetParticipants([]mino.Address{fake.NewAddress(1)})
+
+	data, err := s1.MarshalJSON()
+	require.NoError(t, err)
+
+	err = (&state{}).UnmarshalJSON(data, nil)
+	require.EqualError(t, err,
+		"address factory is required to deserialize participants")
+
+	err = (&state{}).UnmarshalJSON(data, badAddressFactory{})
+	require.EqualError(t, err, "failed to deserialize participant 0")
+}
+
+// badAddressFactory is a factory that fails to deserialize addresses.
+//
+// - implements mino.AddressFactory
+type badAddressFactory struct {
+	mino.AddressFactory
+}
+
+// FromText implements mino.AddressFactory. It always returns a nil address.
+func (f badAddressFactory) FromText(text []byte) mino.Address {
+	return nil
 }
 
 func TestState_MarshalJSON(t *testing.T) {
@@ -260,15 +322,14 @@ func TestState_MarshalJSON(t *testing.T) {
 	require.NoError(t, err)
 
 	s2 := &state{}
-	err = s2.UnmarshalJSON(data)
+	err = s2.UnmarshalJSON(data, fake.AddressFactory{})
 	require.NoError(t, err)
 
 	requireStatesEqual(t, s1, s2)
 
 	// Try with some data
 	distKey := suite.Point().Pick(suite.RandomStream())
-	// TODO: use AddressFactory here
-	participants := []mino.Address{session.NewAddress("grpcs://localhost:12345"), session.NewAddress("grpcs://localhost:1234")}
+	participants := []mino.Address{fake.NewAddress(1), fake.NewAddress(2)}
 
 	s1.SetDistKey(distKey)
 	s1.SetParticipants(participants)
@@ -277,10 +338,11 @@ func TestState_MarshalJSON(t *testing.T) {
 	require.NoError(t, err)
 
 	s2 = &state{}
-	err = s2.UnmarshalJSON(data)
+	err = s2.UnmarshalJSON(data, fake.AddressFactory{})
 	require.NoError(t, err)
 
 	requireStatesEqual(t, s1, s2)
+
 }
 
 func TestHandler_HandlerDecryptRequest(t *testing.T) {

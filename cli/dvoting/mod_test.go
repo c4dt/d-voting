@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/base64"
-	"fmt"
 	"io"
 	"net"
 	"os"
@@ -23,9 +22,7 @@ func TestDvoting_Main(t *testing.T) {
 }
 
 // This test creates a chain with initially 3 nodes. It then adds node 4 and 5
-// in two blocks. Node 4 does not share its certificate which means others won't
-// be able to communicate, but the chain should proceed because of the
-// threshold.
+// in two blocks.
 func TestDvoting_Scenario_SetupAndTransactions(t *testing.T) {
 	dir, err := os.MkdirTemp(os.TempDir(), "dvoting1")
 	require.NoError(t, err)
@@ -58,11 +55,6 @@ func TestDvoting_Scenario_SetupAndTransactions(t *testing.T) {
 
 	require.True(t, waitDaemon(t, []string{node1, node2, node3}), "daemon failed to start")
 
-	// Share the certificates.
-	shareCert(t, node2, node1, "//127.0.0.1:2111")
-	shareCert(t, node3, node1, "//127.0.0.1:2111")
-	shareCert(t, node5, node1, "//127.0.0.1:2111")
-
 	// Set up the chain with nodes 1 and 2.
 	args := append(append(
 		append(
@@ -75,8 +67,7 @@ func TestDvoting_Scenario_SetupAndTransactions(t *testing.T) {
 	err = run(args)
 	require.NoError(t, err)
 
-	// Add node 4 to the current chain. This node is not reachable from the
-	// others but transactions should work as the threshold is correct.
+	// Add node 4 to the current chain.
 	args = append([]string{
 		os.Args[0],
 		"--config", node1, "ordering", "roster", "add",
@@ -87,9 +78,7 @@ func TestDvoting_Scenario_SetupAndTransactions(t *testing.T) {
 	err = run(args)
 	require.NoError(t, err)
 
-	// Add the certificate and push two new blocks to make sure node4 is
-	// fully participating
-	shareCert(t, node4, node1, "//127.0.0.1:2111")
+	// Push two new blocks to make sure node4 is fully participating.
 	publicKey, err := bn256.NewSuiteG2().Point().MarshalBinary()
 	require.NoError(t, err)
 	publicKeyHex := base64.StdEncoding.EncodeToString(publicKey)
@@ -176,7 +165,8 @@ func TestDvoting_Scenario_RestartNode(t *testing.T) {
 	)
 
 	err = run(args)
-	require.EqualError(t, err, "command error: transaction refused: duplicate in roster: grpcs://127.0.0.1:2210")
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "command error: transaction refused: duplicate in roster: /ip4/127.0.0.1/tcp/2210/ws/p2p/")
 }
 
 // -----------------------------------------------------------------------------
@@ -211,8 +201,6 @@ func setupChain(t *testing.T, nodes []string, ports []uint16) {
 	}()
 
 	waitDaemon(t, nodes)
-
-	shareCert(t, nodes[1], nodes[0], fmt.Sprintf("//127.0.0.1:%d", ports[0]))
 
 	args := append(append(
 		[]string{os.Args[0], "--config", nodes[0], "ordering", "setup"},
@@ -255,31 +243,8 @@ func waitDaemon(t *testing.T, daemons []string) bool {
 
 func makeNodeArg(path string, port uint16) []string {
 	return []string{
-		os.Args[0], "--config", path, "start", "--listen", "tcp://127.0.0.1:" + strconv.Itoa(int(port)),
+		os.Args[0], "--config", path, "start", "--listen", "/ip4/127.0.0.1/tcp/" + strconv.Itoa(int(port)) + "/ws",
 	}
-}
-
-func shareCert(t *testing.T, path string, src string, addr string) {
-	args := append(
-		[]string{os.Args[0], "--config", path, "minogrpc", "join", "--address", addr},
-		getToken(t, src)...,
-	)
-
-	err := run(args)
-	require.NoError(t, err)
-}
-
-func getToken(t *testing.T, path string) []string {
-	buffer := new(bytes.Buffer)
-	cfg := config{
-		Writer: buffer,
-	}
-
-	args := []string{os.Args[0], "--config", path, "minogrpc", "token"}
-	err := runWithCfg(args, cfg)
-	require.NoError(t, err)
-
-	return strings.Split(buffer.String(), " ")
 }
 
 func getExport(t *testing.T, path string) []string {

@@ -19,7 +19,7 @@ services:
     <<: *dela
     environment:
       <<: *dela-env
-      PUBLIC_URL: grpc://dela-worker-0:2000
+      PUBLIC_URL: /dns4/dela-worker-0/tcp/2000/ws
     volumes:
       - dela-worker-0-data:/data
     ports:
@@ -33,7 +33,7 @@ services:
       - dela-worker-1-data:/data
     environment:
       <<: *dela-env
-      PUBLIC_URL: grpc://dela-worker-1:2000
+      PUBLIC_URL: /dns4/dela-worker-1/tcp/2000/ws
     ports:
       - 127.0.0.1:40001:40000
     networks:
@@ -45,7 +45,7 @@ services:
       - dela-worker-2-data:/data
     environment:
       <<: *dela-env
-      PUBLIC_URL: grpc://dela-worker-2:2000
+      PUBLIC_URL: /dns4/dela-worker-2/tcp/2000/ws
     ports:
       - 127.0.0.1:40002:40000
     networks:
@@ -57,7 +57,7 @@ services:
       - dela-worker-3-data:/data
     environment:
       <<: *dela-env
-      PUBLIC_URL: grpc://dela-worker-3:2000
+      PUBLIC_URL: /dns4/dela-worker-3/tcp/2000/ws
     ports:
       - 127.0.0.1:40003:40000
     networks:

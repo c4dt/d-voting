@@ -62,7 +62,7 @@ pass "list proxies"
 info "Registering ${PROXY_COUNT} temporary proxies"
 
 for i in $(seq 1 "$PROXY_COUNT"); do
-    node_addr="grpc://zz-system-test-${i}:2000"
+    node_addr="/dns4/zz-system-test-${i}/tcp/2000/ws"
     proxy_addr="http://zz-system-test-${i}:8080"
 
     NODE_ADDRS+=("$node_addr")
@@ -81,7 +81,7 @@ info "Verifying registered proxies"
 response="$(api_get "/api/proxies")"
 
 for i in $(seq 1 "$PROXY_COUNT"); do
-    node_addr="grpc://zz-system-test-${i}:2000"
+    node_addr="/dns4/zz-system-test-${i}/tcp/2000/ws"
     expected_proxy="http://zz-system-test-${i}:8080"
 
     actual_proxy="$(jq -r --arg node "$node_addr" '.Proxies[$node]' <<<"$response")"
@@ -93,7 +93,7 @@ done
 info "Reading proxies individually"
 
 for i in $(seq 1 "$PROXY_COUNT"); do
-    node_addr="grpc://zz-system-test-${i}:2000"
+    node_addr="/dns4/zz-system-test-${i}/tcp/2000/ws"
     expected_proxy="http://zz-system-test-${i}:8080"
 
     encoded="$(jq -nr --arg value "$node_addr" '$value | @uri')"
@@ -111,7 +111,7 @@ done
 info "Updating proxies"
 
 for i in $(seq 1 "$PROXY_COUNT"); do
-    node_addr="grpc://zz-system-test-${i}:2000"
+    node_addr="/dns4/zz-system-test-${i}/tcp/2000/ws"
     updated_proxy="http://zz-system-test-${i}:8081"
 
     encoded="$(jq -nr --arg value "$node_addr" '$value | @uri')"
@@ -127,7 +127,7 @@ done
 info "Verifying proxy updates"
 
 for i in $(seq 1 "$PROXY_COUNT"); do
-    node_addr="grpc://zz-system-test-${i}:2000"
+    node_addr="/dns4/zz-system-test-${i}/tcp/2000/ws"
     expected_proxy="http://zz-system-test-${i}:8081"
 
     encoded="$(jq -nr --arg value "$node_addr" '$value | @uri')"

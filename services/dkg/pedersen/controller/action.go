@@ -3,7 +3,6 @@ package controller
 import (
 	"encoding/base64"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -162,7 +161,8 @@ func (a *exportInfoAction) Execute(ctx node.Context) error {
 		return bucket.ForEach(func(formIDBuf, handlerDataBuf []byte) error {
 
 			handlerData := pedersen.HandlerData{}
-			err = json.Unmarshal(handlerDataBuf, &handlerData)
+			err = handlerData.UnmarshalJSON(
+				handlerDataBuf, m.GetAddressFactory())
 			if err != nil {
 				return err
 			}

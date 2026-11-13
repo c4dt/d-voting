@@ -2,17 +2,10 @@ package integration
 
 import (
 	"context"
-	"crypto/ecdsa"
-	"crypto/elliptic"
-	"crypto/x509"
-	"io"
-	"math/rand"
-	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
 	"sync"
-	"time"
 
 	"github.com/c4dt/d-voting/contracts/evoting"
 	etypes "github.com/c4dt/d-voting/contracts/evoting/types"
@@ -20,6 +13,7 @@ import (
 	"github.com/c4dt/d-voting/services/dkg/pedersen"
 	"github.com/c4dt/d-voting/services/shuffle"
 	"github.com/c4dt/d-voting/services/shuffle/neff"
+	ma "github.com/multiformats/go-multiaddr"
 	"github.com/stretchr/testify/require"
 	accessContract "go.dedis.ch/dela/contracts/access"
 	"go.dedis.ch/dela/contracts/value"
@@ -46,15 +40,12 @@ import (
 	"go.dedis.ch/dela/crypto/loader"
 	"go.dedis.ch/dela/mino"
 	"go.dedis.ch/dela/mino/gossip"
-	"go.dedis.ch/dela/mino/minogrpc"
-	"go.dedis.ch/dela/mino/minogrpc/certs"
-	"go.dedis.ch/dela/mino/minogrpc/session"
-	"go.dedis.ch/dela/mino/router/tree"
+	"go.dedis.ch/dela/mino/minows"
+	minowskey "go.dedis.ch/dela/mino/minows/key"
 	"go.dedis.ch/dela/serde/json"
 	"golang.org/x/xerrors"
 )
 
-const certKeyName = "cert.key"
 const privateKeyFile = "private.key"
 
 // delaNode defines the common interface for a Dela node.
@@ -111,13 +102,11 @@ func setupDVotingNodes(t require.TestingT, numberOfNodes int, tempDir string) []
 
 	nodes := make(chan dVotingCosiDela, numberOfNodes)
 
-	randSource := rand.NewSource(int64(0))
-
 	for n := 0; n < numberOfNodes; n++ {
 		go func(i int) {
 			defer wait.Done()
 			filePath := filepath.Join(tempDir, "node", strconv.Itoa(i))
-			nodes <- newDVotingNode(t, filePath, randSource)
+			nodes <- newDVotingNode(t, filePath)
 		}(n)
 	}
 
@@ -137,7 +126,7 @@ func setupDVotingNodes(t require.TestingT, numberOfNodes int, tempDir string) []
 }
 
 // Creates a single dVotingCosiDela node
-func newDVotingNode(t require.TestingT, path string, randSource rand.Source) dVotingCosiDela {
+func newDVotingNode(t require.TestingT, path string) dVotingCosiDela {
 	err := os.MkdirAll(path, 0700)
 	require.NoError(t, err)
 
@@ -148,29 +137,18 @@ func newDVotingNode(t require.TestingT, path string, randSource rand.Source) dVo
 	require.NoError(t, err)
 
 	// mino
-	router := tree.NewRouter(minogrpc.NewAddressFactory())
-	addr := minogrpc.ParseAddress("127.0.0.1", uint16(0))
-
-	certs := certs.NewDiskStore(db, session.AddressFactory{})
-
-	fload := loader.NewFileLoader(filepath.Join(path, certKeyName))
-
-	keydata, err := fload.LoadOrCreate(newCertGenerator(rand.New(randSource), elliptic.P521()))
+	listen, err := ma.NewMultiaddr("/ip4/127.0.0.1/tcp/0/ws")
 	require.NoError(t, err)
 
-	key, err := x509.ParseECPrivateKey(keydata)
+	storage := minowskey.NewStorage(db)
+	key, err := storage.LoadOrCreate()
 	require.NoError(t, err)
 
-	opts := []minogrpc.Option{
-		minogrpc.WithStorage(certs),
-		minogrpc.WithCertificateKey(key, key.Public()),
-	}
-
-	onet, err := minogrpc.NewMinogrpc(addr, nil, router, opts...)
+	onet, err := minows.NewMinows(listen, nil, key)
 	require.NoError(t, err)
 
 	// ordering + validation + execution
-	fload = loader.NewFileLoader(filepath.Join(path, privateKeyFile))
+	fload := loader.NewFileLoader(filepath.Join(path, privateKeyFile))
 
 	signerdata, err := fload.LoadOrCreate(newKeyGenerator())
 	require.NoError(t, err)
@@ -295,29 +273,8 @@ func createDVotingAccess(t require.TestingT, nodes []dVotingCosiDela, dir string
 	return signer
 }
 
-// Setup implements delaNode. It creates the roster, shares the certificate, and
-// create an new chain.
+// Setup implements delaNode. It creates the roster and a new chain.
 func (c dVotingNode) Setup(nodes ...delaNode) {
-	// share the certificates
-	joinable, ok := c.onet.(minogrpc.Joinable)
-	require.True(c.t, ok)
-
-	addrURL, err := url.Parse(c.onet.GetAddress().String())
-	require.NoError(c.t, err, addrURL)
-
-	token := joinable.GenerateToken(time.Hour)
-
-	certHash, err := joinable.GetCertificateStore().Hash(joinable.GetCertificateChain())
-	require.NoError(c.t, err)
-
-	for _, n := range nodes {
-		otherJoinable, ok := n.GetMino().(minogrpc.Joinable)
-		require.True(c.t, ok)
-
-		err = otherJoinable.Join(addrURL, token, certHash)
-		require.NoError(c.t, err)
-	}
-
 	type extendedService interface {
 		GetRoster() (authority.Authority, error)
 		Setup(ctx context.Context, ca crypto.CollectiveAuthority) error
@@ -348,7 +305,7 @@ func (c dVotingNode) Setup(nodes ...delaNode) {
 	roster := authority.New(minoAddrs, pubKeys)
 
 	// create chain
-	err = extended.Setup(context.Background(), roster)
+	err := extended.Setup(context.Background(), roster)
 	require.NoError(c.t, err)
 }
 
@@ -415,39 +372,6 @@ func (c dVotingNode) GetValidationSrv() validation.Service {
 // GetRosterFac implements dVotingNode
 func (c dVotingNode) GetRosterFac() authority.Factory {
 	return c.rosterFac
-}
-
-// certGenerator can generate a private key compatible with the x509
-// certificate.
-//
-// - implements loader.Generator
-type certGenerator struct {
-	random io.Reader
-	curve  elliptic.Curve
-}
-
-func newCertGenerator(r io.Reader, c elliptic.Curve) loader.Generator {
-	return certGenerator{
-		random: r,
-		curve:  c,
-	}
-}
-
-// Generate implements loader.Generator. It returns the serialized data of a
-// private key generated from the an elliptic curve. The data is formatted as a
-// PEM block "EC PRIVATE KEY".
-func (g certGenerator) Generate() ([]byte, error) {
-	priv, err := ecdsa.GenerateKey(g.curve, g.random)
-	if err != nil {
-		return nil, xerrors.Errorf("ecdsa: %v", err)
-	}
-
-	data, err := x509.MarshalECPrivateKey(priv)
-	if err != nil {
-		return nil, xerrors.Errorf("while marshaling: %v", err)
-	}
-
-	return data, nil
 }
 
 func newKeyGenerator() loader.Generator {
