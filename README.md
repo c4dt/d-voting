@@ -69,6 +69,9 @@ students under the supervision of DEDIS members.
 ⚠️ This project is still under development and should not be used for real
 forms.
 
+🤖 AI coding agents: read [AGENTS.md](AGENTS.md) for repository-specific
+guidance on layout, commands and conventions before making changes.
+
 Main properties of the system are the following:
 
 <div align="center">
